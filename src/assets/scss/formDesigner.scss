@@ -1,0 +1,282 @@
+/**
+ * Created by tangyue on 20/11/9
+ */
+@import './common/vars';
+@import './mixins/mixins';
+
+$leftSiderWidth: 180px;
+$rightSiderWidth: 300px;
+$componentsSettingPanelHeader: 30px;
+$headerHeight: 40px;
+@mixin formItemOperateBorderStyle() {
+	position: absolute;
+	border-color: $--color-purple2;
+	border-width: 2px;
+	border-style: dashed;
+}
+
+// 表单的样式 -start--
+@include b(form) {
+	height: 100%; // 初始值为百分百
+	box-sizing: border-box;
+	// 重设一些默认元素样式 todo use mixins
+
+	*{
+		box-sizing: border-box;
+	}
+	ul{
+		margin: 0;
+	}
+	a, a:focus, a:hover {
+		cursor: pointer;
+		color: inherit;
+		text-decoration: none;
+	}
+	@include e(itemBox) {
+		&.block {
+			float: none;
+			clear: both;
+		}
+		&.hidden {
+			// todo 现在是用了颜色来代表隐藏表单、不过看起来不太好看。后面看看是否能搞成右下角小图标
+			.fd-formItem{
+				background: rgba(177, 160, 198, .5);
+			}
+			.el-input__inner{
+				background: inherit;
+			}
+		}
+		// 重写原本的el-input 与el-select的组件的样式，因为原有的样式会导致input的包裹组件（el-form-item__content）的高度不同
+		.el-form-item__content {
+			.el-select {
+				float: left;
+			}
+
+			.el-input {
+				float: left;
+			}
+		}
+		// 有oh样式的表示需要设置overflow:hidden。这主要是针对编辑模式时，不允许超出后影响了页面布局
+		.oh{
+			.el-form-item__content{
+				overflow: hidden;
+			}
+		}
+		.auto-width {
+			width: 100%;
+			padding-left: 0;
+			padding-right: 0;
+		}
+		.el-radio-group,
+		.el-checkbox-group{
+			white-space: nowrap;
+			padding-left: 10px;
+		}
+	}
+	@include m(inline) {
+	}
+	// 表单项的一行
+	@include e(row) {
+		height: 100%;
+		margin: 0 !important; // 覆盖掉el-row原本的margin-left与right的-17.5px。防止编辑区的宽度超出去引起不必要的滚动条
+	}
+	// 拖拽组件的transition的元素
+	@include e(dragbox) {
+		height: 100%;
+		.fd-form__dragbox--inner{
+			border: 1px solid #b9c2dd;// 分组的给加个边框线，为了突出是分组
+			min-height: 80px;
+			width: 100%;
+			float: left;// 为了当子元素增加后，这个元素的高度能撑开
+
+		}
+	}
+	@include e(transition) {
+		height: 100%;
+	}
+
+	// 重写gost的样式
+	.ghost,
+	[class*=ghost-] {
+		background: #F56C6C;
+		border: 2px solid #F56C6C;
+		outline-width: 0;
+		height: 3px;
+		box-sizing: border-box;
+		font-size: 0;
+		content: '';
+		overflow: hidden;
+		padding: 0;
+		display: block;
+		float: left;
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.ghost-col-8 {
+		width: 33.33333%
+	}
+	.ghost-col-24 {
+		width: 100%;
+	}
+
+	// 分组
+	@include e(group) {
+		box-shadow:0 2px 12px 0 rgba(0,0,0,.1);
+
+		// 加上下面的伪类的写法，主要是因为分组内有浮动元素，分组的高度没有被撑开
+		&:after,
+		&::after
+		{
+			content: '';
+			clear: both;
+			display: block;
+		}
+	}
+	// 分组的头部
+	@include e(groupHeader){
+		color: #333;
+		font-size: 14px;
+		font-weight: bold;
+		padding: 10px 20px;
+		border-bottom: 1px solid #ebeef5;
+		margin-bottom: 10px;
+	}
+
+	// 预览时的表单的样式
+	@include m(preview){
+		height: 100%;
+		overflow-x: hidden;
+		overflow-y: auto;
+		.el-form-item{
+			margin-bottom: 0;
+			.el-radio-group,
+			.el-checkbox-group{
+				white-space: nowrap;
+				padding-left: 10px;
+			}
+		}
+		// 重写报错提示的样式，使其可以在显示时自动撑开
+		.el-form-item__error{
+			position: static;
+		}
+	}
+	// 不同的皮肤
+	@include m(blue){
+		.el-form-item__label{
+			background: $--form-label-blue-background-color;
+			border: solid 1px $--form-label-blue-border-color;
+			line-height: 32px;
+			font-size: 12px;
+		}
+		.el-form-item__content{
+			line-height: 32px;
+
+		}
+		.el-input__inner{
+			border: solid 1px $--form-label-blue-border-color;
+			height: 34px;
+			line-height: 34px;
+		}
+
+		// 如果表单上还有不同的size
+		.el-input--mini .el-input__inner {
+			height: 28px;
+			line-height: 28px;
+		}
+	}
+}
+// 表单的样式 --end--
+
+@include b(formItem) {
+	position: relative;
+	cursor: move;
+	overflow-y: hidden;//主要是为了嵌套的表单项的高度
+	.operate-border__top {
+		@include formItemOperateBorderStyle();
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 0;
+	}
+	.operate-border__right {
+		@include formItemOperateBorderStyle();
+		top: 0;
+		right: 0;
+		width: 0;
+		height: 100%;
+	}
+	.operate-border__bottom {
+		@include formItemOperateBorderStyle();
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 0;
+	}
+	.operate-border__left {
+		@include formItemOperateBorderStyle();
+		top: 0;
+		left: 0;
+		width: 0;
+		height: 100%;
+	}
+
+	// 清空elementui的原本样式
+	.el-form-item {
+		margin-bottom: 0 !important;
+	}
+	.el-form-item__label {
+		cursor: move;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	&:hover {
+		.operate-border__top,
+		.operate-border__right,
+		.operate-border__bottom,
+		.operate-border__left {
+			border-color: #409EFF;
+		}
+	}
+
+	// 日期控件的样式重写
+	.el-date-editor.el-input {
+		width: 100%;
+	}
+
+	// 分割线
+	.dividingLine {
+
+	}
+	// 附件上传组
+	@include e(upload-file){
+		border: solid 1px #ccdaf4;
+		.input-box{
+			margin-right: 160px;
+			display: block;
+		}
+		.file-btn{
+			float: right;
+			width: 56px;
+			height: 34px;
+			line-height: 32px;
+			padding: 0;
+			text-align: center;
+			margin-left: 20px;
+			font-size: 12px;
+		}
+		.open-file-btn{
+			overflow: hidden;
+			border: 1px solid #99d3f5;
+			display: inline-block;
+			position: relative;
+			input{
+				position: absolute;
+				font-size: 100px;
+				right: 0;
+				top: 0;
+				opacity: 0;
+			}
+		}
+	}
+}

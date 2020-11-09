@@ -1,0 +1,33 @@
+//整个项目的样式中的公共变量统一管理
+$baseFontSize:12px;
+$hundredPercent:100%;
+$commonColor:#239ce9;
+$whiteColor:#ffffff;
+$blackColor:#000000;
+$greenColor: #67c23a;
+
+$MenubarContainerHeight: 41px;
+$--color-white1: #FFFFFF !default;
+$--color-white2: rgba(255,255,255,0.45) !default;
+$--color-gray1: #606266 !default;
+$--color-gray2: #ddd !default;
+$--color-primary1: #409EFF !default;
+$--color-primary2: #52bee5 !default;
+$--color-green1: #0DBC15 !default;
+$--color-red1: #f00 !default;
+
+// 紫色系
+$--color-purple1: rgb(155, 0, 82) !default;
+$--color-purple2: rgb(245, 177, 179) !default;
+$--color-purple3: rgb(233, 84, 100) !default;
+
+// 蓝色系
+$--color-blue1: #293c55 !default;
+@mixin boxSizingBorderbox{
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+// 表单皮肤颜色配置
+$--form-label-blue-background-color: #cfe7fd;
+$--form-label-blue-border-color:#ccdaf4;
