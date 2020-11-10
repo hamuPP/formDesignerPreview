@@ -7,13 +7,13 @@ const uglify = require("uglifyjs-webpack-plugin");
 
 module.exports = {
     devtool: 'source-map',
-    entry: "./src/index.js",
+    entry: "./src/formPreview.js",
     output: {
         path: path.resolve(__dirname, '../dist'),
         publicPath: '/dist/',
-        filename: 'TransverseTreeTable.min.js',
+        filename: 'FormPreview.min.js',
         libraryTarget: 'umd',
-        library: 'TransverseTreeTable',
+        library: 'FormPreview',
         umdNamedDefine: true
     },
     module: {
