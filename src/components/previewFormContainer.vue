@@ -103,6 +103,8 @@
 </script>
 
 <style lang="scss">
+  @import 'element-ui/lib/theme-chalk/index.css';
+
   .preview__headBtn {
     font-size: 16px;
     margin: 10px;

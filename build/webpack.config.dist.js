@@ -35,14 +35,22 @@ module.exports = {
                 exclude: /node_modules|vue\/dist|vue-router\/|vue-loader\/|vue-hot-reload-api\//,
                 loader: 'babel-loader'
             },
-            {
-                test: /\.(png|jpg|gif|ttf|svg|woff|eot)$/,
-                loader: 'url-loader',
-                query: {
-                    limit: 30000,
-                    name: '[name].[ext]?[hash]'
-                }
-            }
+          {
+              test: /\.(png|jpg|gif|ttf|svg|woff|eot)$/,
+              loader: 'url-loader',
+              // query: {
+              //     limit: 10000,
+              //     name: '[name].[ext]?[hash]'
+              // }
+          },
+            // {
+            //     test: /\.(png|jpg|gif|ttf|svg|woff|eot)$/,
+            //     loader: 'url-loader',
+            //     query: {
+            //         limit: 10000,
+            //         name: '[name].[ext]?[hash]'
+            //     }
+            // }
         ]
     },
     plugins: [
