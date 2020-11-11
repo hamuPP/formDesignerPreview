@@ -17,9 +17,9 @@ Vue.component('FormDesigner', FormDesigner);
 
 // Vue.use(VueRouter);
 
-// 路由配置
+// // 路由配置
 // const RouterConfig = {
-//     routes: Routers
+//     // routes: Routers
 // };
 
 // const router = new VueRouter(RouterConfig);

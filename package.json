@@ -1,8 +1,7 @@
 {
-	"name": "t-vue-transverse-tree-table",
-	"version": "0.1.2",
-	"description": "TransverseTreeTable.min.js base on vue2.5.9",
-	"main": "dist/TransverseTreeTable.min.js",
+	"name": "t-vue-form-preview",
+	"version": "0.0.3",
+	"main": "dist/FormPreview.min.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "webpack-dev-server --hot --inline",
@@ -64,7 +63,8 @@
 		"babel-plugin-transform-vue-jsx": "^3.5.0",
 		"babel-preset-env": "^1.3.2",
 		"babel-preset-stage-2": "^6.22.0",
-		"element-ui": "2.13.2"
+		"element-ui": "2.13.2",
+		"t-vue-tree": "^1.1.8"
 	},
 	"engines": {
 		"node": ">= 6.0.0",
