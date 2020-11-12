@@ -2,6 +2,7 @@
 * Created by tangyue on 20/10/23
 */
 <template>
+  <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
   <el-form-item
           v-if="data.type !== 'uploadFile' || (data.type === 'uploadFile' && !view)"
           :prop="data.code"
@@ -107,7 +108,7 @@
       </template>
     </div>
 
-    <!--   上传附件 (预览模式不要附件)    -->
+    <!--   上传附件   -->
     <div v-else-if="data.type === 'uploadFile'"
          class="fd-formItem__upload-file">
       <el-button type="primary" size="mini" @click="upFile" class="file-btn">上传</el-button>

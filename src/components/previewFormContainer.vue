@@ -64,7 +64,8 @@
 
   export default {
     name: 'previewFormContainer',
-    components: {previewForm
+    components: {
+      previewForm
       // transferDialog,
       // terminateDialog
     },
@@ -108,19 +109,19 @@
       },
       formModel: {
         type: Object,
-        default() {
+        default () {
           return {}
         }
       },
       fdFormItems: {
         type: Array,
-        default() {
+        default () {
           return []
         }
       },
       fdFormData: {
         type: Object,
-        default() {
+        default () {
           return {}
         }
       }
@@ -152,9 +153,9 @@
     },
     methods: {
       // 获取form的vue实例,因为外部调用需要操作el-form
-        getFormIns(){
-          return this.$refs.form;
-        }
+      getFormIns () {
+        return this.$refs.form.$refs.fdForm;
+      }
     }
 
   }
@@ -163,7 +164,6 @@
 <style lang="scss">
   @import 'element-ui/lib/theme-chalk/index.css';
   @import "../assets/font/iconfont.css";
-  @import "../assets/scss/buzStyle.scss";
 
   .preview__headBtn {
     font-size: 16px;

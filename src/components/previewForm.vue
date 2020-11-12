@@ -29,9 +29,9 @@
               :key="key"
               :span="item.width"
               :style="colStyle(item)">
-        <!--    如果是有分组的  --start--  -->
+        <!--    如果是有分组的(分组的自定义样式是套在分组的元素上的)  --start--  -->
         <template v-if="item.type === 'group'">
-          <div class="fd-form__group">
+          <div class="fd-form__group" :class="item.className">
             <div v-if="item.label" class="fd-form__groupHeader">{{item.label}}</div>
             <el-row v-for="(child, childIdx) in  item.children"
                     :key="childIdx"
