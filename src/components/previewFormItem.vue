@@ -152,44 +152,48 @@
       },
       formModel: {
         type: Object,
-        default(){
+        default () {
           return {}
         }
       },
       data: {
         type: Object,
-        default: {}
+        default () {
+          return {}
+        }
       },
       labelWidth: {
         type: Number,
         default: 0
       },
-      lineMarginBottom:{
+      lineMarginBottom: {
         type: Number,
         default: 0
       }
     },
-    data(){
+    data () {
       return {
-        options: [],// 针对下拉框等的下拉数据
-        fileName: "", //附件名字
-        fileList: [], //附件列表
+        options: [], // 针对下拉框等的下拉数据
+        fileName: '', // 附件名字
+        fileList: [], // 附件列表
+        USER_UPLOAD_PARAM: null, // 仅对上传组件有用的自定义查询参数
+        USER_UPLOAD_SEARCH_LIST_PARAM: null// 仅对上传组件有用的自定义查询参数
       }
     },
-    created(){
+    created () {
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting} = this.data;
-      if(optionSetting === 'static'){
+      if (optionSetting === 'static') {
         this.options = this.data.optionSetting_options;
-      }else if(optionSetting === 'remote'){
+      } else if (optionSetting === 'remote') {
         // 调用接口，查询数据
-        if(this.data.optionSetting_codeType){
+        if (this.data.optionSetting_codeType) {
           this.getCodeTypeList(this.data.optionSetting_codeType);
         }
       }
     },
-    mounted(){
-      if(this.data.type === 'textarea'){
+    mounted () {
+      if (this.data.type === 'textarea') {
         this.labelEle = this.$el.getElementsByClassName('el-form-item__label')[0];
         this.contentEle = this.$el.querySelector('.el-form-item__content .el-textarea');
         this.setLabelEleHeight(this.contentEle.offsetHeight + 'px');
@@ -197,19 +201,18 @@
     },
     methods: {
       // 设置label元素的高度与行高
-      setLabelEleHeight(newHeight){
+      setLabelEleHeight (newHeight) {
         this.labelEle.style.height = newHeight;
         this.labelEle.style.lineHeight = newHeight;
       },
-      //添加附件信息
-      addFileName() {
+      // 添加附件信息
+      addFileName () {
         this.fileName = this.$refs.file.files[0].name;
       },
-      //上传到服务器
-      upFile() {
-        debugger;
+      // 上传到服务器
+      upFile () {
         const uploadOptions = this.data.uploadSettings;// 上传相关配置（诸如接口地址、请求方式）
-        //判断文件是否为空
+        // 判断文件是否为空
         if (this.$refs.file.value === '') {
           this.$message({
             showClose: true,
@@ -218,15 +221,25 @@
             type: 'warning'
           });
           return false;
-        }else{
+        } else {
           // 找到配置的请求体、接口地址、查询方式
           let param = new FormData();
           param.append('files', this.$refs.file.files[0]);
           param.append('access_token', sessionStorage.getItem('access_token'));
 
+          // 用户自定义添加的参数,这是例如在引用页面，用户可能需要再添加一些参数
+          debugger;
+          if (this.USER_UPLOAD_PARAM) {
+            for (let key in this.USER_UPLOAD_PARAM) {
+              if (key) {
+                param.append(key, this.USER_UPLOAD_PARAM[key]);
+              }
+            }
+          }
+
           // 遍历配置的请求体，加上这些参数
-          uploadOptions.bodyParam.forEach(it =>{
-            if(it && it.label){
+          uploadOptions.bodyParam.forEach(it => {
+            if (it && it.label) {
               param.append(it.label, it.value);
             }
           });
@@ -236,83 +249,103 @@
             data: param,
             method: uploadOptions.uploadMethod,
             url: uploadOptions.uploadUrl,
-            headers:{'Content-Type': 'multipart/form-data'}
+            headers: {'Content-Type': 'multipart/form-data'}
           })
             .then(res => {
-              if (res.data.code === 100) {//上传失败
-                this.$message({
-                  showClose: true,
-                  message: res.data.codeMsg,
-                  duration: 1500,
-                  type: 'warning'
-                });
-              }
-              else if (res.data.code === 0) {//上传成功
+              debugger;
+              if (res.data.ok) { // 上传成功
                 this.$message({
                   showClose: true,
                   message: '上传成功',
                   duration: 1500,
                   type: 'success'
                 });
-                this.fileName = '';//清空文件
-                this.getFileList();
+                this.fileName = '';// 清空文件
+              } else {
+                this.$message({
+                  showClose: true,
+                  message: res.data.codeMsg || res.data.msg || '上传失败',
+                  duration: 1500,
+                  type: 'warning'
+                });
               }
+              // 改为不论上传成功与否，都请求列表数据
+              this.getFileList();
             })
-            .catch(e=>{
-
+            .catch(e => {
+              debugger;
           })
         }
       },
       // 查询附件列表
-      getFileList(){
-        if(this.data.listRequestUrl){
+      getFileList () {
+        if (this.data.listRequestUrl) {
           // 遍历配置的请求体，加上这些参数
           let queryData = {};
-          this.data.bodyParam.forEach(it =>{
-            queryData[it.label] = it.value
-          });
+          if (this.data.bodyParam) {
+            this.data.bodyParam.forEach(it => {
+              queryData[it.label] = it.value
+            });
+          }
+
+          // 用户自定义添加的参数,这是例如在引用页面，用户可能需要再添加一些参数
+          if (this.USER_UPLOAD_SEARCH_LIST_PARAM) {
+            for (let key in this.USER_UPLOAD_SEARCH_LIST_PARAM) {
+              if (key) {
+                queryData[key] = this.USER_UPLOAD_SEARCH_LIST_PARAM[key];
+              }
+            }
+          }
+
           commonRequest({
-            data: queryData,
+            params: queryData,
             method: this.data.listRequestMethod,
-            url: this.data.listRequestUrl,
+            url: this.data.listRequestUrl
           })
-            .then(res=>{
-              this.fileList = res.data.dataList;
+            .then(res => {
+              if (res && res.data && res.data.ok) {
+                this.fileList = res.data.data;
+              } else {
+                this.fileList = [];
+              }
             })
-            .catch(e=>{console.log(e)})
+            .catch(e => {
+              debugger;
+              console.log(e)
+            })
         }
       },
-      //下载地址
-      getDownURL(row) {
+      // 下载地址
+      getDownURL (row) {
         return (
           this.data.downloadServiceUrl +
           row.id +
-          "?access_token=" +
-          sessionStorage.getItem("access_token")
+          '?access_token=' +
+          sessionStorage.getItem('access_token')
         );
       },
-      //删除附件
-      delFile(row) {
+      // 删除附件
+      delFile (row) {
         commonRequest({
           method: 'DELETE',
-          url: this.data.delFileUrl + row.id,
+          url: this.data.delFileUrl + row.id
         })
           .then((response) => {
           this.$message({
             showClose: true,
-            message: "删除成功!",
+            message: '删除成功!',
             duration: 1000,
-            type: "success",
+            type: 'success'
           });
           this.getFileList();
         });
       },
       // 获取码表数据列表
-      getCodeTypeList(codeType){
+      getCodeTypeList (codeType) {
         getCodeTypeData({codeType: codeType})
-          .then(res=>{
-            if(res && res.data && res.data.ok){
-              this.options = res.data.data.map(it =>{
+          .then(res => {
+            if (res && res.data && res.data.ok) {
+              this.options = res.data.data.map(it => {
                 return {
                   label: it.NAME,
                   value: it.ID
@@ -320,9 +353,8 @@
               })
             }
           })
-          .catch(e=>{
+          .catch(e => {
             debugger
-
           })
       }
     }

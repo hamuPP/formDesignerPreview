@@ -3,14 +3,7 @@
 * 使用方式：
 * <previewForm ref="FD"
 *             view ---> 渲染样式区别：Boolean,预览|编辑。加上view就表示是预览的样式,不加就是编辑的样式
-*             card --->：渲染样式区别:Boolean 是否将表单嵌套在一个elCard中, 如果不需要，那就是一个纯净的表单主体
-*             workflow --->是否使用流程，
-*             se---> 数据来源方式：Boolean, 带上se,表示数据将从sessionStorage中取
 * </previewForm>
-* **注意：**
-* 1. 关于数据来源方式：se与id，如果同时存在，将使用se,而忽略id
-* 2. workflow：是否使用流程。目前表单设计器做出来的表单是要和流程一起用的，所以会有这么一条配置
-*
 */
 <template>
   <el-form :class="formClassStr"
@@ -81,10 +74,10 @@
   export default {
     name: 'previewForm',
     components: {previewFormItem},
-    data() {
+    data () {
       return {
         skin: '', // 预设的表格的样式名称
-        formClassStr: '',
+        formClassStr: ''
       }
     },
     props: {
@@ -97,10 +90,6 @@
         type: Boolean,
         default: false
       },
-      workflow: {
-        type: Boolean,
-        default: false
-      },
       // 表单的id
       id: {
         type: [Number, String],
@@ -108,41 +97,40 @@
       },
       rules: {
         type: Object,
-        default() {
+        default () {
           return {}
         }
       },
       formModel: {
         type: Object,
-        default() {
+        default () {
           return {}
         }
       },
       fdFormItems: {
         type: Array,
-        default() {
+        default () {
           return []
         }
       },
       fdFormData: {
         type: Object,
-        default() {
+        default () {
           return {}
         }
       }
     },
     watch: {
-      fdFormData(n, o) {
+      fdFormData (n, o) {
         this.skin = n.skin;
         this.formClassStr = `fd-form fd-form--preview ${n.skin} ${n.customClassName}`
-      },
+      }
     },
-    created() {
+    created () {
       window.ME = this;// todo 调试时整个全局的我好直接在外部使用
-
     },
     methods: {
-      colStyle(item) {
+      colStyle (item) {
         let str = '';
         if (item.displayInline) {
           str += 'clear: both;';
@@ -153,22 +141,22 @@
         return str;
       },
 
-      /////// 组件外会用到的方法：
+      /// //// 组件外会用到的方法：
       // 返回表单组件
-      getForm() {
+      getForm () {
         return this.$refs.fdForm;
       },
       // 返回表单里面的每个输入组件
-      getRef(refName) {
+      getRef (refName) {
         return getRefs(this, refName);
       },
       // 给输入组件绑定事件，返回的参数与elementUI的Api写的相同
-      addEvent(eventType, refName, func) {
+      addEvent (eventType, refName, func) {
         let refs = getRefs(this, refName);
         refs.forEach(ref => {
           ref.$on(eventType, func)
         })
-      },
+      }
     }
   }
 </script>

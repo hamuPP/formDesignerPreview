@@ -3,9 +3,6 @@
     <FormDesigner ref="FD"
                   :view="isView"
                   :id="formId"
-                  :boId="boId"
-                  :userId="userId"
-                  :businessType="businessType"
                   :formModel="formModel"
                   :fdFormItems="fdFormItems"
                   :fdFormData="fdFormData"
@@ -22,11 +19,8 @@
       return {
         // 以下几个参数由调用方来传给表单设计器预览插件
         isView: false,
-        isSe: false,
-        formId: '1323817116486471680',// 表单的id,而不是业务的id
-        boId: null,// 流程业务的id
-        userId: sessionStorage.getItem("login_name"),
-        businessType: "ComplaintOrder", // 集客的流程编码 以前用的CustomerComplaint， 后面改成了 ComplaintOrder
+        formId: '1351354922003730432',// 表单的id,而不是业务的id
+        businessType: 'zctest', // 集客的流程编码 以前用的CustomerComplaint， 后面改成了 ComplaintOrder
         formModel: {},
         fdFormItems: [],
         fdFormData: {}
@@ -39,8 +33,8 @@
       if(searchParamObj.se){
         this.formModel = this.getFormModel(JSON.parse(sessionStorage.getItem('preview_lists')));
         this.fdFormItems = this.formateList(JSON.parse(sessionStorage.getItem('preview_lists')));
+        console.log(this.fdFormItems)
         this.fdFormData = this.formateFormData(JSON.parse(sessionStorage.getItem('preview_form')));
-
       }
       else if(this.formId) {
         this.getFormData();
@@ -129,6 +123,7 @@
               this.fdFormData = fmData;
               this.formModel = this.getFormModel(list);
               this.fdFormItems = this.formateList(list);
+              console.log(this.fdFormItems)
             }
             else{
               this.MessageConfig = {
