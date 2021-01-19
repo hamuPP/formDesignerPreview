@@ -13,4 +13,3 @@
  */
 export let baseUrl = window.g && window.g.baseUrl ? window.g.baseUrl : 'http://192.168.12.118:9090';
 // export let baseUrl='http://192.168.12.104:8080'
-

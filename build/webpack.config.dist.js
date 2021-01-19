@@ -4,6 +4,11 @@
 const path = require("path");
 const webpack = require("webpack");
 const uglify = require("uglifyjs-webpack-plugin");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+function resolve (dir) {
+  return path.join(__dirname, '..', dir)
+}
 
 module.exports = {
     devtool: 'source-map',
@@ -22,35 +27,34 @@ module.exports = {
                 test: /\.vue$/,
                 loader: 'vue-loader'
             },
-            {
-                test: /\.less$/,
-                use: [
-                    { loader: "style-loader" },
-                    { loader: "css-loader" },
-                    { loader: "less-loader" }
-                ]
-            },
+            // {
+            //     test: /\.less$/,
+            //     use: [
+            //         { loader: "style-loader" },
+            //         { loader: "css-loader" },
+            //         { loader: "less-loader" }
+            //     ]
+            // },
+          {
+            test: /\.css$/,
+            loaders: ['style-loader', 'css-loader']
+          },
             {
                 test: /\.js$/,
                 exclude: /node_modules|vue\/dist|vue-router\/|vue-loader\/|vue-hot-reload-api\//,
-                loader: 'babel-loader'
+                loader: 'babel-loader',
+              // include的写法示例
+              //   include: [
+              //     resolve('src'),
+              //     resolve('test'),
+              //     resolve('node_modules/webpack-dev-server/client'),
+                 // resolve('node_modules/element-ui'),
+                // ]
             },
           {
               test: /\.(png|jpg|gif|ttf|svg|woff|eot)$/,
               loader: 'url-loader',
-              // query: {
-              //     limit: 10000,
-              //     name: '[name].[ext]?[hash]'
-              // }
           },
-            // {
-            //     test: /\.(png|jpg|gif|ttf|svg|woff|eot)$/,
-            //     loader: 'url-loader',
-            //     query: {
-            //         limit: 10000,
-            //         name: '[name].[ext]?[hash]'
-            //     }
-            // }
         ]
     },
     plugins: [
@@ -74,5 +78,7 @@ module.exports = {
                 }
             }
         ),
+      // 开启 BundleAnalyzerPlugin
+      new BundleAnalyzerPlugin(),
     ]
 };

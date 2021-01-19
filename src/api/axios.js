@@ -21,16 +21,16 @@ const postEncodeParamsFunction = (data) => {
 
 // 请求拦截
 axios.interceptors.request.use((config) => {
-    config.headers['Content-Type'] = config.myContentType ? config.myContentType: 'application/json; charset=UTF-8;';
+    config.headers['Content-Type'] = config.myContentType ? config.myContentType : 'application/json; charset=UTF-8;';
     // 如果不需要在头里加token
-    if(!config.donotNeedToken && sessionStorage.getItem('access_token')){
+    if (!config.donotNeedToken && sessionStorage.getItem('access_token')) {
       config.headers['Authorization'] = 'Bearer ' + sessionStorage.getItem('access_token')
     }
     config.withCredentials = true;
     config.responseType = config.responseType || 'json';
-    if(config.method === 'post'){
+    if (config.method === 'post') {
       // 如果有指定myParamsHandleType参数为encodeURIComponent，则采用不同的解析参数的方法
-      if(config.myParamsHandleType && config.myParamsHandleType === 'encodeURIComponent'){
+      if (config.myParamsHandleType && config.myParamsHandleType === 'encodeURIComponent') {
         config.transformRequest = [postEncodeParamsFunction];
       }
     }
@@ -44,10 +44,9 @@ axios.interceptors.response.use(function (response) {
   if (err.response) {
     switch (err.response.status) {
       case 400:
-        if(err.response.data.msg){
-          err.message= err.response.data.msg
-        }
-        else{
+        if (err.response.data.msg) {
+          err.message = err.response.data.msg
+        } else {
           err.message = '错误请求';
         }
         alertMessage(err.message);
@@ -103,11 +102,11 @@ axios.interceptors.response.use(function (response) {
         alertMessage(err.message);
     }
   } else {
-    if(sessionStorage.getItem('access_token')){
-      err.message = "连接到服务器失败";
+    if (sessionStorage.getItem('access_token')) {
+      err.message = '连接到服务器失败';
       // alertMessage(err.message);
       message.error(err.message);
-    }else {
+    } else {
       sessionStorage.removeItem('access_token');
       err.message = '未授权，请重新登录';
       alertMessage(err.message);

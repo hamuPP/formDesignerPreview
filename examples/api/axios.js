@@ -1,13 +1,14 @@
 import axios from 'axios'
-import {Message} from 'element-ui'
+// import {Message} from 'element-ui'
 
 const alertMessage = msg => {
-  Message({
-    showClose: true,
-    message: msg,
-    type: 'error',
-    duration: 1000
-  });
+  // Message({
+  //   showClose: true,
+  //   message: msg,
+  //   type: 'error',
+  //   duration: 1000
+  // });
+  alert(msg)
 };
 // encodeURIComponent的方式处理post的传参，就是以前旧的处理方式
 const postEncodeParamsFunction = (data) => {
