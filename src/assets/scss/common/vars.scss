@@ -29,5 +29,10 @@ $--color-blue1: #293c55 !default;
 	box-sizing: border-box;
 }
 // 表单皮肤颜色配置
-$--form-label-blue-background-color: #cfe7fd;
-$--form-label-blue-border-color:#ccdaf4;
+$--form-label-blue-background-color: #e4f5ff;
+$--form-label-blue-border-color: #c0d2f1;
+$--form-label-blue-color: #718dc4;
+
+// 表单内输入组件的高度（包括单行文本、日历、下拉框，这些都属于输入组件）
+$--form-input-height--default: 30px;
+$--form-input-height--mini: 26px;

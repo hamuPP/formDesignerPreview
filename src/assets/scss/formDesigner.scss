@@ -29,8 +29,10 @@
 	}
 	// 分组--todo目前分组组件就没用过，不确定这个样式是否有效是否正确
 	@include e(group) {
-		box-shadow:0 2px 12px 0 rgba(0,0,0,.1);
-
+		box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+		background: #fff;
+		margin: 0 0 10px;
+		padding: 10px;
 		// 加上下面的伪类的写法，主要是因为分组内有浮动元素，分组的高度没有被撑开
 		&:after,
 		&::after
@@ -73,7 +75,7 @@
 
 			}
 			.el-input__icon{
-				line-height: 34px;
+				line-height: normal;
 			}
 		}
 		// 重写报错提示的样式，使其可以在显示时自动撑开
@@ -86,23 +88,46 @@
 		.el-form-item__label{
 			background: $--form-label-blue-background-color;
 			border: solid 1px $--form-label-blue-border-color;
-			line-height: 32px;
+			line-height: $--form-input-height--default;
+			height: $--form-input-height--default;
 			font-size: 12px;
+			color: $--form-label-blue-color;
+			border-top-left-radius: 4px;
+			border-bottom-left-radius: 4px;
 		}
 		.el-form-item__content{
-			line-height: 32px;
-
+			line-height: normal;
 		}
 		.el-input__inner{
 			border: solid 1px $--form-label-blue-border-color;
-			height: 34px;
-			line-height: 34px;
+			height: $--form-input-height--default;
+			line-height: $--form-input-height--default;
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
+		}
+		.el-textarea__inner{
+			border: solid 1px $--form-label-blue-border-color;
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
+		}
+		.el-radio-group {
+			border: 1px solid #c0d2f1;
+			width: 100%;
+			height: $--form-input-height--default;
+			float: left;
+			padding-left: 10px;
+			.el-radio{
+				line-height: $--form-input-height--default;
+			}
+			.el-radio__label{
+				font-size: 12px;
+			}
 		}
 
 		// 如果表单上还有不同的size
 		.el-input--mini .el-input__inner {
-			height: 28px;
-			line-height: 28px;
+			height: $--form-input-height--mini;
+			line-height:  $--form-input-height--mini;
 		}
 	}
 }

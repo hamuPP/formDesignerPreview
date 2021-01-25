@@ -124,10 +124,10 @@
       fdFormData (n, o) {
         this.skin = n.skin;
         this.formClassStr = `fd-form fd-form--preview ${n.skin} ${n.customClassName}`
-      }
+      },
     },
     created () {
-      window.ME = this;// todo 调试时整个全局的我好直接在外部使用
+
     },
     methods: {
       colStyle (item) {
