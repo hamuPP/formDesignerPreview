@@ -1,13 +1,12 @@
 /**
  * Created by tangyue on 20/11/11
  */
-import axios from './axios';
-import {baseUrl} from './commonUrl';
-
+import axios from 'axios';
+const BASE_URL = 'http://192.168.11.188:9090'
 // 查询
-export function getForm(data) {
+export function getForm (data) {
   return axios({
-    url: baseUrl + '/workflow/form/config/getForm',
+    url: BASE_URL + '/workflow/form/config/getForm',
     method: 'post',
     params: data
   })

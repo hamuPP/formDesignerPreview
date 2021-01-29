@@ -1,56 +1,17 @@
 /**
- * Created by tangyue on 20/11/9
+ * Created by hamuPP on 20/11/9
+ * styles for only preview
+ todo font-size: 后面改成配置化大小的
  */
 @import './common/vars';
 @import './mixins/mixins';
-
-@mixin formItemOperateBorderStyle() {
-	position: absolute;
-	border-color: $--color-purple2;
-	border-width: 2px;
-	border-style: dashed;
-}
 
 // 表单的样式 -start--
 @include b(form) {
 	height: 100%; // 初始值为百分百
 	box-sizing: border-box;
-	// 重设一些默认元素样式 todo use mixins
-	*{
-		box-sizing: border-box;
-	}
-	ul{
-		margin: 0;
-	}
-	a, a:focus, a:hover {
-		cursor: pointer;
-		color: inherit;
-		text-decoration: none;
-	}
-	// 分组--todo目前分组组件就没用过，不确定这个样式是否有效是否正确
-	@include e(group) {
-		box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
-		background: #fff;
-		margin: 0 0 10px;
-		padding: 10px;
-		// 加上下面的伪类的写法，主要是因为分组内有浮动元素，分组的高度没有被撑开
-		&:after,
-		&::after
-		{
-			content: '';
-			clear: both;
-			display: block;
-		}
-	}
-	// 分组的头部
-	@include e(groupHeader){
-		color: #333;
-		font-size: 14px;
-		font-weight: bold;
-		padding: 10px 20px;
-		border-bottom: 1px solid #ebeef5;
-		margin-bottom: 10px;
-	}
+	// 重设一些默认元素样式
+	@include normalize;
 
 	// 预览时的表单的样式
 	@include m(preview){
@@ -65,15 +26,11 @@
 				white-space: nowrap;
 				padding-left: 10px;
 			}
-			.el-date-editor{
-				&.el-input{
-					width: 100%;
-				}
-			}
-			.el-select{
-				width: 100%;
 
+			.el-checkbox__label{
+				font-size: 12px;
 			}
+
 			.el-input__icon{
 				line-height: normal;
 			}
@@ -112,16 +69,26 @@
 		}
 		.el-radio-group {
 			border: 1px solid #c0d2f1;
-			width: 100%;
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
 			height: $--form-input-height--default;
 			float: left;
 			padding-left: 10px;
+			background: #fff;
 			.el-radio{
 				line-height: $--form-input-height--default;
 			}
 			.el-radio__label{
 				font-size: 12px;
 			}
+		}
+		.el-checkbox-group{
+			border: 1px solid #c0d2f1;
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
+			background: #fff;
+			height: $--form-input-height--default;
+			line-height: $--form-input-height--default;
 		}
 
 		// 如果表单上还有不同的size
@@ -162,6 +129,31 @@
 				opacity: 0;
 			}
 		}
+	}
+}
+
+// 分组-- todo 目前分组组件就没用过，不确定这个样式是否有效是否正确
+@include b(group) {
+	box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+	background: #fff;
+	margin: 0 0 10px;
+	padding: 10px;
+	// 加上下面的伪类的写法，主要是因为分组内有浮动元素，分组的高度没有被撑开
+	&:after,
+	&::after
+	{
+		content: '';
+		clear: both;
+		display: block;
+	}
+	// 分组的头部
+	@include e(header){
+		color: #333;
+		font-size: 14px;
+		font-weight: bold;
+		padding: 10px 20px;
+		border-bottom: 1px solid #ebeef5;
+		margin-bottom: 10px;
 	}
 }
 // 表单的样式 --end--

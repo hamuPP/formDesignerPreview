@@ -1,7 +1,7 @@
 /**
  * Created by ty on 18/1/31.
  */
-"use strict";
+'use strict';
 import 'babel-polyfill'
 
 /* 引入Vue相关 */
@@ -9,7 +9,7 @@ import Vue from 'vue'
 // import VueRouter from 'vue-router';
 // import Routers from './router';
 import FormDesigner from '../src/formPreview.js';
-
+import '../src/assets/scss/index.scss';
 
 import App from './app.vue';
 
@@ -24,6 +24,7 @@ Vue.component('FormDesigner', FormDesigner);
 
 // const router = new VueRouter(RouterConfig);
 
+// eslint-disable-next-line no-new
 new Vue({
     el: '#appExample',
     // router: router,

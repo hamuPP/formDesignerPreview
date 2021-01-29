@@ -1,5 +1,15 @@
 <template>
   <div class="app" id="app">
+    <el-card class="params-config">
+      <div slot="header" class="clearfix">
+        <span>try</span>
+      </div>
+      <div class="params-config__row">
+        <span class="text-label">请输入表单id:</span>
+        <el-input size="mini" v-model="formId" v-on:keyup.enter.native="formIdEnterHand"></el-input>
+        <em>(按回车进行查询)</em>
+      </div>
+    </el-card>
     <FormDesigner ref="FD"
                   :view="isView"
                   :id="formId"
@@ -15,55 +25,48 @@
   import {getUrlQueryParams} from '../src/assets/js/utils';
 
   export default {
-    data() {
+    data () {
       return {
         // 以下几个参数由调用方来传给表单设计器预览插件
         isView: false,
-        formId: '1351354922003730432',// 表单的id,而不是业务的id
+        formId: '', // 表单的id,而不是业务的id
         businessType: 'zctest', // 集客的流程编码 以前用的CustomerComplaint， 后面改成了 ComplaintOrder
         formModel: {},
         fdFormItems: [],
         fdFormData: {}
       }
     },
-    created() {
+    created () {
       let searchParamObj = getUrlQueryParams();
-      console.log(searchParamObj)
-      // 从本地查询数据
-      if(searchParamObj.se){
-        this.formModel = this.getFormModel(JSON.parse(sessionStorage.getItem('preview_lists')));
-        this.fdFormItems = this.formateList(JSON.parse(sessionStorage.getItem('preview_lists')));
-        console.log(this.fdFormItems)
-        this.fdFormData = this.formateFormData(JSON.parse(sessionStorage.getItem('preview_form')));
-      }
-      else if(this.formId) {
+      // 根据表单id查询接口数据
+      if (this.formId) {
         this.getFormData();
       }
-
     },
-    mounted() {
+    mounted () {
       let FD = this.$refs.FD;
       let FD_form = FD.getFormIns();
       console.log(FD_form)
     },
-    beforeDestroy() {
+    beforeDestroy () {
 
     },
     methods: {
       // 做出表单的绑定值
-      getFormModel(n) {
+      getFormModel (n) {
         let obj = {};
         n.forEach(it => {
-          if(it.type === 'checkbox'){
-            obj[it.code] = it.defaultValue ? it.defaultValue.split(','): [];
-          }else{
+          if (it.type === 'checkbox' || it.type === 'timePickerRange') {
+            debugger;
+            obj[it.code] = it.defaultValue ? it.defaultValue.split(',') : [];
+          } else {
             obj[it.code] = it.defaultValue;
           }
         });
         return obj;
       },
-      formateList(dataList) {
-        const BASE_COUNT = 24;//基数：多少个为一组
+      formateList (dataList) {
+        const BASE_COUNT = 24;// 基数：多少个为一组
         let list = [];
         let fn = (dataList, parent) => {
           let count = 0;
@@ -102,7 +105,7 @@
         return list;
       },
 
-      formateFormData(data) {
+      formateFormData (data) {
         let resultData = {};
         let skin = data.skin;
         let skinOptions = (skin && SKIN_OPTIONS[skin]) ? SKIN_OPTIONS[skin] : {};
@@ -111,10 +114,10 @@
       },
 
       // 根据id,查询表单的数据
-      getFormData() {
+      getFormData () {
         getForm({formId: this.formId})
           .then(res => {
-            if(res && res.data && res.data.ok){
+            if (res && res.data && res.data.ok) {
               var configContent = JSON.parse(res.data.data.configContent);
               // 表单配置项数据合并
               var fmData = configContent.fm;
@@ -124,36 +127,54 @@
               this.formModel = this.getFormModel(list);
               this.fdFormItems = this.formateList(list);
               console.log(this.fdFormItems)
-            }
-            else{
+              debugger;
+            } else {
               this.MessageConfig = {
-                showMessage: true,//打开消息提示框
-                MsgBoxType: 'error',//消息提示框类型
-                MsgText: (res && res.data && res.data.msg)? res.data.msg : '请稍后再试'
+                showMessage: true, // 打开消息提示框
+                MsgBoxType: 'error', // 消息提示框类型
+                MsgText: (res && res.data && res.data.msg) ? res.data.msg : '请稍后再试'
               }
             }
           })
-          .catch(e=>{
+          .catch(e => {
             debugger;
             this.MessageConfig = {
-              showMessage: true,//打开消息提示框
-              MsgBoxType: 'error',//消息提示框类型
+              showMessage: true, // 打开消息提示框
+              MsgBoxType: 'error', // 消息提示框类型
               MsgText: e.message
             }
           })
       },
+
+      formIdEnterHand () {
+        this.getFormData(this.formId);
+      }
     }
 
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .app{
     box-sizing: border-box;
     height: 100%;
     background: #f5f5f5;
     padding: 40px 83px 50px 72px;
     overflow: auto;
+  }
+  .params-config{
+    border:1px solid #dcdcdc;
+    font-size: 14px;
+    margin-bottom: 20px;
+    .params-config__row{
+      margin:5px 0;
+    }
+    .text-label{
+      padding:0 10px;
+    }
+    .el-input{
+      width: 200px;
+    }
   }
 
 </style>

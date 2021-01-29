@@ -24,8 +24,8 @@
               :style="colStyle(item)">
         <!--    如果是有分组的(分组的自定义样式是套在分组的元素上的)  --start--  -->
         <template v-if="item.type === 'group'">
-          <div class="fd-form__group" :class="item.className">
-            <div v-if="item.label" class="fd-form__groupHeader">{{item.label}}</div>
+          <div class="fd-form-group" :class="item.className">
+            <div v-if="item.label" class="fd-form-group__header">{{item.label}}</div>
             <el-row v-for="(child, childIdx) in  item.children"
                     :key="childIdx"
                     :gutter="35">
@@ -127,7 +127,10 @@
       },
     },
     created () {
-
+        if (this.fdFormData.skin){
+          this.skin = this.fdFormData.skin;
+          this.formClassStr = `fd-form fd-form--preview ${this.fdFormData.skin} ${this.fdFormData.customClassName}`;
+        }
     },
     methods: {
       colStyle (item) {
@@ -160,7 +163,3 @@
     }
   }
 </script>
-
-<style lang="scss">
-  @import "../assets/scss/formDesigner.scss";
-</style>

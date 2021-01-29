@@ -1,5 +1,3 @@
-
-
 # 附带流程业务的表单设计器所做的表单的预览(页面生成)功能组件
 
 ## 表单设计器：
@@ -14,3 +12,9 @@
 
 ## develop enviroment
 node 8.9.3 mac64
+
+## 本地运行（开发）
+使用``npm run examplesDev``
+
+## 打包
+使用``npm run build``

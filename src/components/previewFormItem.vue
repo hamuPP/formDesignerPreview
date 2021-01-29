@@ -77,6 +77,30 @@
     >
     </el-date-picker>
 
+    <!--  时间选择器      -->
+    <el-time-picker v-else-if="data.type === 'timePicker'"
+                    :ref="data.ref"
+                    v-model="formModel[data.code]"
+                    :value-format="data.valueFormat"
+                    :disabled="data.disabled"
+                    :readonly="data.readonly"
+    >
+    </el-time-picker>
+
+    <!--  时间范围选择器      -->
+    <el-time-picker v-else-if="data.type === 'timePickerRange'"
+                    :ref="data.ref"
+                    is-range
+                    v-model="formModel[data.code]"
+                    :value-format="data.valueFormat"
+                    :disabled="data.disabled"
+                    :readonly="data.readonly"
+                    range-separator="至"
+                    start-placeholder="开始时间"
+                    end-placeholder="结束时间"
+                    @click.native.stop
+    >
+    </el-time-picker>
     <!--  按钮      -->
     <el-button v-else-if="data.type === 'button'"
                :ref="data.ref"
