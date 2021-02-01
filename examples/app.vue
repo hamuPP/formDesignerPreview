@@ -118,7 +118,6 @@
               this.formModel = this.getFormModel(list);
               this.fdFormItems = this.formateList(list);
               console.log(this.fdFormItems)
-              debugger;
             } else {
               this.MessageConfig = {
                 showMessage: true, // 打开消息提示框

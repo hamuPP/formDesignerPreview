@@ -118,6 +118,9 @@ $--color-purple2: rgb(245, 177, 179) !default;
 		height: $--form-input-height--default;
 		font-size: 12px;
 	}
+	.el-form-item__content{
+		line-height: normal;
+	}
 	.el-input__inner{
 		height: $--form-input-height--default;
 		line-height: $--form-input-height--default;

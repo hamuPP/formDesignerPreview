@@ -28,13 +28,9 @@
 		.el-form-item__label{
 			background: $--form-label-blue-background-color;
 			border: solid 1px $--form-label-blue-border-color;
-
 			color: $--form-label-blue-color;
 			border-top-left-radius: 4px;
 			border-bottom-left-radius: 4px;
-		}
-		.el-form-item__content{
-			line-height: normal;
 		}
 		.el-input__inner{
 			border: solid 1px $--form-label-blue-border-color;
