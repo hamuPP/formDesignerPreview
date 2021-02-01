@@ -80,10 +80,19 @@ $--color-purple2: rgb(245, 177, 179) !default;
 		text-decoration: none;
 	}
 
-	// 重设elementui的默认样式
+	// 重设elementui的默认样式--start--
+	.el-form-item{
+		margin-bottom: 0;// 默认0。然后会通过style.marginBotom来改变
+		.el-input__icon{
+			line-height: normal;
+		}
+	}
 	.el-date-editor{
 		&.el-input{
 			width: 100%;
+		}
+		.el-range-separator{
+			line-height: $--form-date-separator-height--default;
 		}
 	}
 	.el-select{
@@ -94,10 +103,37 @@ $--color-purple2: rgb(245, 177, 179) !default;
 	}
 	.el-radio-group{
 		width: 100%;
+		white-space: nowrap;
+		padding-left: 10px;
 	}
 	.el-checkbox-group{
 		width: 100%;
+		white-space: nowrap;
+		padding-left: 10px;
 	}
+	// ---默认的尺寸与颜色--start--
+	.el-form-item__label{
+		// 默认的尺寸
+		line-height: $--form-input-height--default;
+		height: $--form-input-height--default;
+		font-size: 12px;
+	}
+	.el-input__inner{
+		height: $--form-input-height--default;
+		line-height: $--form-input-height--default;
+	}
+	.el-radio-group{
+		height: $--form-input-height--default;
+		.el-radio{
+			line-height: $--form-input-height--default;
+		}
+	}
+	.el-checkbox-group{
+		height: $--form-input-height--default;
+		line-height: $--form-input-height--default;
+	}
+	// ---默认的尺寸与颜色--start--
+	// 重设elementui的默认样式--end--
 
 }
 

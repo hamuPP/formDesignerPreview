@@ -44,11 +44,6 @@
 				padding-left: 0;
 				padding-right: 0;
 			}
-			.el-radio-group,
-			.el-checkbox-group{
-				white-space: nowrap;
-				padding-left: 10px;
-			}
 		}
 		// 表单项的一行
 		@include e(row) {
@@ -129,7 +124,7 @@
 
 			// 清空elementui的原本样式
 			.el-form-item {
-				margin-bottom: 0 !important;
+				margin-bottom: 0 !important;// 编辑模式下不要下边距，视觉上的下边距是由外层的一个div提供的
 			}
 			.el-form-item__label {
 				cursor: move;

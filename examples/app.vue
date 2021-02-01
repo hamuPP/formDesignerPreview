@@ -57,7 +57,6 @@
         let obj = {};
         n.forEach(it => {
           if (it.type === 'checkbox' || it.type === 'timePickerRange') {
-            debugger;
             obj[it.code] = it.defaultValue ? it.defaultValue.split(',') : [];
           } else {
             obj[it.code] = it.defaultValue;
@@ -103,14 +102,6 @@
         };
         fn(dataList);
         return list;
-      },
-
-      formateFormData (data) {
-        let resultData = {};
-        let skin = data.skin;
-        let skinOptions = (skin && SKIN_OPTIONS[skin]) ? SKIN_OPTIONS[skin] : {};
-        resultData = Object.assign(skinOptions, data);
-        return resultData;
       },
 
       // 根据id,查询表单的数据
