@@ -135,9 +135,18 @@ $--color-purple2: rgb(245, 177, 179) !default;
 		height: $--form-input-height--default;
 		line-height: $--form-input-height--default;
 	}
+	.el-rate{
+		height: $--form-input-height--default;
+		padding-left: 15px;
+		.el-rate__icon{
+			font-size: 18px;
+			line-height: $--form-input-height--default;
+			//line-height: normal;
+			//vertical-align: middle;
+		}
+	}
 	// ---默认的尺寸与颜色--start--
 	// 重设elementui的默认样式--end--
-
 }
 
 @mixin formItemOperateBorderStyle() {

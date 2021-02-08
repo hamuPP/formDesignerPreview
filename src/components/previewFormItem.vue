@@ -38,7 +38,7 @@
       </el-radio>
     </el-radio-group>
 
-    <!--   多选组 todo 检查多选组的值v-model    -->
+    <!--   多选组   -->
     <el-checkbox-group v-else-if="data.type === 'checkbox'"
                        :ref="data.ref"
                        v-model="formModel[data.code]"
@@ -50,6 +50,14 @@
                    :label="check.value">{{check.label}}
       </el-checkbox>
     </el-checkbox-group>
+
+    <!--   评分     -->
+    <el-rate v-else-if="data.type === 'rate'"
+             :ref="data.ref"
+             v-model="formModel[data.code]"
+             :disabled="data.disabled"
+             :readonly="data.readonly">
+    </el-rate>
 
     <!--   下拉框     -->
     <el-select v-else-if="data.type === 'select'"
@@ -207,13 +215,19 @@
     created () {
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting} = this.data;
+      debugger;
       if (optionSetting === 'static') {
         this.options = this.data.optionSetting_options;
-      } else if (optionSetting === 'remote') {
-        // 调用接口，查询数据
+      }
+      // 码表(调用接口，查询数据)
+      else if (optionSetting === 'remote') {
         if (this.data.optionSetting_codeType) {
           this.getCodeTypeList(this.data.optionSetting_codeType);
         }
+      }
+      // 远程接口 todo 查接口的逻辑还没有写 2021年02月07日18:08:58
+      else if (optionSetting === 'remoteUrl'){
+
       }
     },
     mounted () {

@@ -122,14 +122,18 @@
     },
     watch: {
       fdFormData (n, o) {
+        debugger;// 尺寸呢？
         this.skin = n.skin;
-        this.formClassStr = `fd-form fd-form--preview ${n.skin} ${n.customClassName}`
+        this.formClassStr = `fd-form fd-form--preview ${n.skin} ${n.customClassName}` +
+          (n.size ? ` fd-form--${n.size}` : '');
       },
     },
     created () {
         if (this.fdFormData.skin){
+          debugger;// 尺寸呢？
           this.skin = this.fdFormData.skin;
-          this.formClassStr = `fd-form fd-form--preview ${this.fdFormData.skin} ${this.fdFormData.customClassName}`;
+          this.formClassStr = `fd-form fd-form--preview ${this.fdFormData.skin} ${this.fdFormData.customClassName}` +
+            (this.fdFormData.size ? ` fd-form--${this.fdFormData.size}` : '');
         }
     },
     methods: {
