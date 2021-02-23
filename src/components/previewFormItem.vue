@@ -21,6 +21,7 @@
               resize="none"
               :disabled="data.disabled"
               :readonly="data.readonly"
+              :clearable="data.clearable"
     >
     </el-input>
 
@@ -30,6 +31,7 @@
                     v-model="formModel[data.code]"
                     :disabled="data.disabled"
                     :readonly="data.readonly"
+                    :clearable="data.clearable"
                   >
       <el-radio v-for="radio in options"
                 :key="radio.value"
@@ -44,6 +46,7 @@
                        v-model="formModel[data.code]"
                        :disabled="data.disabled"
                        :readonly="data.readonly"
+                       :clearable="data.clearable"
                       >
       <el-checkbox v-for="(check, index) in options"
                    :key="index"
@@ -56,7 +59,8 @@
              :ref="data.ref"
              v-model="formModel[data.code]"
              :disabled="data.disabled"
-             :readonly="data.readonly">
+             :readonly="data.readonly"
+             :clearable="data.clearable">
     </el-rate>
 
     <!--   下拉框     -->
@@ -65,6 +69,8 @@
                v-model="formModel[data.code]"
                :disabled="data.disabled"
                :readonly="data.readonly"
+               :clearable="data.clearable"
+               @change="selectChangeHand"
     >
       <el-option
               v-for="item in options"
@@ -82,6 +88,7 @@
                     :value-format="data.valueFormat"
                     :disabled="data.disabled"
                     :readonly="data.readonly"
+                    :clearable="data.clearable"
     >
     </el-date-picker>
 
@@ -92,6 +99,7 @@
                     :value-format="data.valueFormat"
                     :disabled="data.disabled"
                     :readonly="data.readonly"
+                    :clearable="data.clearable"
     >
     </el-time-picker>
 
@@ -103,6 +111,7 @@
                     :value-format="data.valueFormat"
                     :disabled="data.disabled"
                     :readonly="data.readonly"
+                    :clearable="data.clearable"
                     range-separator="至"
                     start-placeholder="开始时间"
                     end-placeholder="结束时间"
@@ -165,6 +174,7 @@
               :ref="data.ref"
               :disabled="data.disabled"
               :readonly="data.readonly"
+              :clearable="data.clearable"
               :type="data.innerType"
               v-model="formModel[data.code]"></el-input>
 
@@ -173,6 +183,7 @@
 
 <script>
   import {commonRequest, getCodeTypeData} from '../api/formDesigner_api';
+  import {isObjEmpty} from '../util/common.js';
 
   export default {
     name: 'previewFormItem',
@@ -203,19 +214,36 @@
         default: 0
       }
     },
+    computed: {
+      componentRootForm () {
+        let parent = this.$parent;
+        let parentName = parent.$options.name;
+        while (parentName !== 'previewForm') {
+          parent = parent.$parent;
+          parentName = parent.$options.name;
+        }
+        return parent;
+      }
+    },
+    watch: {
+      // relationPreQueryParam(n, o){
+      //   debugger;
+      // }
+    },
     data () {
       return {
         options: [], // 针对下拉框等的下拉数据
         fileName: '', // 附件名字
         fileList: [], // 附件列表
         USER_UPLOAD_PARAM: null, // 仅对上传组件有用的自定义查询参数
-        USER_UPLOAD_SEARCH_LIST_PARAM: null// 仅对上传组件有用的自定义查询参数
+        USER_UPLOAD_SEARCH_LIST_PARAM: null, // 仅对上传组件有用的自定义查询参数
+        relationPreQueryParam: {}, // 关联前置查询参数(键值的形式的)
+        relationPreQueryParamKeys: {} // 关联前置查询参数(键对应的记录)
       }
     },
     created () {
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting} = this.data;
-      debugger;
       if (optionSetting === 'static') {
         this.options = this.data.optionSetting_options;
       }
@@ -226,8 +254,47 @@
         }
       }
       // 远程接口 todo 查接口的逻辑还没有写 2021年02月07日18:08:58
-      else if (optionSetting === 'remoteUrl'){
-
+      else if (optionSetting === 'remoteUrl') {
+        // 如果有前置关联关系设置的，则需要先检查其前置是否有值，有再查询
+        // eslint-disable-next-line camelcase
+        const optionSetting_tabContent = this.data.optionSetting_tabContent;
+        if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
+          optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values)) {
+          // 整理出查询参数
+          let queryParam = {};// 值版本
+          let queryParamKeys = {};// 键对应的版本
+          let flg = true;
+          let values = optionSetting_tabContent.relationSettings.values;
+          for (let key in values) {
+            let it = values[key];
+            var targetKey = it[1];// 找到前置关联的字段的名称；
+            if (targetKey) {
+              queryParam[key] = this.formModel[targetKey];
+              queryParamKeys[key] = targetKey;
+              // 只要有一个没值的，都算作false，即不去查后端
+              flg && (flg = Boolean(this.formModel[targetKey]));
+            } else {
+              flg = false;
+            }
+          }
+          this.relationPreQueryParam = queryParam;
+          this.relationPreQueryParamKeys = queryParamKeys;
+          if (flg) {
+            this.getRemoteUrlDatas({
+              url: optionSetting_tabContent.remoteUrl.value,
+              method: optionSetting_tabContent.remoteMethods.value,
+              params: queryParam,
+              data: queryParam
+            });
+          }
+        }
+        // 没有配置前置关联查询参数，则现在就查询后台接口
+        else {
+          this.getRemoteUrlDatas({
+            url: optionSetting_tabContent.remoteUrl.value,
+            method: optionSetting_tabContent.remoteMethods.value
+          });
+        }
       }
     },
     mounted () {
@@ -394,6 +461,102 @@
           .catch(e => {
             debugger
           })
+      },
+
+      // 针对配置了数据来源是远程接口的表单项，查询远程接口的数据
+      getRemoteUrlDatas ({url, method, params, data}) {
+        const that = this;
+        commonRequest({
+          params: params,
+          data: data,
+          method: method,
+          url: url
+        })
+          .then(res => {
+            // 清空当前的选中值
+            this.formModel[this.data.code] = '';
+            // 清空当前的下拉数据们
+            this.options = [];
+            if(res.data && res.data.code == '0000'){
+              this.options = res.data.data.data.map(it=>{
+                return {
+                  label: it.name,
+                  value: it.id
+                }
+              });
+            }else{
+              this.$message({
+                showClose: true,
+                message: res.data.codeMsg || res.data.msg || '查询失败',
+                duration: 1500,
+                type: 'warning'
+              });
+            }
+          })
+          .catch(e => {
+            this.$message({
+              showClose: true,
+              message: (e && e.message)? e.message : '查询失败',
+              duration: 1500,
+              type: 'warning'
+            });
+            // 清空当前的选中值
+            this.formModel[this.data.code] = '';
+            // 清空当前的下拉数据们
+            this.options = [];
+          })
+      },
+
+      // 检查当前表单项的前置关联查询参数。若都有值，则需要向后台查询接口
+      checkRelationPreQueryParam () {
+        let flg = true;
+        for (let i in this.relationPreQueryParam) {
+          if (!i || !this.relationPreQueryParam[i]) {
+            flg = false;
+            break;
+          }
+        }
+        if(flg){
+          const optionSetting_tabContent = this.data.optionSetting_tabContent;
+
+          this.getRemoteUrlDatas({
+            url: optionSetting_tabContent.remoteUrl.value,
+            method: optionSetting_tabContent.remoteMethods.value,
+            params: this.relationPreQueryParam,
+            data: this.relationPreQueryParam
+          });
+        }
+      },
+
+      clearValueAndOptions(){
+        // 清空当前的选中值
+        this.formModel[this.data.code] = '';
+        // 清空当前的下拉数据们
+        this.options = [];
+      },
+
+      // 下拉框的选中值改变后的事件
+      selectChangeHand (val) {
+        const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
+
+        // 检查当前表单中的所有表单项的前置关联查询参数
+        for (let i = 0, len = FD_FORM_ITEM_LIST.length; i < len; i++) {
+          let formItem = FD_FORM_ITEM_LIST[i];
+          for (let j in formItem.relationPreQueryParamKeys) {
+            if (j && formItem.relationPreQueryParamKeys[j] && formItem.relationPreQueryParamKeys[j] === this.data.code) {
+              debugger;
+              formItem.relationPreQueryParam[j] = val;
+              // 假如该下拉框有选中值，再检查是否关联参数都齐了
+              if(val){
+                formItem.checkRelationPreQueryParam();
+              }
+              // 假如该下拉框没有选中值，（比如：点了清空按钮，或者选了没有值的选项），则清掉被关联的值和下拉数据
+              else{
+                formItem.clearValueAndOptions();
+              }
+            }
+          }
+        }
       }
     }
   }

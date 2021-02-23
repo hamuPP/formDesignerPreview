@@ -7,7 +7,7 @@ import {baseUrl} from './commonUrl';
 // 通用查询方法
 export function commonRequest ({params, data, method, url, headers = {}}) {
   return axios({
-    url: url,
+    url: (url.startsWith('http:') || url.startsWith('https:')) ? url : baseUrl + url,
     method: method,
     data: data,
     params: params,
@@ -15,14 +15,6 @@ export function commonRequest ({params, data, method, url, headers = {}}) {
   })
 }
 
-// 保存
-export function saveForm (data) {
-  return axios({
-    url: baseUrl + '/workflow/form/config/saveForm',
-    method: 'post',
-    data: data
-  })
-}
 // 查询
 export function getForm (data) {
   return axios({
@@ -32,13 +24,6 @@ export function getForm (data) {
   })
 }
 
-export function createForm (data) {
-  return axios({
-    url: baseUrl + '/workflow/form/config/createForm',
-    method: 'post',
-    params: data
-  })
-}
 // 获取所有的码表列表
 export function getCodeTypeList (url, data) {
   return axios({

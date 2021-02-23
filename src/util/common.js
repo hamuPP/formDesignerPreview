@@ -18,3 +18,10 @@ export const getRefs = (that, refName) => {
   });
   return results;
 };
+
+export const isObjEmpty = (obj) => {
+  for (let name in obj) {
+    return false;
+  }
+  return true;
+};

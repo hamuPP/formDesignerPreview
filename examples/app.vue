@@ -20,6 +20,9 @@
   </div>
 </template>
 <script>
+  // 样式控制的组件
+  const STYLE_FORM_COMPONENTS = ['dividingLine'];
+
   import {getForm} from './api/API';
 
   import {getUrlQueryParams} from '../src/assets/js/utils';
@@ -53,15 +56,40 @@
     },
     methods: {
       // 做出表单的绑定值
-      getFormModel (n) {
+      getFormModel (that, n, valueFieldKey, useInitData) {
         let obj = {};
-        n.forEach(it => {
-          if (it.type === 'checkbox' || it.type === 'timePickerRange') {
-            obj[it.code] = it.defaultValue ? it.defaultValue.split(',') : [];
-          } else {
-            obj[it.code] = it.defaultValue;
-          }
-        });
+        let fn = function(list){
+          list.forEach(it => {
+            if(it.type === 'group'){
+              fn(it.children);
+            }else{
+              if (it.type === 'checkbox') {
+                // 如果是建单人等字段
+                let _val = (useInitData && it.fieldType)? that.formInitData[it.code]: it[valueFieldKey];
+
+                obj[it.code] = _val ?
+                  (_val.constructor === String ? _val.split(',') : _val)
+                  : [];
+              }
+              else if(it.type === 'timePickerRange'){
+                // 如果是建单人等字段
+                let _val = (useInitData & it.fieldType) ? that.formInitData[it.code]: it[valueFieldKey];
+
+                obj[it.code] = _val ? (_val.constructor === String ? _val.split(',') : _val) : null;
+
+              }
+              // 排除掉样式组件（例如分割线，这些是样式，不是表单值）
+              else if(!STYLE_FORM_COMPONENTS.includes(it.type)) {
+                // 如果是建单人等字段
+                let _val = (useInitData && it.fieldType)? that.formInitData[it.code]: it[valueFieldKey];
+                obj[it.code] = _val || '';// 如果有null，不要null，整个空字符串
+              }
+            }
+
+          });
+        };
+        fn(n);
+
         return obj;
       },
       formateList (dataList) {
@@ -115,7 +143,7 @@
               // 域们的数据
               var list = configContent.list;
               this.fdFormData = fmData;
-              this.formModel = this.getFormModel(list);
+              this.formModel = this.getFormModel(this, list, 'defaultValue');
               this.fdFormItems = this.formateList(list);
               console.log(this.fdFormItems)
             } else {
