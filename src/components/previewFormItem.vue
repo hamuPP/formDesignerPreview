@@ -268,22 +268,14 @@
               :clearable="data.clearable"
               :type="data.innerType"
               v-model="formModel[data.code]"></el-input>
-    <MessageBox
-      :showMessage.sync="MessageConfig.showMessage"
-      :MessageConfig="MessageConfig"
-      @checkyes="checkyesDel"
-      @checkno="checkDeleteNo"
-    ></MessageBox>
   </el-form-item>
 </template>
 
 <script>
   import {commonRequest, getCodeTypeData} from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
-  import MessageBox from './MessageBox.vue'
   export default {
     name: 'previewFormItem',
-    components:{MessageBox},
     props: {
       // 是否为预览模式，模式是编辑模式啦
       view: {
@@ -338,12 +330,7 @@
         relationPreQueryParamKeys: {}, // 关联前置查询参数(键对应的记录)
         tableData:[],//表格数据
         currentIndex:null,
-        MessageConfig: {
-        showMessage: false, //打开消息提示框
-        MsgBoxType: "", //消息提示框类型
-        MsgText: "",
-        delRolIndex:null
-      },
+         delRolIndex:null,
       }
     },
     created () {
@@ -676,10 +663,7 @@
     //删除行
     handleDelete(index) {
       event.stopPropagation();
-              this.MessageConfig.showMessage = true;
-        this.MessageConfig.MsgBoxType = "confirm";
-        this.MessageConfig.MsgText = "确认删除该行数据？";
-        this.delRolIndex = index
+
     },
     //编辑行
     handleEdit(index, row) {
