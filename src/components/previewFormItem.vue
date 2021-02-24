@@ -11,9 +11,100 @@
           :style="{
             'marginBottom': data.type === 'dividingLine'? 0 : lineMarginBottom + 'px'
           }">
+           <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件  -->
+    <template v-if="data.type === 'table'">
+      <div
+        class="fd-formTable"
+        :class="{ empty: !data.tableCols.length }"
+      >
+        <p class="fd-formTable__emptyMsg" v-if="!data.tableCols.length">
+          您尚未为表格设置列数据
+        </p>
+        <template v-else>
+          <!--  1：是；0：否        -->
+          <!-- <div
+            v-if="data.showTitleHeader.value === 1"
+            class="fd-formTable__toolbox"
+          >
+            {{ data.title.value }}
+          </div> -->
+          <div style="text-align: right; margin-bottom: 5px">
+            <el-button type="primary" round size="mini" @click="addTableRow"
+              >新增行</el-button
+            >
+          </div>
+          <el-table
+            style="width: 100%"
+            ref="tableInForm"
+            border
+            stripe
+            :data="tableData"
+            header-cell-class-name="fd-formTable__headerItem"
+          >
+            <el-table-column
+              v-if="data.showSerial === 1"
+              type="index"
+              width="50"
+              align="center"
+              label="序号"
+            >
+            </el-table-column>
+            <el-table-column
+              v-for="(col, index) in data.tableCols"
+              :key="index"
+              align="center"
+              :label="col.label"
+              :width="col.width"
+            >
+              <template slot-scope="scope">
+                <el-input
+                  v-model="scope.row[col.prop]"
+                  v-if="currentIndex == scope.$index"
+                ></el-input>
+                <span style="margin-left: 10px" v-else>{{
+                  scope.row[col.prop]
+                }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="100" align="center">
+              <template slot-scope="scope">
+                <span v-if="currentIndex == scope.$index">
+                  <el-button
+                    type="text"
+                    size="small"
+                    @click="handleUse(scope.$index, scope.row)"
+                    >应用</el-button
+                  >
+                  <el-button
+                    type="text"
+                    size="small"
+                    @click="handleCancel(scope.$index, scope.row)"
+                    >取消</el-button
+                  >
+                </span>
+                <span v-else>
+                  <el-button
+                    type="text"
+                    size="small"
+                    @click="handleEdit(scope.$index, scope.row)"
+                    >编辑</el-button
+                  >
+                  <el-button
+                    @click="handleDelete(scope.$index)"
+                    type="text"
+                    size="small"
+                    >删除</el-button
+                  ></span
+                >
+              </template>
+            </el-table-column>
+          </el-table>
+        </template>
+      </div>
+    </template>
     <!--  区分输入组件的类型      -->
     <!--   多行文本     -->
-    <el-input v-if="data.type === 'textarea'"
+    <el-input v-else-if="data.type === 'textarea'"
               :ref="data.ref"
               v-model="formModel[data.code]"
               type="textarea"
@@ -177,16 +268,22 @@
               :clearable="data.clearable"
               :type="data.innerType"
               v-model="formModel[data.code]"></el-input>
-
+    <MessageBox
+      :showMessage.sync="MessageConfig.showMessage"
+      :MessageConfig="MessageConfig"
+      @checkyes="checkyesDel"
+      @checkno="checkDeleteNo"
+    ></MessageBox>
   </el-form-item>
 </template>
 
 <script>
   import {commonRequest, getCodeTypeData} from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
-
+  import MessageBox from './MessageBox.vue'
   export default {
     name: 'previewFormItem',
+    components:{MessageBox},
     props: {
       // 是否为预览模式，模式是编辑模式啦
       view: {
@@ -238,7 +335,15 @@
         USER_UPLOAD_PARAM: null, // 仅对上传组件有用的自定义查询参数
         USER_UPLOAD_SEARCH_LIST_PARAM: null, // 仅对上传组件有用的自定义查询参数
         relationPreQueryParam: {}, // 关联前置查询参数(键值的形式的)
-        relationPreQueryParamKeys: {} // 关联前置查询参数(键对应的记录)
+        relationPreQueryParamKeys: {}, // 关联前置查询参数(键对应的记录)
+        tableData:[],//表格数据
+        currentIndex:null,
+        MessageConfig: {
+        showMessage: false, //打开消息提示框
+        MsgBoxType: "", //消息提示框类型
+        MsgText: "",
+        delRolIndex:null
+      },
       }
     },
     created () {
@@ -298,6 +403,7 @@
       }
     },
     mounted () {
+      console.log(this.data);
       if (this.data.type === 'textarea') {
         this.labelEle = this.$el.getElementsByClassName('el-form-item__label')[0];
         this.contentEle = this.$el.querySelector('.el-form-item__content .el-textarea');
@@ -557,7 +663,41 @@
             }
           }
         }
-      }
+      },
+      //新增行
+    addTableRow(event) {
+      event.stopPropagation();
+      let obj = {}
+      this.data.tableCols.forEach((item) => {
+        obj[item.prop] = ''
+      });
+      this.tableData.push(obj);
+    },
+    //删除行
+    handleDelete(index) {
+      event.stopPropagation();
+              this.MessageConfig.showMessage = true;
+        this.MessageConfig.MsgBoxType = "confirm";
+        this.MessageConfig.MsgText = "确认删除该行数据？";
+        this.delRolIndex = index
+    },
+    //编辑行
+    handleEdit(index, row) {
+      event.stopPropagation();
+      this.defaultData = JSON.parse(JSON.stringify(row));
+      this.currentIndex = index;
+    },
+    //确认编辑行
+    handleUse(index, row) {
+      event.stopPropagation();
+        this.currentIndex = null;
+    },
+    //取消编辑
+    handleCancel(index, row) {
+      event.stopPropagation();
+      this.tableData[index] = JSON.parse(JSON.stringify(this.defaultData));
+      this.currentIndex = null;
+    },
     }
   }
 </script>
