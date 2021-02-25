@@ -10,7 +10,8 @@
           :class="data.className"
           :style="{
             'marginBottom': data.type === 'dividingLine'? 0 : lineMarginBottom + 'px'
-          }">
+          }"
+          :rules="rules">
            <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件  -->
     <template v-if="data.type === 'table'">
       <div
@@ -102,6 +103,7 @@
         </template>
       </div>
     </template>
+
     <!--  区分输入组件的类型      -->
     <!--   多行文本     -->
     <el-input v-else-if="data.type === 'textarea'"
@@ -260,14 +262,36 @@
       </ul>
     </div>
 
-    <!-- 如果没有设置type，则都是input -->
-    <el-input v-else
+    <!-- 如果没有设置type，则都是input --start-- -->
+    <template v-else>
+<!--      <div style="color:red">{{data}}</div>-->
+      <el-input v-if="data.validationSetting && data.validationSetting.dataType.value === 'number'"
               :ref="data.ref"
               :disabled="data.disabled"
               :readonly="data.readonly"
               :clearable="data.clearable"
-              :type="data.innerType"
-              v-model="formModel[data.code]"></el-input>
+              type="number"
+              v-model.number="formModel[data.code]"
+      ></el-input>
+      <el-input v-else-if="data.validationSetting && data.validationSetting.dataType.value === 'password'"
+              :ref="data.ref"
+              :disabled="data.disabled"
+              :readonly="data.readonly"
+              :clearable="data.clearable"
+              type="password"
+              v-model="formModel[data.code]"
+      ></el-input>
+      <el-input v-else
+              :ref="data.ref"
+              :disabled="data.disabled"
+              :readonly="data.readonly"
+              :clearable="data.clearable"
+              v-model="formModel[data.code]"
+      ></el-input>
+    </template>
+
+    <!-- 如果没有设置type，则都是input --end-- -->
+
     <MessageBox
       :showMessage.sync="MessageConfig.showMessage"
       :MessageConfig="MessageConfig"
@@ -275,7 +299,7 @@
       @checkno="checkDeleteNo"
     ></MessageBox>
   </el-form-item>
-  
+
 </template>
 
 <script>
@@ -332,11 +356,18 @@
       return {
         options: [], // 针对下拉框等的下拉数据
         fileName: '', // 附件名字
-        fileList: [], // 附件列表
+        fileList: [
+          // {
+          //   name: 'todo'
+          // }, {
+          //   name: 'todo2'
+          // },
+        ], // 附件列表
         USER_UPLOAD_PARAM: null, // 仅对上传组件有用的自定义查询参数
         USER_UPLOAD_SEARCH_LIST_PARAM: null, // 仅对上传组件有用的自定义查询参数
         relationPreQueryParam: {}, // 关联前置查询参数(键值的形式的)
         relationPreQueryParamKeys: {}, // 关联前置查询参数(键对应的记录)
+        rules: {},
         tableData:[],//表格数据
         currentIndex:null,//用于行内编辑
         delRolIndex:null,//用于删除
@@ -349,7 +380,7 @@
     },
     created () {
       // 检查如果有码表配置的，查询其数据
-      let {type, optionSetting} = this.data;
+      let {type, optionSetting, validationSetting} = this.data;
       if (optionSetting === 'static') {
         this.options = this.data.optionSetting_options;
       }
@@ -402,6 +433,59 @@
           });
         }
       }
+
+      // 检查是否有配置校验规则
+      if (validationSetting) {
+        let rules = [];
+        // 必填
+        if (validationSetting.required && validationSetting.required.selected) {
+          rules.push({ required: true, message: '请输入必填信息', trigger: 'blur' });
+        }
+        // 数据类型
+        if (validationSetting.dataType && validationSetting.dataType.selected) {
+          let validationDataValue = validationSetting.dataType.value;
+          let txt = '';
+          for (let i = 0, len = validationSetting.dataType.options.length; i < len; i++) {
+            let child = validationSetting.dataType.options[i];
+            if (child.value === validationDataValue) {
+              txt = child.label;
+            }
+          }
+          if(validationDataValue === 'password'){
+
+          }
+          // 手机类型的，给它整个正则校验
+          else if(validationDataValue === 'mobile'){
+            rules.push({pattern: eval('/^(1)\\d{10}$/'), message: '手机格式不正确'})
+
+          }
+          // 其他类型的，用 elementui 自己的校验配置的type即可
+          else{
+            rules.push({type: validationDataValue, message: `仅限${txt}类型`})
+          }
+        }
+
+        // 自定义正则
+        if (validationSetting.regExpPattern && validationSetting.regExpPattern.selected && validationSetting.regExpPattern.value) {
+          try {
+            // eslint-disable-next-line no-eval
+            let _value = eval(validationSetting.regExpPattern.value)
+            rules.push({pattern: _value, message: `错误格式(${validationSetting.regExpPattern.value})`})
+          } catch (e) {
+            console.log('错误的正则表达式:', e)
+          }
+        }
+
+        // 长度控制
+        if(validationSetting.lengthControl && validationSetting.lengthControl.selected){
+          let min = validationSetting.lengthControl.min;
+          let max = validationSetting.lengthControl.max;
+          if(max && max !== min){
+            rules.push({ min: min, max: max, message: `长度在 ${min} 到 ${max} 个字符` })
+          }
+        }
+        this.rules = rules;
+      }
     },
     mounted () {
       console.log(this.data);
@@ -410,8 +494,13 @@
         this.contentEle = this.$el.querySelector('.el-form-item__content .el-textarea');
         this.setLabelEleHeight(this.contentEle.offsetHeight + 'px');
       }
+
+      this.renderUploadStyles();
     },
     methods: {
+      renderUploadStyles () {
+        // fileList
+      },
       // 设置label元素的高度与行高
       setLabelEleHeight (newHeight) {
         this.labelEle.style.height = newHeight;
@@ -522,7 +611,6 @@
               }
             })
             .catch(e => {
-              debugger;
               console.log(e)
             })
         }
@@ -584,14 +672,14 @@
             this.formModel[this.data.code] = '';
             // 清空当前的下拉数据们
             this.options = [];
-            if(res.data && res.data.code == '0000'){
-              this.options = res.data.data.data.map(it=>{
+            if (res.data && res.data.code == '0000') {
+              this.options = res.data.data.data.map(it => {
                 return {
                   label: it.name,
                   value: it.id
                 }
               });
-            }else{
+            } else {
               this.$message({
                 showClose: true,
                 message: res.data.codeMsg || res.data.msg || '查询失败',
@@ -603,7 +691,7 @@
           .catch(e => {
             this.$message({
               showClose: true,
-              message: (e && e.message)? e.message : '查询失败',
+              message: (e && e.message) ? e.message : '查询失败',
               duration: 1500,
               type: 'warning'
             });
@@ -623,7 +711,7 @@
             break;
           }
         }
-        if(flg){
+        if (flg) {
           const optionSetting_tabContent = this.data.optionSetting_tabContent;
 
           this.getRemoteUrlDatas({
@@ -635,7 +723,7 @@
         }
       },
 
-      clearValueAndOptions(){
+      clearValueAndOptions () {
         // 清空当前的选中值
         this.formModel[this.data.code] = '';
         // 清空当前的下拉数据们
@@ -654,11 +742,11 @@
               debugger;
               formItem.relationPreQueryParam[j] = val;
               // 假如该下拉框有选中值，再检查是否关联参数都齐了
-              if(val){
+              if (val) {
                 formItem.checkRelationPreQueryParam();
               }
               // 假如该下拉框没有选中值，（比如：点了清空按钮，或者选了没有值的选项），则清掉被关联的值和下拉数据
-              else{
+              else {
                 formItem.clearValueAndOptions();
               }
             }
