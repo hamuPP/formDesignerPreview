@@ -23,7 +23,7 @@
       <div v-if="MessageConfig.MsgBoxType=='success'" class="success diocontent">
         <div class="msgconten">
           <span class="iconfont">
-            <img src="@/assets/images/ic-ywc.png" alt="">
+            <img src="../assets/images/ic-ywc.png" alt="">
           </span>
           <div class="msgtitle">操作成功</div>
           <div class="msgbody">{{MessageConfig.MsgText}}</div>
@@ -32,7 +32,7 @@
       <div v-show="MessageConfig.MsgBoxType=='warning'" class="warning diocontent">
         <div class="msgconten">
           <span class="iconfont">
-            <img src="@/assets/images/ic_gj.png" alt="">
+            <img src="../assets/images/ic_gj.png" alt="">
           </span>
           <div class="msgtitle">消息提示</div>
           <div class="msgbody">{{MessageConfig.MsgText}}</div>
@@ -41,7 +41,7 @@
       <div v-show="MessageConfig.MsgBoxType=='error'" class="error diocontent">
         <div class="msgconten">
           <span class="iconfont">
-            <img src="@/assets/images/ic_error.png" alt="">
+            <img src="../assets/images/ic_error.png" alt="">
           </span>
           <div class="msgtitle">操作失败</div>
           <div class="msgbody">{{MessageConfig.MsgText}}</div>
@@ -50,7 +50,7 @@
       <div v-show="MessageConfig.MsgBoxType=='confirm'" class="confirm diocontent">
         <div class="msgconten">
             <span class="iconfont">
-              <img src="@/assets/images/ic_tip.png" alt="">
+              <img src="../assets/images/ic_tip.png" alt="">
             </span>
             <div class="msgtitle">确认提示</div>
             <div class="msgbody">{{MessageConfig.MsgText}}</div>
