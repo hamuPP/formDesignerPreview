@@ -268,14 +268,23 @@
               :clearable="data.clearable"
               :type="data.innerType"
               v-model="formModel[data.code]"></el-input>
+    <MessageBox
+      :showMessage.sync="MessageConfig.showMessage"
+      :MessageConfig="MessageConfig"
+      @checkyes="checkyesDel"
+      @checkno="checkDeleteNo"
+    ></MessageBox>
   </el-form-item>
+  
 </template>
 
 <script>
   import {commonRequest, getCodeTypeData} from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
+  import MessageBox from "@/components/MessageBox.vue";
   export default {
     name: 'previewFormItem',
+    components:{MessageBox},
     props: {
       // 是否为预览模式，模式是编辑模式啦
       view: {
@@ -330,7 +339,12 @@
         relationPreQueryParamKeys: {}, // 关联前置查询参数(键对应的记录)
         tableData:[],//表格数据
         currentIndex:null,
-         delRolIndex:null,
+        delRolIndex:null,
+        MessageConfig: {
+          showMessage: false, //打开消息提示框
+          MsgBoxType: "", //消息提示框类型
+          MsgText: "",
+        },
       }
     },
     created () {
@@ -663,8 +677,41 @@
     //删除行
     handleDelete(index) {
       event.stopPropagation();
-
+       this.MessageConfig.showMessage = true;
+        this.MessageConfig.MsgBoxType = "confirm";
+        this.MessageConfig.MsgText = "确认删除该行数据？";
+        this.delRolIndex = index
+      //  this.$confirm('确认删除该行数据？', '提示', {
+      //     confirmButtonText: '确定',
+      //     cancelButtonText: '取消',
+      //     type: 'warning'
+      //   }).then(() => {
+      //     this.tableData.splice(index,1)
+      //     this.$message({
+      //       type: 'success',
+      //       message: '删除成功!'
+      //     });
+      //   }).catch(() => {
+      //     this.$message({
+      //       type: 'info',
+      //       message: '已取消删除'
+      //     });          
+      //   });
     },
+     /**
+       * 确认删除
+       */
+      checkyesDel(data){
+        if(data){
+          this.tableData.splice(this.delRolIndex, 1);
+        }
+      },
+      // 取消删除事件
+      checkDeleteNo(data) {
+        if (!data) {
+          this.delRolIndex = null
+        }
+      },
     //编辑行
     handleEdit(index, row) {
       event.stopPropagation();
@@ -674,14 +721,22 @@
     //确认编辑行
     handleUse(index, row) {
       event.stopPropagation();
+       this.MessageConfig.showMessage = true;
+        this.MessageConfig.MsgBoxType = "success";
+        this.MessageConfig.MsgText = "应用成功";
         this.currentIndex = null;
+      //  this.$message({
+      //     message: '应用成功',
+      //     type: 'success'
+      //   });
+      //   this.currentIndex = null;
     },
     //取消编辑
     handleCancel(index, row) {
       event.stopPropagation();
       this.tableData[index] = JSON.parse(JSON.stringify(this.defaultData));
       this.currentIndex = null;
-    },
+      },
     }
   }
 </script>
