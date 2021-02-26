@@ -11,7 +11,7 @@
           :style="{
             'marginBottom': data.type === 'dividingLine'? 0 : lineMarginBottom + 'px'
           }"
-          :rules="rules">
+          :rules="componentRootForm.useCustormRule? null: rules">
            <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件  -->
     <template v-if="data.type === 'table'">
       <div
@@ -434,57 +434,58 @@
         }
       }
 
-      // 检查是否有配置校验规则
-      if (validationSetting) {
-        let rules = [];
-        // 必填
-        if (validationSetting.required && validationSetting.required.selected) {
-          rules.push({ required: true, message: '请输入必填信息', trigger: 'blur' });
-        }
-        // 数据类型
-        if (validationSetting.dataType && validationSetting.dataType.selected) {
-          let validationDataValue = validationSetting.dataType.value;
-          let txt = '';
-          for (let i = 0, len = validationSetting.dataType.options.length; i < len; i++) {
-            let child = validationSetting.dataType.options[i];
-            if (child.value === validationDataValue) {
-              txt = child.label;
+      // 检查是否有配置校验规则(前提是：不使用用户自定义的规则)
+      if (!this.componentRootForm.useCustormRule) {
+        if (validationSetting) {
+          let rules = [];
+          // 必填
+          if (validationSetting.required && validationSetting.required.selected) {
+            rules.push({ required: true, message: '请输入必填信息', trigger: 'blur' });
+          }
+          // 数据类型
+          if (validationSetting.dataType && validationSetting.dataType.selected) {
+            let validationDataValue = validationSetting.dataType.value;
+            let txt = '';
+            for (let i = 0, len = validationSetting.dataType.options.length; i < len; i++) {
+              let child = validationSetting.dataType.options[i];
+              if (child.value === validationDataValue) {
+                txt = child.label;
+              }
+            }
+            if (validationDataValue === 'password') {
+
+            }
+            // 手机类型的，给它整个正则校验
+            else if (validationDataValue === 'mobile') {
+              rules.push({pattern: eval('/^(1)\\d{10}$/'), message: '手机格式不正确'})
+            }
+            // 其他类型的，用 elementui 自己的校验配置的type即可
+            else {
+              rules.push({type: validationDataValue, message: `仅限${txt}类型`})
             }
           }
-          if(validationDataValue === 'password'){
 
+          // 自定义正则
+          if (validationSetting.regExpPattern && validationSetting.regExpPattern.selected && validationSetting.regExpPattern.value) {
+            try {
+              // eslint-disable-next-line no-eval
+              let _value = eval(validationSetting.regExpPattern.value)
+              rules.push({pattern: _value, message: `错误格式(${validationSetting.regExpPattern.value})`})
+            } catch (e) {
+              console.log('错误的正则表达式:', e)
+            }
           }
-          // 手机类型的，给它整个正则校验
-          else if(validationDataValue === 'mobile'){
-            rules.push({pattern: eval('/^(1)\\d{10}$/'), message: '手机格式不正确'})
 
+          // 长度控制
+          if(validationSetting.lengthControl && validationSetting.lengthControl.selected){
+            let min = validationSetting.lengthControl.min;
+            let max = validationSetting.lengthControl.max;
+            if(max && max !== min){
+              rules.push({ min: min, max: max, message: `长度在 ${min} 到 ${max} 个字符` })
+            }
           }
-          // 其他类型的，用 elementui 自己的校验配置的type即可
-          else{
-            rules.push({type: validationDataValue, message: `仅限${txt}类型`})
-          }
+          this.rules = rules;
         }
-
-        // 自定义正则
-        if (validationSetting.regExpPattern && validationSetting.regExpPattern.selected && validationSetting.regExpPattern.value) {
-          try {
-            // eslint-disable-next-line no-eval
-            let _value = eval(validationSetting.regExpPattern.value)
-            rules.push({pattern: _value, message: `错误格式(${validationSetting.regExpPattern.value})`})
-          } catch (e) {
-            console.log('错误的正则表达式:', e)
-          }
-        }
-
-        // 长度控制
-        if(validationSetting.lengthControl && validationSetting.lengthControl.selected){
-          let min = validationSetting.lengthControl.min;
-          let max = validationSetting.lengthControl.max;
-          if(max && max !== min){
-            rules.push({ min: min, max: max, message: `长度在 ${min} 到 ${max} 个字符` })
-          }
-        }
-        this.rules = rules;
       }
     },
     mounted () {

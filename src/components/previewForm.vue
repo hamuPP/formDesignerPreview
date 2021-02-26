@@ -101,6 +101,12 @@
           return {}
         }
       },
+      // 是否采用用户自配的规则，即props中传入的rules。
+      // 若是，则表单这里将会无视表单编辑器中配置的校验数据
+      useCustormRule: {
+        type: Boolean,
+        default: false
+      },
       formModel: {
         type: Object,
         default () {
