@@ -16,14 +16,14 @@ let lineMarginBottom = 0;
 let allOptions = {}; // 针对下拉框等的下拉数据
 
 // 生成zip文件并且下载
-const downloadZip = (filename, files)=>{
+const downloadZip = (filename, files) => {
   var JSZip = require('jszip');
   var zip = new JSZip();
   files.forEach(it => {
     zip.file(it.filename, it.fileContent);
   });
   zip.generateAsync({type: 'blob'})
-    .then(function(content) {
+    .then(function (content) {
       downloadLocalFile(`${filename}.zip`, content, 'application/zip')
     });
 };
@@ -70,10 +70,10 @@ const formateList = (dataList) => {
 
 const generateAllOptions = (list) => {
   let fn = (list)=>{
-    list.forEach(it=>{
-      if(it.type === 'group'){
+    list.forEach(it => {
+      if (it.type === 'group') {
         fn(it.children)
-      }else{
+      } else {
         let {type, optionSetting, validationSetting} = it;
         if (optionSetting === 'static') {
           allOptions[it.frontId] = it.optionSetting_options;
