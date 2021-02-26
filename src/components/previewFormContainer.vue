@@ -7,6 +7,7 @@
               :view="view"
               :id="id"
               :rules="rules"
+              :useCustormRule="useCustormRule"
               :formModel="formModel"
               :fdFormItems="fdFormItems"
               :fdFormData="fdFormData"
@@ -17,6 +18,7 @@
 <script>
   import {getUrlQueryParams, showQueryErrorMessage} from '../assets/js/utils'
   import previewForm from './previewForm.vue'
+  import {generateElementuiCode} from '../generate_code/generateCode'
 
   export default {
     name: 'previewFormContainer',
@@ -57,6 +59,12 @@
         default () {
           return {}
         }
+      },
+      // 是否采用用户自配的规则，即props中传入的rules。
+      // 若是，则表单这里将会无视表单编辑器中配置的校验数据
+      useCustormRule: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
@@ -85,8 +93,9 @@
       getFormItemsIns () {
         return this.$refs.form.$refs.fdFormItem;
       }
-    }
+    },
 
+    generateElementuiCode: generateElementuiCode
   }
 </script>
 
