@@ -103,7 +103,32 @@
         </template>
       </div>
     </template>
-
+        <!-- 选择人员树组件 -->
+    <template v-else-if="data.type==='user'">
+       <el-form-item
+          class="form-item suffix-button"
+          prop="paramExpress"
+        >
+          <el-input
+            style="width: calc(100% - 40px);"
+            readonly
+            resize="none"
+            v-model="data.defaultValue"
+            type="textarea"
+            v-on:click.native.stop="openPerRoleDialog()"
+          >
+          </el-input>
+          <el-button
+            size="mini"
+            type="danger"
+            circle
+            title="清除"
+            icon="el-icon-delete"
+            style="margin-bottom: 14px;margin-left:4px"
+             @click="clearExpress()"
+          ></el-button>
+        </el-form-item>
+    </template>
     <!--  区分输入组件的类型      -->
     <!--   多行文本     -->
     <el-input v-else-if="data.type === 'textarea'"
@@ -291,7 +316,10 @@
     </template>
 
     <!-- 如果没有设置type，则都是input --end-- -->
-
+  <personEditDialog
+      ref="personEditDialog"
+      @personSure="personSure"
+    ></personEditDialog>
     <MessageBox
       :showMessage.sync="MessageConfig.showMessage"
       :MessageConfig="MessageConfig"
@@ -306,9 +334,10 @@
   import {commonRequest, getCodeTypeData} from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
+  import personEditDialog from "./personEditDialog.vue";
   export default {
     name: 'previewFormItem',
-    components:{MessageBox},
+    components:{MessageBox,personEditDialog},
     props: {
       // 是否为预览模式，模式是编辑模式啦
       view: {
@@ -753,6 +782,23 @@
             }
           }
         }
+      },
+           // 打开选择人员或角色弹框
+    openPerRoleDialog() {
+        if (this.$refs.personEditDialog){
+          this.$refs.personEditDialog.show(this.data.defaultValueArr);
+        }
+    },
+          // 将选人弹窗中确定的人员更新到表单中
+      personSure(usersData,names,ids){// usersData:选中的人，用于弹框回显，names：选中的人，用于展示
+        this.data.defaultValue=names
+        this.data.defaultValueArr=[...usersData]
+      },
+          //清空选中人员
+      clearExpress(){
+          event.stopPropagation();
+        this.data.defaultValue=''
+        this.data.defaultValueArr=[]
       },
       //新增行
     addTableRow(event) {
