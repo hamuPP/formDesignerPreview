@@ -154,7 +154,7 @@ const generateBasicElementFormItem = (data)=>{
              :clearable="${data.clearable}">
     </el-rate>`
   }
-  else if(data.type === 'select'){
+  else if (data.type === 'select') {
     innerStr = ` <el-select
                     v-model="formModel.${data.code}"
                     :disabled="${data.disabled}"
@@ -170,9 +170,59 @@ const generateBasicElementFormItem = (data)=>{
       </el-option>
     </el-select>`;
   }
-
-  // 分割线(todo 分割线到单选组中间的代码还没有拷过来)
-  else if(data.type === 'dividingLine'){
+  else if (data.type === 'datePicker') {
+    innerStr = `<el-date-picker
+                    v-model="formModel.${data.code}"
+                    type="${data.innerType}"
+                    value-format="${data.valueFormat}"
+                    :disabled="${data.disabled}"
+                    :readonly="${data.readonly}"
+                    :clearable="${data.clearable}"
+    >
+    </el-date-picker>`;
+  }
+  else if(data.type === 'timePicker'){
+    innerStr = `<el-time-picker
+                    v-model="formModel.${data.code}"
+                    value-format="${data.valueFormat}"
+                    :disabled="${data.disabled}"
+                    :readonly="${data.readonly}"
+                    :clearable="${data.clearable}"
+    >
+    </el-time-picker>`
+  }
+  else if(data.type === 'timePickerRange') {
+    innerStr = `<el-time-picker
+                    is-range
+                    v-model="formModel.${data.code}"
+                    value-format="${data.valueFormat}"
+                    :disabled="${data.disabled}"
+                    :readonly="${data.readonly}"
+                    :clearable="${data.clearable}"
+                    range-separator="至"
+                    start-placeholder="开始时间"
+                    end-placeholder="结束时间"
+                    @click.native.stop
+    >
+    </el-time-picker>`
+  }
+  else if(data.type === 'button') {
+    innerStr = `<el-button
+               type="${data.innerType}"
+               :round="${data.round}"
+               :circle="${data.circle}"
+               :icon="${data.icon}"
+               :size="${data.size}"
+               :disabled="${data.disabled}"
+               :class="{'auto-width': ${data.fixParentWidth}"
+    >
+      <template v-if="data.defaultValue">
+        {{data.defaultValue}}
+      </template>
+    </el-button>`
+  }
+  // 分割线
+  else if (data.type === 'dividingLine') {
     innerStr = `<div
          class="fd-formItem__dividingLine"
          :style="{
@@ -184,9 +234,29 @@ const generateBasicElementFormItem = (data)=>{
              }">
     </div>`;
   }
+  // 上传附件
+  else if (data.type === 'uploadFile') {
+    innerStr = `<div class="fd-formItem__upload-file">
+      <el-button type="primary" size="mini" @click="upFile" class="file-btn">上传</el-button>
+      <a href="javascript:;" class="file-btn open-file-btn">
+        浏览
+        <input type="file" ref="file" name="file" @change="addFileName" />
+      </a>
+      <div class="input-box">
+        <el-input v-model="fileName"></el-input>
+      </div>
+
+      <ul class="file-list">
+        <li v-for="(item,index) in fileList" :key="index">
+          <a class="file-detail" :href="getDownURL(item)" download title="下载">{{item.name}}</a>
+          <i class="el-icon-delete" @click="delFile(item)"></i>
+        </li>
+      </ul>
+    </div>`;
+  }
   // 如果没有设置type，则都是input
-  else{
-    if(data.validationSetting && data.validationSetting.dataType.value === 'number'){
+  else {
+    if (data.validationSetting && data.validationSetting.dataType.value === 'number'){
       innerStr = ` <el-input
               :disabled="${data.disabled}"
               :readonly="${data.readonly}"
@@ -195,7 +265,7 @@ const generateBasicElementFormItem = (data)=>{
               v-model.number="formModel.${data.code}"
       ></el-input>`;
     }
-    else if(data.validationSetting && data.validationSetting.dataType.value === 'password'){
+    else if (data.validationSetting && data.validationSetting.dataType.value === 'password'){
       innerStr = ` <el-input
               :disabled="${data.disabled}"
               :readonly="${data.readonly}"
@@ -300,6 +370,10 @@ export const generateElementuiCode = (filename, formModel, list)=>{
        // 下拉框的选中值改变后的事件
         selectChangeHand (val) {
           console.log(val);
+          // do your own business
+        },
+         // 上传到服务器 todo 
+        upFile(){
           // do your own business
         }
      }
