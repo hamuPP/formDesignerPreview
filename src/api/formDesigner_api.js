@@ -40,3 +40,21 @@ export function getCodeTypeData (data) {
     params: data
   })
 }
+
+//获取组织
+export function getOrgTree (data) {
+  return axios({
+    url:baseUrl+'/workflow/user/queryOrgTree',
+    method:'post',
+    data:data
+  })
+}
+
+//获取人员
+export function getUser (data) {
+  return axios({
+    url:baseUrl+'/workflow/user/getUsers',
+    method:'post',
+    data:data
+  })
+}
