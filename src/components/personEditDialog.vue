@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import {getUser,getOrgTree} from '@/api/formDesigner_api.js'
+import {getUser,getOrgTree} from '../api/formDesigner_api'
 import Pagination from "./pagination.vue";
 export default {
   name: "line-param-edit-dialog",
@@ -139,14 +139,6 @@ export default {
     };
   },
   watch: {
-    getOrgTreeResult(n, o) {
-      this.resolve(n.data);
-    },
-    getUserResult(n, o) {
-      this.tableData = n.data.data;
-      // 处理分页参数
-      this.configPage.pageTotal = parseInt(n.data.total);
-    },
   },
   methods: {
     //初始化方法，显示弹框
@@ -179,24 +171,16 @@ export default {
       if (node.level === 0) {
         this.node = node;
       }
-      this.resolve = resolve;
       let req = {
         condition: "",
         parentId: node.data ? node.data.id : 0,
       };
      getOrgTree(req).then(res=>{
-        if(res&&res.data&&res.code=='0000'){
-          resolve(data)
+        if(res&&res.data&&res.data.code=='0000'){
+          resolve(res.data.data)
         }
       })
     },
-    /**
-     * 查询组织树
-     */
-    // getOrgTree(req) {
-    //   this.$store.dispatch("getOrgTree", { reqData: req });
-
-    // },
     //树节点点击
     handleNodeClick(data) {
       this.currentClickedOrgId = data.id;
@@ -215,12 +199,11 @@ export default {
       };
       getUser(queryParams).then(res=>{
         if(res&&res.data&&res.data.code=='0000'){
-          this.tableData = res.data.data;
+          this.tableData = res.data.data.data;
       // 处理分页参数
-      this.configPage.pageTotal = parseInt(res.data.total);
+      this.configPage.pageTotal = parseInt(res.data.data.total);
         }
       })
-      // this.$store.dispatch("getUser", { reqData: queryParams });
     },
     //分页 todo 未调试和检查接口
     handleCurrentChange(cur, page) {

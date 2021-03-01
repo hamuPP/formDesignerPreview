@@ -106,12 +106,11 @@
         <!-- 选择人员树组件 -->
     <template v-else-if="data.type==='user'">
        <el-form-item
-          :label="data.label"
           class="form-item suffix-button"
           prop="paramExpress"
         >
           <el-input
-            style="width: calc(100% - 30px);"
+            style="width: calc(100% - 40px);"
             readonly
             resize="none"
             v-model="data.defaultValue"
@@ -335,7 +334,7 @@
   import {commonRequest, getCodeTypeData} from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
-  import personEditDialog from "./personEditDialog";
+  import personEditDialog from "./personEditDialog.vue";
   export default {
     name: 'previewFormItem',
     components:{MessageBox,personEditDialog},
