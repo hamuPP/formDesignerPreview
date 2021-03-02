@@ -254,7 +254,63 @@ const generateBasicElementFormItem = (data)=>{
       </ul>
     </div>`;
   }
-  // 如果没有设置type，则都是input
+  // 业务公共字段-流水号
+  else if (data.type === 'sheetFlowCode') {
+    innerStr = `<el-input
+                  :disabled="${data.disabled}"
+                  :readonly="${data.readonly}"
+                  :clearable="${data.clearable}"
+                  v-model="formModel.${data.code}"
+        ></el-input>`;
+  }
+  // 业务公共字段-操作人
+  else if (data.type === 'operator') {
+    innerStr = `<el-input
+                  :disabled="${data.disabled}"
+                  :readonly="${data.readonly}"
+                  :clearable="${data.clearable}"
+                  v-model="formModel.${data.code}"
+        ></el-input>`;
+  }
+  // 业务公共字段-操作人部门
+  else if (data.type === 'operatorDept') {
+    innerStr = `<el-input
+                  :disabled="${data.disabled}"
+                  :readonly="${data.readonly}"
+                  :clearable="${data.clearable}"
+                  v-model="formModel.${data.code}"
+        ></el-input>`;
+  }
+  // 业务公共字段-操作人联系方式
+  else if (data.type === 'operatorMobile') {
+    innerStr = `<el-input
+                  :disabled="${data.disabled}"
+                  :readonly="${data.readonly}"
+                  :clearable="${data.clearable}"
+                  v-model="formModel.${data.code}"
+        ></el-input>`;
+  }
+  // 业务公共字段-操作人当前角色
+  else if (data.type === 'operatorRole') {
+    innerStr = `<el-input
+                  :disabled="${data.disabled}"
+                  :readonly="${data.readonly}"
+                  :clearable="${data.clearable}"
+                  v-model="formModel.${data.code}"
+        ></el-input>`;
+  }
+  // 业务公共字段-操作时间
+  else if (data.type === 'operateTime') {
+    innerStr = `<el-date-picker
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  :disabled="${data.disabled}"
+                  :readonly="${data.readonly}"
+                  :clearable="${data.clearable}"
+                  v-model="formModel.${data.code}"
+                  :computereadonly="${data.readonly}"
+        ></el-date-picker>`;
+  }
+    // 如果没有设置type，则都是input
   else {
     if (data.validationSetting && data.validationSetting.dataType.value === 'number'){
       innerStr = ` <el-input

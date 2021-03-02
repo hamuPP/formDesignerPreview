@@ -287,6 +287,62 @@
       </ul>
     </div>
 
+    <!--   业务公共字段-流水号     -->
+    <el-input v-else-if="data.type === 'sheetFlowCode'"
+            :ref="data.ref"
+            v-model="data.defaultValue"
+            :disabled="data.disabled"
+            :readonly="data.readonly"
+            :clearable="data.clearable"
+    ></el-input>
+
+    <!--   业务公共字段-操作人     -->
+    <el-input v-else-if="data.type === 'operator'"
+            :ref="data.ref"
+            v-model="data.defaultValue"
+            :disabled="data.disabled"
+            :readonly="data.readonly"
+            :clearable="data.clearable"
+    ></el-input>
+
+    <!--   业务公共字段-操作人部门     -->
+    <el-input v-else-if="data.type === 'operatorDept'"
+            :ref="data.ref"
+            v-model="data.defaultValue"
+            :disabled="data.disabled"
+            :readonly="data.readonly"
+            :clearable="data.clearable"
+    ></el-input>
+    <!--   业务公共字段-操作人联系方式     -->
+    <el-input v-else-if="data.type === 'operatorMobile'"
+            :ref="data.ref"
+            v-model="data.defaultValue"
+            :disabled="data.disabled"
+            :readonly="data.readonly"
+            :clearable="data.clearable"
+    ></el-input>
+
+    <!--   业务公共字段-操作人当前角色     -->
+    <el-input
+            v-else-if="data.type === 'operatorRole'"
+            :ref="data.ref"
+            v-model="data.defaultValue"
+            :disabled="data.disabled"
+            :readonly="data.readonly"
+            :clearable="data.clearable"
+    ></el-input>
+    <!--   业务公共字段-操作时间     -->
+    <el-date-picker
+            v-else-if="data.type === 'operateTime'"
+            :ref="data.ref"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            v-model="data.defaultValue"
+            type="datetime"
+            :disabled="data.disabled"
+            :computereadonly="data.readonly"
+    >
+    </el-date-picker>
+
     <!-- 如果没有设置type，则都是input --start-- -->
     <template v-else>
 <!--      <div style="color:red">{{data}}</div>-->
