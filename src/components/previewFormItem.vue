@@ -113,7 +113,7 @@
             style="width: calc(100% - 40px);"
             readonly
             resize="none"
-            v-model="data.defaultValue"
+            v-model="data.defaultName"
             type="textarea"
             v-on:click.native.stop="openPerRoleDialog()"
           >
@@ -126,6 +126,33 @@
             icon="el-icon-delete"
             style="margin-bottom: 14px;margin-left:4px"
              @click="clearExpress()"
+          ></el-button>
+        </el-form-item>
+    </template>
+     <!-- 下拉树组件 -->
+    <template v-else-if="data.type==='tree'">
+       <el-form-item
+          :label="data.label"
+          class="form-item suffix-button"
+          prop="paramExpress"
+        >
+          <el-input
+            style="width: calc(100% - 30px);"
+            readonly
+            resize="none"
+            v-model="data.defaultValueArr"
+            type="textarea"
+            v-on:click.native.stop="openTreeDialog()"
+          >
+          </el-input>
+          <el-button
+            size="mini"
+            type="danger"
+            circle
+            title="清除"
+            icon="el-icon-delete"
+            style="margin-bottom: 14px;margin-left:4px"
+             @click="clearGogroup()"
           ></el-button>
         </el-form-item>
     </template>
@@ -320,6 +347,11 @@
       ref="personEditDialog"
       @personSure="personSure"
     ></personEditDialog>
+    <rogroupEditDialog
+      
+      ref="rogroupEditDialog"
+      @rogroup="rogroup"
+    ></rogroupEditDialog>
     <MessageBox
       :showMessage.sync="MessageConfig.showMessage"
       :MessageConfig="MessageConfig"
@@ -335,9 +367,10 @@
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
   import personEditDialog from "./personEditDialog.vue";
+  import rogroupEditDialog from "./rogroupEditDialog";
   export default {
     name: 'previewFormItem',
-    components:{MessageBox,personEditDialog},
+    components:{MessageBox,personEditDialog,rogroupEditDialog},
     props: {
       // 是否为预览模式，模式是编辑模式啦
       view: {
@@ -791,15 +824,37 @@
     },
           // 将选人弹窗中确定的人员更新到表单中
       personSure(usersData,names,ids){// usersData:选中的人，用于弹框回显，names：选中的人，用于展示
-        this.data.defaultValue=names
+        this.data.defaultName=names
         this.data.defaultValueArr=[...usersData]
+        this.formModel[this.data.code]=ids
       },
           //清空选中人员
       clearExpress(){
-          event.stopPropagation();
-        this.data.defaultValue=''
+        event.stopPropagation();
+        this.data.defaultName=''
         this.data.defaultValueArr=[]
+        this.formModel[this.data.code]=''
       },
+            //打开下拉树弹框
+    openTreeDialog(){
+      if (this.$refs.rogroupEditDialog) {
+          this.$refs.rogroupEditDialog.show(this.data);
+        }
+    },
+    //将下拉树选择的值显示在input中
+    rogroup({value,name}){
+      this.data.defaultValueArr = name
+      this.data.defaultValue=''
+      value.forEach(item=>{
+        this.data.defaultValue+=item.id+','
+      })
+    },
+    //清空下拉树选中的值
+    clearGogroup(){
+      event.stopPropagation();
+      this.data.defaultValueArr = ''
+      this.data.defaultValue=''
+    },
       //新增行
     addTableRow(event) {
       event.stopPropagation();

@@ -58,3 +58,21 @@ export function getUser (data) {
     data:data
   })
 }
+
+// 下拉树的自定义接口post
+export function getTreePostAPI(url, method,data) {
+  return request({
+    url: baseUrl + url,
+    method: method,
+    data:data
+  })
+}
+
+// 下拉树的自定义接口get
+export function getTreeGetAPI(url, method,data) {
+  return request({
+    url: baseUrl + url,
+    method: method,
+    params:data
+  })
+}
