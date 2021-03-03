@@ -1,11 +1,11 @@
 /**
-*人员定义----选择人员弹框
-* Created by tangyue on 20/7/3
+*人选选择组件弹框 
+* Created by lzp on 21/3/2
 */
 <template>
   <el-dialog
     class="cus-dialog line-params-dialog person-dialog"
-    title="选择人员"
+    :title="title"
     :visible.sync="dialogVisible"
     width="400"
     append-to-body
@@ -113,6 +113,7 @@ export default {
   data() {
     return {
       graph: null,
+      title:'选择人员',
       dialogVisible: false,
       props: {
         label: "text",
@@ -142,8 +143,9 @@ export default {
   },
   methods: {
     //初始化方法，显示弹框
-    show(users) {
+    show(users,data) {
       this.dialogVisible = true;
+      this.title = data.label
       this.tableData = [];
       if (users.length) {
         let list = [];
