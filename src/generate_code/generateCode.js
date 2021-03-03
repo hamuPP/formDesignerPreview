@@ -96,17 +96,17 @@ const colStyle = (item)=>{
   return str;
 };
 
-const generateBasicElementFormItem = (data)=>{
+const generateBasicElementFormItem = (data) => {
   let strStart = `<el-form-item prop="${data.code || ''}" label="${data.label || ''}" class="${data.className}"
-                     :style="{
-                       'marginBottom': ${data.type === 'dividingLine'? 0 : `${lineMarginBottom} + 'px'`}
-                      }"
+                          :style="{
+                            'marginBottom': ${data.type === 'dividingLine'? 0 : `${lineMarginBottom} + 'px'`}
+                          }"
                   >`;
   let strEnd = '</el-form-item>';
 
   let innerStr = '';
   // 多行文本
-  if(data.type === 'textarea'){
+  if (data.type === 'textarea') {
     innerStr = `<el-input
               v-model="formModel.${data.code}"
               type="textarea"
@@ -313,39 +313,36 @@ const generateBasicElementFormItem = (data)=>{
     // 如果没有设置type，则都是input
   else {
     if (data.validationSetting && data.validationSetting.dataType.value === 'number'){
-      innerStr = ` <el-input
-              :disabled="${data.disabled}"
-              :readonly="${data.readonly}"
-              :clearable="${data.clearable}"
-              type="number"
-              v-model.number="formModel.${data.code}"
-      ></el-input>`;
+      innerStr = `<el-input
+                     :disabled="${data.disabled}"
+                     :readonly="${data.readonly}"
+                     :clearable="${data.clearable}"
+                     type="number"
+                     v-model.number="formModel.${data.code}"></el-input>`;
     }
     else if (data.validationSetting && data.validationSetting.dataType.value === 'password'){
-      innerStr = ` <el-input
-              :disabled="${data.disabled}"
-              :readonly="${data.readonly}"
-              :clearable="${data.clearable}"
-              type="password"
-              v-model="formModel.${data.code}"
-      ></el-input>`;
+      innerStr = `<el-input
+                      :disabled="${data.disabled}"
+                      :readonly="${data.readonly}"
+                      :clearable="${data.clearable}"
+                      type="password"
+                      v-model="formModel.${data.code}"></el-input>`;
     }
     else{
-      innerStr = ` <el-input
-              :disabled="${data.disabled}"
-              :readonly="${data.readonly}"
-              :clearable="${data.clearable}"
-              v-model="formModel.${data.code}"
-      ></el-input>`;
+      innerStr = `<el-input
+                      :disabled="${data.disabled}"
+                      :readonly="${data.readonly}"
+                      :clearable="${data.clearable}"
+                      v-model="formModel.${data.code}"></el-input>`;
     }
   }
-  return ` ${strStart}
-              ${innerStr}
-           ${strEnd}`;
+  return `    ${strStart}
+             ${innerStr}
+                      ${strEnd}`;
 };
 
 //
-const generatePreviewFormItem = (item)=>{
+const generatePreviewFormItem = (item) => {
   let str = '';
 
   // 如果是分组
@@ -353,13 +350,11 @@ const generatePreviewFormItem = (item)=>{
     if (item.label) {
       str += `<div class="fd-form-group__header">${item.label}</div>`;
     }
-    str += `
-      ${item.children.map((child, childIdx)=>`
-       <el-row key="${childIdx}" :gutter="35">
-         ${loopCol(child)}
-       </el-row>
-      `).join(' ')}
-    `;
+    str += `${item.children.map((child, childIdx)=>`
+              <el-row key="${childIdx}" :gutter="35">
+              ${loopCol(child, 'group')}
+              </el-row>
+      `).join(' ')}`;
   }
   // 非分组的表单项
   else {
@@ -368,13 +363,29 @@ const generatePreviewFormItem = (item)=>{
 
   return str;
 };
-const loopCol = (obj)=>{
+const loopCol = (obj, isGroup) => {
   let str = '';
-  for(let key in obj){
+  for (let key in obj) {
     let item = obj[key];
-    str += `  <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
-           ${generatePreviewFormItem(item)}
-         </el-col>`;
+
+    // 分组内的el-col布局
+    if (isGroup) {
+      if (str.length) {
+        str += '\n              ';// 14个空格
+      }
+      str += `    <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
+                  ${generatePreviewFormItem(item)}
+                  </el-col>`;
+    }
+    // 非分组内的el-col布局
+    else {
+      if (str.length) {
+        str += '\n      ';// 6个空格
+      }
+      str += `    <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
+                  ${generatePreviewFormItem(item)}
+          </el-col>`;
+    }
   }
 
   return str;
@@ -398,10 +409,10 @@ export const generateElementuiCode = (filename, formModel, list)=>{
   <el-form class="${formClassStr}"
            size="${formModel.size}"
            label-width="${formModel.labelWidth}px">
-    ${formateList(list).map((it,index)=>`
-        <el-row :gutter="35" key="${index}">
-        ${loopCol(it)}
-        </el-row>
+    ${formateList(list).map((it, index) => `
+      <el-row :gutter="35" key="${index}">
+      ${loopCol(it)}
+      </el-row>
     `).join(' ')}
   </el-form>
 </template>
