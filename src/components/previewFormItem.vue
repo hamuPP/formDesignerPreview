@@ -2,21 +2,13 @@
 * Created by tangyue on 20/10/23
 */
 <template>
-  <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
-  <el-form-item
-          v-if="data.type !== 'uploadFile' || (data.type === 'uploadFile' && !view)"
-          :prop="data.code"
-          :label="data.label"
-          :class="data.className"
-          :style="{
-            'marginBottom': data.type === 'dividingLine'? 0 : lineMarginBottom + 'px'
-          }"
-          :rules="componentRootForm.useCustormRule? null: rules">
-           <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件  -->
+  <div>
+  <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件,并且table没有label,所以单独提出来  -->
     <template v-if="data.type === 'table'">
       <div
         class="fd-formTable"
         :class="{ empty: !data.tableCols.length }"
+        style="margin-bottom:6px"
       >
         <p class="fd-formTable__emptyMsg" v-if="!data.tableCols.length">
           您尚未为表格设置列数据
@@ -103,17 +95,30 @@
         </template>
       </div>
     </template>
+  <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
+    <el-form-item
+          v-else-if="data.type !== 'uploadFile' || (data.type === 'uploadFile' && !view)"
+          :prop="data.code"
+          :label="data.label"
+          :class="data.className"
+          :style="{
+            'marginBottom': data.type === 'dividingLine'? 0 : lineMarginBottom + 'px'
+          }"
+          :rules="componentRootForm.useCustormRule? null: rules">
+
         <!-- 选择人员树组件 -->
-    <template v-else-if="data.type==='user'">
-       <el-form-item
+      <template v-if="data.type==='user'">
+        <el-form-item
           class="form-item suffix-button"
           prop="paramExpress"
         >
           <el-input
             style="width: calc(100% - 40px);"
             readonly
+             :rows='3'
             resize="none"
-            v-model="data.defaultValue"
+            :disabled="data.disabled"
+            v-model="data.defaultName"
             type="textarea"
             v-on:click.native.stop="openPerRoleDialog()"
           >
@@ -124,8 +129,36 @@
             circle
             title="清除"
             icon="el-icon-delete"
-            style="margin-bottom: 14px;margin-left:4px"
+            style="margin-bottom: 22px;margin-left:4px"
              @click="clearExpress()"
+          ></el-button>
+        </el-form-item>
+      </template>
+     <!-- 下拉树组件 -->
+      <template v-else-if="data.type==='tree'">
+        <el-form-item
+          class="form-item suffix-button"
+          prop="paramExpress"
+        >
+          <el-input
+            style="width: calc(100% - 40px);"
+            readonly
+            :rows='3'
+            :disabled="data.disabled"
+            resize="none"
+            v-model="data.defaultValueArr"
+            type="textarea"
+            v-on:click.native.stop="openTreeDialog()"
+          >
+          </el-input>
+          <el-button
+            size="mini"
+            type="danger"
+            circle
+            title="清除"
+            icon="el-icon-delete"
+            style="margin-bottom: 22px;margin-left:4px"
+            @click="clearGogroup()"
           ></el-button>
         </el-form-item>
     </template>
@@ -376,14 +409,19 @@
       ref="personEditDialog"
       @personSure="personSure"
     ></personEditDialog>
+    <rogroupEditDialog
+      
+      ref="rogroupEditDialog"
+      @rogroup="rogroup"
+    ></rogroupEditDialog>
     <MessageBox
       :showMessage.sync="MessageConfig.showMessage"
       :MessageConfig="MessageConfig"
       @checkyes="checkyesDel"
       @checkno="checkDeleteNo"
     ></MessageBox>
-  </el-form-item>
-
+    </el-form-item>
+  </div>
 </template>
 
 <script>
@@ -391,9 +429,10 @@
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
   import personEditDialog from "./personEditDialog.vue";
+  import rogroupEditDialog from "./rogroupEditDialog.vue";
   export default {
     name: 'previewFormItem',
-    components:{MessageBox,personEditDialog},
+    components:{MessageBox,personEditDialog,rogroupEditDialog},
     props: {
       // 是否为预览模式，模式是编辑模式啦
       view: {
@@ -466,6 +505,7 @@
     created () {
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting, validationSetting} = this.data;
+      if(type=='tree') return
       if (optionSetting === 'static') {
         this.options = this.data.optionSetting_options;
       }
@@ -574,8 +614,7 @@
       }
     },
     mounted () {
-      console.log(this.data);
-      if (this.data.type === 'textarea') {
+      if (this.data.type === 'textarea'||this.data.type=='user'||this.data.type=='tree') {
         this.labelEle = this.$el.getElementsByClassName('el-form-item__label')[0];
         this.contentEle = this.$el.querySelector('.el-form-item__content .el-textarea');
         this.setLabelEleHeight(this.contentEle.offsetHeight + 'px');
@@ -841,21 +880,46 @@
       },
            // 打开选择人员或角色弹框
     openPerRoleDialog() {
-        if (this.$refs.personEditDialog){
-          this.$refs.personEditDialog.show(this.data.defaultValueArr);
+        if (this.$refs.personEditDialog&&!this.data.disabled){
+          this.$refs.personEditDialog.show(this.data.defaultValueArr,this.data);
         }
     },
           // 将选人弹窗中确定的人员更新到表单中
       personSure(usersData,names,ids){// usersData:选中的人，用于弹框回显，names：选中的人，用于展示
-        this.data.defaultValue=names
+        this.data.defaultName=names
         this.data.defaultValueArr=[...usersData]
+        this.formModel[this.data.code]=ids
       },
           //清空选中人员
       clearExpress(){
-          event.stopPropagation();
-        this.data.defaultValue=''
+        event.stopPropagation();
+        this.data.defaultName=''
         this.data.defaultValueArr=[]
+        this.formModel[this.data.code]=''
       },
+            //打开下拉树弹框
+    openTreeDialog(){
+      if (this.$refs.rogroupEditDialog&&!this.data.disabled) {
+          this.$refs.rogroupEditDialog.show(this.data);
+        }
+    },
+    //将下拉树选择的值显示在input中
+    rogroup({value,name}){
+      this.data.defaultValueArr = name
+      this.data.defaultValue=''
+      this.formModel[this.data.code]=''
+      value.forEach(item=>{
+        this.data.defaultValue+=item.id+','
+        this.formModel[this.data.code]+=item.id+','
+      })
+    },
+    //清空下拉树选中的值
+    clearGogroup(){
+      event.stopPropagation();
+      this.data.defaultValueArr = ''
+      this.data.defaultValue=''
+      this.formModel[this.data.code]=''
+    },
       //新增行
     addTableRow(event) {
       event.stopPropagation();
