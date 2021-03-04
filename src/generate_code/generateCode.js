@@ -391,7 +391,7 @@ const loopCol = (obj, isGroup) => {
   return str;
 };
 // 生成使用elenetui组件编写的页面
-export const generateElementuiCode = (filename, formModel, list)=>{
+export const generateElementuiCode = (filename, formModel, list) => {
   let IndexVueContent = '';// 文本正文内容
   // 1.整理出表单上的样式
   console.log(formModel);
