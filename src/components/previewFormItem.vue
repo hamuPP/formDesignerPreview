@@ -65,12 +65,14 @@
                   <el-button
                     type="text"
                     size="small"
+                    :disabled="data.readonly"
                     @click="handleUse(scope.$index, scope.row)"
                     >应用</el-button
                   >
                   <el-button
                     type="text"
                     size="small"
+                    :disabled="data.readonly"
                     @click="handleCancel(scope.$index, scope.row)"
                     >取消</el-button
                   >
@@ -79,12 +81,14 @@
                   <el-button
                     type="text"
                     size="small"
+                    :disabled="data.readonly"
                     @click="handleEdit(scope.$index, scope.row)"
                     >编辑</el-button
                   >
                   <el-button
                     @click="handleDelete(scope.$index)"
                     type="text"
+                    :disabled="data.readonly"
                     size="small"
                     >删除</el-button
                   ></span
@@ -128,6 +132,7 @@
             type="danger"
             circle
             title="清除"
+             :disabled="data.disabled"
             icon="el-icon-delete"
             style="margin-bottom: 22px;margin-left:4px"
              @click="clearExpress()"
@@ -156,6 +161,7 @@
             type="danger"
             circle
             title="清除"
+             :disabled="data.disabled"
             icon="el-icon-delete"
             style="margin-bottom: 22px;margin-left:4px"
             @click="clearGogroup()"
@@ -414,13 +420,13 @@
       ref="rogroupEditDialog"
       @rogroup="rogroup"
     ></rogroupEditDialog>
+    </el-form-item>
     <MessageBox
       :showMessage.sync="MessageConfig.showMessage"
       :MessageConfig="MessageConfig"
       @checkyes="checkyesDel"
       @checkno="checkDeleteNo"
     ></MessageBox>
-    </el-form-item>
   </div>
 </template>
 
@@ -500,11 +506,12 @@
           MsgBoxType: "", //消息提示框类型
           MsgText: "",
         },
+        formSetting:[]//表单元素状态控制
       }
     },
     created () {
       // 检查如果有码表配置的，查询其数据
-      let {type, optionSetting, validationSetting} = this.data;
+      let {type, optionSetting, validationSetting,formSetting_children} = this.data;
       if(type=='tree') return
       if (optionSetting === 'static') {
         this.options = this.data.optionSetting_options;
@@ -558,7 +565,10 @@
           });
         }
       }
-
+      //判断是否有控制表单元素状态的下拉框
+      if(formSetting_children){
+        this.formSetting = formSetting_children
+      }
       // 检查是否有配置校验规则(前提是：不使用用户自定义的规则)
       if (!this.componentRootForm.useCustormRule) {
         if (validationSetting) {
@@ -877,6 +887,19 @@
             }
           }
         }
+        //判断当前下拉框是否有配置更改其他表单元素的状态
+        if(this.formSetting.length>0){
+          let data=[]
+          this.formSetting.forEach(item=>{
+            if(item.value==val&&item.editSettingArray){
+              data = JSON.parse(JSON.stringify(item.editSettingArray))
+              this.$emit('selectChange',data)
+            }else if(item.editSettingArray){
+              this.$emit('selectChange',data)
+            }
+          })
+        }
+         
       },
            // 打开选择人员或角色弹框
     openPerRoleDialog() {

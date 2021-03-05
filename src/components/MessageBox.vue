@@ -78,6 +78,7 @@ export default {
       // footer:false
     };
   },
+  
   methods: {
     open() {
       if(this.MessageConfig.MsgBoxType!="confirm"){
