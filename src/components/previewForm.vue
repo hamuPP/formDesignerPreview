@@ -95,19 +95,32 @@ export default {
       type: Boolean,
       default: false,
     },
-    card: {
-      type: Boolean,
-      default: false,
-    },
-    // 表单的id
-    id: {
-      type: [Number, String],
-      default: null,
-    },
-    rules: {
-      type: Object,
-      default() {
-        return {};
+    props: {
+      // 是否为预览模式，模式是编辑模式啦
+      view: {
+        type: Boolean,
+        default: false
+      },
+      card: {
+        type: Boolean,
+        default: false
+      },
+      // 表单的id
+      id: {
+        type: [Number, String],
+        default: null
+      },
+      rules: {
+        type: Object,
+        default () {
+          return {}
+        }
+      },
+      // 是否采用用户自配的规则，即props中传入的rules。注意：默认值是true哦
+      // 若是，则表单这里将会无视表单编辑器中配置的校验数据
+      useCustormRule: {
+        type: Boolean,
+        default: true
       },
     },
     // 是否采用用户自配的规则，即props中传入的rules。
