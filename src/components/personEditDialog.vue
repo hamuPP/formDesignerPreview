@@ -32,7 +32,7 @@
             placeholder="请输入内容"
             prefix-icon="el-icon-search"
             v-model="userSearchValue"
-            @input="getTableData"
+            @change="getTableData"
           >
           </el-input>
           <el-table
