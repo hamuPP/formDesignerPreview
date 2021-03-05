@@ -99,28 +99,27 @@
       <el-button type="primary" @click="sureHand" size="mini">确定</el-button>
       <el-button @click="dialogVisible = false" size="mini">取消</el-button>
     </span>
-     
   </el-dialog>
 </template>
 
 <script>
-import {getUser,getOrgTree} from '../api/formDesigner_api'
+import { getUser, getOrgTree } from "../api/formDesigner_api";
 import Pagination from "./pagination.vue";
 export default {
   name: "line-param-edit-dialog",
   components: { Pagination },
-  props:['sigleChose'],
+  props: ["sigleChose"],
   data() {
     return {
       graph: null,
-      title:'选择人员',
+      title: "选择人员",
       dialogVisible: false,
       props: {
         label: "text",
         children: "children",
         isLeaf: "leaf",
       },
-       MessageConfig: {
+      MessageConfig: {
         showMessage: false, //打开消息提示框
         MsgBoxType: "", //消息提示框类型
         MsgText: "",
@@ -139,13 +138,12 @@ export default {
       pageLayout: "prev,pager,next,total", // 分页的布局配置。如果没有这个参数，则组件内会采用其默认的配置
     };
   },
-  watch: {
-  },
+  watch: {},
   methods: {
     //初始化方法，显示弹框
-    show(users,data) {
+    show(users, data) {
       this.dialogVisible = true;
-      this.title = data.label
+      this.title = data.label;
       this.tableData = [];
       if (users.length) {
         let list = [];
@@ -177,11 +175,11 @@ export default {
         condition: "",
         parentId: node.data ? node.data.id : 0,
       };
-     getOrgTree(req).then(res=>{
-        if(res&&res.data&&res.data.code=='0000'){
-          resolve(res.data.data)
+      getOrgTree(req).then((res) => {
+        if (res && res.data && res.data.code == "0000") {
+          resolve(res.data.data);
         }
-      })
+      });
     },
     //树节点点击
     handleNodeClick(data) {
@@ -199,13 +197,13 @@ export default {
         page: this.configPage.currentPage, // 第几页
         limit: this.configPage.pageSize, // 每页几条
       };
-      getUser(queryParams).then(res=>{
-        if(res&&res.data&&res.data.code=='0000'){
+      getUser(queryParams).then((res) => {
+        if (res && res.data && res.data.code == "0000") {
           this.tableData = res.data.data.data;
-      // 处理分页参数
-      this.configPage.pageTotal = parseInt(res.data.data.total);
+          // 处理分页参数
+          this.configPage.pageTotal = parseInt(res.data.data.total);
         }
-      })
+      });
     },
     //分页 todo 未调试和检查接口
     handleCurrentChange(cur, page) {
@@ -213,7 +211,7 @@ export default {
       this.configPage.currentPage = cur;
       this.configPage.pageSize = page;
       // 查询下一页的人员
-      
+
       this.getTableData();
     },
     // 选人
@@ -224,17 +222,26 @@ export default {
         newRightData = [];
       selection.forEach((item) => {
         item.id = item.userId;
-        if (!mxUtils.isInArray(item.id, this.selectedPeople, "id")) {
+        if (!this.isInArray(item.id, this.selectedPeople, "id")) {
           newRightData.push(item);
         }
       });
       this.selectedPeople = this.selectedPeople.concat(newRightData);
       this.tableData.forEach((it) => {
-        if (!mxUtils.isInArray(it.id, selection, "id")) {
+        if (!this.isInArray(it.id, selection, "id")) {
           newLeftData.push(it);
         }
       });
       this.tableData = newLeftData;
+    },
+    isInArray(child, arr, key) {
+      for (var i = 0, len = arr.length; i < len; i++) {
+        var c = key ? arr[i][key] : arr[i];
+        if (c == child) {
+          return true;
+        }
+      }
+      return false;
     },
     // 取消选人
     unselectPeople(tableNo) {
@@ -257,7 +264,7 @@ export default {
       let newRightData = [];
       this[leftTableData] = this[leftTableData].concat(selection); // 把选中的行，添加到左边的table里
       this[rightTableData].forEach((it) => {
-        if (!mxUtils.isInArray(it.id, selection, "id")) {
+        if (!this.isInArray(it.id, selection, "id")) {
           newRightData.push(it);
         }
       });
@@ -286,13 +293,13 @@ export default {
 </script>
 
 <style lang="scss">
-  .person-dialog {
-    .people-define-group {
-      .people-table-wrap {
-        .Pagination {
-          height: 42px;
-        }
+.person-dialog {
+  .people-define-group {
+    .people-table-wrap {
+      .Pagination {
+        height: 42px;
       }
     }
   }
+}
 </style>
