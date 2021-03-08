@@ -981,9 +981,9 @@
     //确认编辑行
     handleUse(index, row) {
       event.stopPropagation();
-       this.MessageConfig.showMessage = true;
-        this.MessageConfig.MsgBoxType = "success";
-        this.MessageConfig.MsgText = "应用成功";
+      //  this.MessageConfig.showMessage = true;
+      //   this.MessageConfig.MsgBoxType = "success";
+      //   this.MessageConfig.MsgText = "应用成功";
         this.currentIndex = null;
     },
     //取消编辑
