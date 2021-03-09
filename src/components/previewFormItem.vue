@@ -124,6 +124,7 @@
             :disabled="data.disabled"
             v-model="data.defaultName"
             type="textarea"
+            :placeholder="formModel[data.code]||''"
             v-on:click.native.stop="openPerRoleDialog()"
           >
           </el-input>
@@ -911,7 +912,7 @@
       personSure(usersData,names,ids){// usersData:选中的人，用于弹框回显，names：选中的人，用于展示
         this.data.defaultName=names
         this.data.defaultValueArr=[...usersData]
-        this.formModel[this.data.code]=ids
+        this.formModel[this.data.code]=names
       },
           //清空选中人员
       clearExpress(){
