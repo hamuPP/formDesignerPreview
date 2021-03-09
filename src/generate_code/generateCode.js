@@ -9,6 +9,7 @@
  * 4.附件的逻辑还没有加上
  */
 import README from './README.js';
+import listPage from './views/list_page.js';
 import CommonJs from './utils/Common.js';
 import request from './utils/request.js';
 import work_sheet_common from './utils/work_sheet_common.js';
@@ -545,6 +546,7 @@ export const generateElementuiCode = (filename, formModel, list) => {
 
   downloadZip(filename, [
       { filename: 'main.vue', fileContent: IndexVueContent },
+      { filename: 'list.vue', fileContent: listPage },
       { filename: 'README.md', fileContent: README }
     ],
     {

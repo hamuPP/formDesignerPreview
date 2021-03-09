@@ -1,5 +1,6 @@
 <template>
   <div class="app" id="app">
+    <button @click="testDownload">测试下载</button>
     <el-card class="params-config">
       <div slot="header" class="clearfix">
         <span>try</span>
@@ -20,6 +21,7 @@
   </div>
 </template>
 <script>
+  import {generateElementuiCode} from '../src/generate_code/generateCode.js'
   // 样式控制的组件
   const STYLE_FORM_COMPONENTS = ['dividingLine'];
 
@@ -166,6 +168,15 @@
 
       formIdEnterHand () {
         this.getFormData(this.formId);
+      },
+
+      testDownload(){
+        generateElementuiCode('测试',
+          {
+            labelWidth: 110,
+            lineMarginBottom: 10,
+          },
+        []);
       }
     }
 
