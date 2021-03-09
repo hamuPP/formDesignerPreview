@@ -9,6 +9,11 @@
  * 4.附件的逻辑还没有加上
  */
 import README from './README.js';
+import CommonJs from './utils/Common.js';
+import request from './utils/request.js';
+import work_sheet_common from './utils/work_sheet_common.js';
+import config from './public/config.js'
+import api from './api/api.js'
 import {downloadLocalFile} from '../util/utils'
 
 let labelWidth = 0;
@@ -16,12 +21,20 @@ let lineMarginBottom = 0;
 let allOptions = {}; // 针对下拉框等的下拉数据
 
 // 生成zip文件并且下载
-const downloadZip = (filename, files) => {
+const downloadZip = (filename, files, folderList) => {
   var JSZip = require('jszip');
   var zip = new JSZip();
   files.forEach(it => {
     zip.file(it.filename, it.fileContent);
   });
+  // 把文件夹加进来
+  for (let i in folderList) {
+    let child = folderList[i];
+    var folder = zip.folder(i);
+    child.forEach(it => {
+      folder.file(it.filename, it.fileContent);
+    });
+  }
   zip.generateAsync({type: 'blob'})
     .then(function (content) {
       downloadLocalFile(`${filename}.zip`, content, 'application/zip')
@@ -96,7 +109,7 @@ const colStyle = (item)=>{
   return str;
 };
 
-const generateBasicElementFormItem = (data) => {
+const generateBasicElementFormItem = (data, isInGroup) => {
   let strStart = `<el-form-item prop="${data.code || ''}" label="${data.label || ''}" class="${data.className}"
                           :style="{
                             'marginBottom': ${data.type === 'dividingLine'? 0 : `${lineMarginBottom} + 'px'`}
@@ -237,22 +250,22 @@ const generateBasicElementFormItem = (data) => {
   // 上传附件
   else if (data.type === 'uploadFile') {
     innerStr = `<div class="fd-formItem__upload-file">
-      <el-button type="primary" size="mini" @click="upFile" class="file-btn">上传</el-button>
-      <a href="javascript:;" class="file-btn open-file-btn">
-        浏览
-        <input type="file" ref="file" name="file" @change="addFileName" />
-      </a>
-      <div class="input-box">
-        <el-input v-model="fileName"></el-input>
-      </div>
-
-      <ul class="file-list">
-        <li v-for="(item,index) in fileList" :key="index">
-          <a class="file-detail" :href="getDownURL(item)" download title="下载">{{item.name}}</a>
-          <i class="el-icon-delete" @click="delFile(item)"></i>
-        </li>
-      </ul>
-    </div>`;
+                    <el-button type="primary" size="mini" @click="upFile" class="file-btn">上传</el-button>
+                    <a href="javascript:;" class="file-btn open-file-btn">
+                      浏览
+                      <input type="file" ref="file" name="file" @change="addFileName" />
+                    </a>
+                    <div class="input-box">
+                      <el-input v-model="fileName"></el-input>
+                    </div>
+              
+                    <ul class="file-list">
+                      <li v-for="(item,index) in fileList" :key="index">
+                        <a class="file-detail" :href="getDownURL(item)" download title="下载">{{item.name}}</a>
+                        <i class="el-icon-delete" @click="delFile(item)"></i>
+                      </li>
+                    </ul>
+                </div>`;
   }
   // 业务公共字段-流水号
   else if (data.type === 'sheetFlowCode') {
@@ -260,8 +273,8 @@ const generateBasicElementFormItem = (data) => {
                   :disabled="${data.disabled}"
                   :readonly="${data.readonly}"
                   :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}"
-        ></el-input>`;
+                  v-model="formModel.${data.code}">
+                </el-input>`;
   }
   // 业务公共字段-操作人
   else if (data.type === 'operator') {
@@ -269,8 +282,8 @@ const generateBasicElementFormItem = (data) => {
                   :disabled="${data.disabled}"
                   :readonly="${data.readonly}"
                   :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}"
-        ></el-input>`;
+                  v-model="formModel.${data.code}">
+                </el-input>`;
   }
   // 业务公共字段-操作人部门
   else if (data.type === 'operatorDept') {
@@ -278,8 +291,8 @@ const generateBasicElementFormItem = (data) => {
                   :disabled="${data.disabled}"
                   :readonly="${data.readonly}"
                   :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}"
-        ></el-input>`;
+                  v-model="formModel.${data.code}">
+                </el-input>`;
   }
   // 业务公共字段-操作人联系方式
   else if (data.type === 'operatorMobile') {
@@ -287,8 +300,8 @@ const generateBasicElementFormItem = (data) => {
                   :disabled="${data.disabled}"
                   :readonly="${data.readonly}"
                   :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}"
-        ></el-input>`;
+                  v-model="formModel.${data.code}">
+                </el-input>`;
   }
   // 业务公共字段-操作人当前角色
   else if (data.type === 'operatorRole') {
@@ -296,8 +309,8 @@ const generateBasicElementFormItem = (data) => {
                   :disabled="${data.disabled}"
                   :readonly="${data.readonly}"
                   :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}"
-        ></el-input>`;
+                  v-model="formModel.${data.code}">
+                </el-input>`;
   }
   // 业务公共字段-操作时间
   else if (data.type === 'operateTime') {
@@ -307,10 +320,10 @@ const generateBasicElementFormItem = (data) => {
                   :readonly="${data.readonly}"
                   :clearable="${data.clearable}"
                   v-model="formModel.${data.code}"
-                  :computereadonly="${data.readonly}"
-        ></el-date-picker>`;
+                  :computereadonly="${data.readonly}">
+                </el-date-picker>`;
   }
-    // 如果没有设置type，则都是input
+  // 如果没有设置type，则都是input
   else {
     if (data.validationSetting && data.validationSetting.dataType.value === 'number'){
       innerStr = `<el-input
@@ -318,7 +331,8 @@ const generateBasicElementFormItem = (data) => {
                      :readonly="${data.readonly}"
                      :clearable="${data.clearable}"
                      type="number"
-                     v-model.number="formModel.${data.code}"></el-input>`;
+                     v-model.number="formModel.${data.code}">
+                  </el-input>`;
     }
     else if (data.validationSetting && data.validationSetting.dataType.value === 'password'){
       innerStr = `<el-input
@@ -326,66 +340,102 @@ const generateBasicElementFormItem = (data) => {
                       :readonly="${data.readonly}"
                       :clearable="${data.clearable}"
                       type="password"
-                      v-model="formModel.${data.code}"></el-input>`;
+                      v-model="formModel.${data.code}">
+                  </el-input>`;
     }
     else{
       innerStr = `<el-input
                       :disabled="${data.disabled}"
                       :readonly="${data.readonly}"
                       :clearable="${data.clearable}"
-                      v-model="formModel.${data.code}"></el-input>`;
+                      v-model="formModel.${data.code}">
+                  </el-input>`;
     }
   }
-  return `    ${strStart}
-             ${innerStr}
+  // 代码一样，只是布局排版用的空格不同
+  if (isInGroup) {
+    return `    ${strStart}
+                ${innerStr}
                       ${strEnd}`;
+  } else {
+    return `${strStart}
+            ${innerStr}
+                  ${strEnd}`;
+  }
 };
 
-//
-const generatePreviewFormItem = (item) => {
+/**
+ * 生成表单的单个组件
+ * @param item
+ * @param isInGroup 这个表单组件的外层是否是一个分组框
+ * @returns {string}
+ */
+const generatePreviewFormItem = (item, isInGroup, spaceCount = 0) => {
   let str = '';
 
-  // 如果是分组
+  // 如果本表单组件是分组
   if (item.type === 'group') {
     if (item.label) {
-      str += `<div class="fd-form-group__header">${item.label}</div>`;
+      str += `<div class="fd-form-group__header">${item.label}todo_${spaceCount}</div>`;
     }
     str += `${item.children.map((child, childIdx)=>`
               <el-row key="${childIdx}" :gutter="35">
-              ${loopCol(child, 'group')}
+              ${loopCol(child, 'group', 20)}
               </el-row>
       `).join(' ')}`;
   }
   // 非分组的表单项
   else {
-    str = generateBasicElementFormItem(item);
+    str = generateBasicElementFormItem(item, isInGroup);
   }
 
   return str;
 };
-const loopCol = (obj, isGroup) => {
+const loopCol = (obj, isGroup, spaceCount = 0) => {
   let str = '';
   for (let key in obj) {
     let item = obj[key];
 
-    // 分组内的el-col布局
-    if (isGroup) {
-      if (str.length) {
-        str += '\n              ';// 14个空格
+    // 分组内的el-col布局（代码上来说，一模一样，区别是排版的空格不同）
+    // if (isGroup) {
+    //   if (str.length) {
+    //     str += '\n              ';// 14个空格
+    //   }
+    //   str += `    <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
+    //               ${generatePreviewFormItem(item, isGroup)}
+    //               </el-col>`;
+    // }
+    // // 非分组内的el-col布局
+    // else {
+    //   if (str.length) {
+    //     str += '\n      ';// 6个空格
+    //   }
+    //   str += `    <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
+    //               ${generatePreviewFormItem(item, isGroup)}
+    //       </el-col>`;
+    // }
+
+    if (str.length) {
+      str += '\n';// 6个空格
+      for (let c = 0; c < spaceCount; c++) {
+        str += ' ';
       }
-      str += `    <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
-                  ${generatePreviewFormItem(item)}
-                  </el-col>`;
     }
-    // 非分组内的el-col布局
-    else {
-      if (str.length) {
-        str += '\n      ';// 6个空格
-      }
-      str += `    <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
-                  ${generatePreviewFormItem(item)}
-          </el-col>`;
+    // 这里的空格 ，注意手动补4个空格
+    var _str =
+`    <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
+    ${generatePreviewFormItem(item, isGroup, spaceCount)}
+    `;
+    for (let c = 0; c < spaceCount; c++) {
+      _str += ' ';
     }
+    _str += '</el-col>';
+
+    str += _str;
+//     str +=
+// `<el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
+// ${generatePreviewFormItem(item, isGroup)}
+// </el-col>`;
   }
 
   return str;
@@ -404,53 +454,112 @@ export const generateElementuiCode = (filename, formModel, list) => {
 
   /// IMPORTANT --TODO 不要修改此处的代码格式，更不要使用一键代码自动格式化功能，否则导出的文件内的换行和对齐等格式全都不对 -ty 2021年02月25日18:11:00 ///
   IndexVueContent =
-`
+    `
 <template>
-  <el-form class="${formClassStr}"
-           size="${formModel.size}"
-           label-width="${formModel.labelWidth}px">
-    ${formateList(list).map((it, index) => `
-      <el-row :gutter="35" key="${index}">
-      ${loopCol(it)}
-      </el-row>
-    `).join(' ')}
-  </el-form>
+    <div class="wrapper">
+        <el-form class="${formClassStr}"
+                 size="${formModel.size}"
+                 label-width="${formModel.labelWidth}px">
+          ${formateList(list).map((it, index) => `
+            <el-row :gutter="35" key="${index}">
+            ${loopCol(it, null, 12)}
+            </el-row>
+          `).join(' ')}
+        </el-form>  
+    </div>
+
 </template>
 
 <script>
+    import {openLoading,closeLoading} from "./utils/Common"
+    // 工单公共js
+    import {
+
+      getFormInitData,
+
+    } from './utils/work_sheet_common.js'
    export default {
      data () {
        return {
+         boId: null,// 工单id
+         businessType: null,
+         userId: sessionStorage.getItem("user_id"),
          list: ${JSON.stringify(list)},
          isView: false,// 表单的样式：预览或者是可编辑的
          formModel: {}, // 表单的绑定值
-         options: ${JSON.stringify(allOptions)}
+         options: ${JSON.stringify(allOptions)},
+         fileName: '', // 附件名字
+         fileList: [], // 附件列表
        }
      },
      created(){
-       // 查询所有下拉、单选、多选的选项数据
+         // 处理浏览器传参
+         this.boId = this.$route.query.boId || null;// 有id是编辑，无id是新增
+         this.businessType = this.$route.query.businessType;
+         this.formCode = this.$route.query.formCode;
+         this.status = this.$route.query.status;
+        // 查询所有下拉、单选、多选的选项数据 todo
+        
+         // 根据表单的code获取表单模板的信息
+        if(this.formCode){
+          openLoading({
+            scope: this,
+            target: ['.wrapper']
+          });
+          // 查询表单的建单人等初始信息
+          getFormInitData.call(this, this.formCode, ['.wrapper']);
+        }
       
      },
      methods: {
-       // 查询所有下拉、单选、多选的选项数据
+        // 查询所有下拉、单选、多选的选项数据
    
-       // 下拉框的选中值改变后的事件
+        // 下拉框的选中值改变后的事件
         selectChangeHand (val) {
           console.log(val);
           // do your own business
         },
-         // 上传到服务器 todo 
+        // 上传到服务器 todo 
         upFile(){
           // do your own business
-        }
+        },
+        
+        // 添加附件信息
+        addFileName () {
+          this.fileName = this.$refs.file.files[0].name;
+        },
+        
+        // 下载地址
+        getDownURL (row) {
+          return (
+            this.data.downloadServiceUrl +
+            row.id +
+            '?access_token=' +
+            sessionStorage.getItem('access_token')
+          );
+        },
      }
    }
 </script>
 `;
 
   downloadZip(filename, [
-    { filename: 'main.vue', fileContent: IndexVueContent },
-    { filename: 'README.md', fileContent: README }
-    ]
+      { filename: 'main.vue', fileContent: IndexVueContent },
+      { filename: 'README.md', fileContent: README }
+    ],
+    {
+      utils: [
+        {filename: 'Common.js', fileContent: CommonJs},
+        {filename: 'request.js', fileContent: request},
+        {filename: 'work_sheet_common.js', fileContent: work_sheet_common}
+      ],
+      public: [
+        {filename: 'config.js', fileContent: config}
+      ],
+      api: [
+        {filename: 'api.js', fileContent: api}
+
+      ]
+    }
   );
 };
