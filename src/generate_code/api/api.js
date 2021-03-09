@@ -5,6 +5,7 @@ const text =
 `
 import axios from "../utils/request";
 const baseUrl = window.g.baseUrl;
+const WORKFLOW_BASE = \`\${baseUrl}/workflow/engine/\`;
 const WORKFLOW_FORM_CONFIG = \`\${baseUrl}/workflow/form/config/\`;
 const WORKFLOW_FORM = \`\${baseUrl}/workflow/form/data/\`;
 
@@ -17,7 +18,7 @@ export function getFormTemplateInfoService(data) {
   })
 };
 
-// 查询表单
+// (25行)查询表单
 export function getForm(data) {
   return axios({
     url: baseUrl + '/workflow/form/config/getForm',
@@ -26,6 +27,25 @@ export function getForm(data) {
   })
 };
 
+// 34行
+export const initWorkFlowService = (reqData)=>{
+  return axios({
+    method: 'post',
+    url: WORKFLOW_BASE + 'initWorkflow',
+    data: reqData
+  })
+};
+
+// （74行）
+export const setParameterService = (reqData)=>{
+  return axios({
+    method: 'post',
+    url: \`\${WORKFLOW_FORM}setParameter\`,
+    data: reqData,
+  })
+};
+
+// (142行)
 export function getFormInitDataService(data){
   return axios({
     method: 'get',
