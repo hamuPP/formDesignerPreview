@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { getTreePostAPI, getTreeGetAPI } from "../api/formDesigner_api";
+import { getTreePostAPI } from "../api/formDesigner_api";
 export default {
   name: "line-group-param-edit-dialog",
   data() {
@@ -60,13 +60,14 @@ export default {
     show(data) {
       this.title = data.label;
       this.isCheck = data.isCheck;
-      this.url = data.optionSetting_tabContent.remoteUrl.value;
-      this.methods = data.optionSetting_tabContent.remoteMethods.value;
-      this.responseType.label =
-        data.optionSetting_tabContent.remoteResponse.from.label;
-      this.responseType.value =
-        data.optionSetting_tabContent.remoteResponse.from.value;
-      this.props.label = this.responseType.label;
+       this.codeType = data.optionSetting_codeType;
+      // this.url = data.optionSetting_tabContent.remoteUrl.value;
+      // this.methods = data.optionSetting_tabContent.remoteMethods.value;
+      // this.responseType.label =
+      //   data.optionSetting_tabContent.remoteResponse.from.label;
+      // this.responseType.value =
+      //   data.optionSetting_tabContent.remoteResponse.from.value;
+      // this.props.label = this.responseType.label;
       this.dialogVisible = true;
       if (!data.defaultValue && this.$refs.rogroupEdit) {
         this.$refs.rogroupEdit.setCheckedNodes([]);
@@ -90,21 +91,27 @@ export default {
       }
 
       let req = {
-        parentId: node.data ? node.data[this.responseType.value] : "",
+        parentId: node.data ? node.data.id : "",
+         codeType:this.codeType
       };
-      if (this.methods == "post") {
-        getTreePostAPI(this.url, this.methods, req).then((res) => {
-          if (res && res.data && res.data.code == "0000") {
+      getTreePostAPI( req).then((res) => {
+        if (res && res.data && res.data.code == "0000") {
             resolve(res.data.data);
           }
         });
-      } else {
-        getTreeGetAPI(this.url, this.methods, req).then((res) => {
-          if (res && res.data && res.data.code == "0000") {
-            resolve(res.data.data);
-          }
-        });
-      }
+      // if (this.methods == "post") {
+      //   getTreePostAPI(this.url, this.methods, req).then((res) => {
+      //     if (res && res.data && res.data.code == "0000") {
+      //       resolve(res.data.data);
+      //     }
+      //   });
+      // } else {
+      //   getTreeGetAPI(this.url, this.methods, req).then((res) => {
+      //     if (res && res.data && res.data.code == "0000") {
+      //       resolve(res.data.data);
+      //     }
+        // });
+      // }
     },
     // 点击确定，
     sureHand() {
@@ -115,13 +122,13 @@ export default {
         arr.push(item.text);
         if (this.roleType == "rolegroups") {
           dataList.push({
-            id: item[this.responseType.value],
-            name: item[this.responseType.label],
+             id: item.id,
+            name: item.text,
           });
         } else {
           dataList.push({
-            id: item[this.responseType.value],
-            name: item[this.responseType.label],
+           id: item.id,
+            name: item.text,
           });
         }
       });

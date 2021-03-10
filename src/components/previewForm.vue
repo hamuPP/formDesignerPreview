@@ -292,6 +292,83 @@ export default {
 	// 里面有transfer组件的，修改transfer组件的样式 --end--
 
 }
+/*
+* 自定义的table组件的样式
+ */
+.table-blue2-toolbar{
+	height: 32px;
+	line-height: 32px;
+	.el-button{
+		line-height: 26px;
+		padding: 0;
+		text-align: center;
+	}
+	.title{
+		font-size: 13px;
+		.iconfont{
+			color: #2ca5fe;
+			margin-right: 3px;
+		}
+	}
+	.header-btn{
+		float: right;
+		height: 26px;
+		width: 52px;
+		margin: 5px 0 0 5px;
+	}
+	.el-button--default{
+		border-color: #7bbafd;
+		color: #7bbafd;
+	}
+}
+.table-blue2 {
+	width: 100%;
+	font-size: 12px !important;
+	// 重写原本的header样式
+	.el-table__header {
+		th {
+			color: #fff;
+			background: #3bb0f5;
+		}
+	}
+	// 覆盖掉原本的table的样式
+	&.el-table {
+		td {
+			padding: 2px 0;
+		}
+		th {
+			padding: 2px 0;
+		}
+		.el-button--text {
+			padding: 0;
+		}
+	}
+	// 操作列，即只放了图片的列
+	.operate-col {
+		.iconfont {
+			cursor: pointer;
+			margin: 0 5px;
+			&:hover {
+				color: red;
+			}
+		}
+	}
+
+	// 表格中的input组件
+	.el-input__inner{
+		height: 23px;
+		line-height: 23px;
+		padding: 0 20px 0 5px;
+	}
+	.el-input__suffix{
+		right: 0;
+		.el-input__icon{
+			//height: 23px;
+			line-height: 23px;
+		}
+
+	}
+}
 // 节点的人员定义
 .person-dialog{
 	.el-dialog{
