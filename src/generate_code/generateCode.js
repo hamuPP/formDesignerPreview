@@ -110,27 +110,33 @@ const colStyle = (item)=>{
   return str;
 };
 
-const generateBasicElementFormItem = (data, isInGroup) => {
-  let strStart = `<el-form-item prop="${data.code || ''}" label="${data.label || ''}" class="${data.className}"
-                          :style="{
-                            'marginBottom': ${data.type === 'dividingLine'? 0 : `${lineMarginBottom} + 'px'`}
-                          }"
-                  >`;
-  let strEnd = '</el-form-item>';
+const generateBasicElementFormItem = (data, isInGroup, spaceCount = 0) => {
+  // 把前面的排版空格做出来
+  let _space = '    ';// 我的排版是4个空格缩进，所以这里初始值是4个空格
+  for (let c = 0; c < spaceCount; c++) {
+    _space += ' ';
+  }
+
+  let strStart =
+`${_space}<el-form-item prop="${data.code || ''}" label="${data.label || ''}" class="${data.className}"
+${_space}    :style="{
+${_space}        'marginBottom': ${data.type === 'dividingLine'? 0 : `${lineMarginBottom} + 'px'`}
+${_space}    }"
+${_space}>`;
+  let strEnd = `${_space}</el-form-item>`;
 
   let innerStr = '';
   // 多行文本
   if (data.type === 'textarea') {
-    innerStr = `<el-input
-              v-model="formModel.${data.code}"
-              type="textarea"
-              :rows="${data.rows}"
-              resize="none"
-              :disabled="${data.disabled}"
-              :readonly="${data.readonly}"
-              :clearable="${data.clearable}"
-    >
-    </el-input>`;
+    innerStr = `${_space}    <el-input
+${_space}        v-model="formModel.${data.code}"
+${_space}        type="textarea"
+${_space}        :rows="${data.rows}"
+${_space}        resize="none"
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}">
+${_space}    </el-input>`;
   }
   // 单选组
   else if(data.type === 'radio'){
@@ -336,33 +342,33 @@ const generateBasicElementFormItem = (data, isInGroup) => {
                   </el-input>`;
     }
     else if (data.validationSetting && data.validationSetting.dataType.value === 'password'){
-      innerStr = `<el-input
-                      :disabled="${data.disabled}"
-                      :readonly="${data.readonly}"
-                      :clearable="${data.clearable}"
-                      type="password"
-                      v-model="formModel.${data.code}">
-                  </el-input>`;
+      innerStr = `${_space}    <el-input
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}"
+${_space}        type="password"
+${_space}        v-model="formModel.${data.code}">
+${_space}    </el-input>`;
     }
-    else{
-      innerStr = `<el-input
-                      :disabled="${data.disabled}"
-                      :readonly="${data.readonly}"
-                      :clearable="${data.clearable}"
-                      v-model="formModel.${data.code}">
-                  </el-input>`;
+    else {
+      innerStr = `${_space}    <el-input
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}"
+${_space}        v-model="formModel.${data.code}">
+${_space}    </el-input>`;
     }
   }
-  // 代码一样，只是布局排版用的空格不同
-  if (isInGroup) {
-    return `    ${strStart}
-                ${innerStr}
-                      ${strEnd}`;
-  } else {
-    return `${strStart}
-            ${innerStr}
-                  ${strEnd}`;
-  }
+  // 代码一样，只是布局排版用的空格不同 todo 后面我改用了spacecount的计算，这里还没有改
+//   let _str =
+// `${strStart}
+// ${innerStr}
+// ${strEnd}
+// `
+  return `${strStart}
+${innerStr}
+${strEnd}
+`
 };
 
 /**
@@ -377,44 +383,30 @@ const generatePreviewFormItem = (item, isInGroup, spaceCount = 0) => {
   // 如果本表单组件是分组
   if (item.type === 'group') {
     if (item.label) {
-      str += `<div class="fd-form-group__header">${item.label}todo_${spaceCount}</div>`;
+      str += `<div class="fd-form-group__header">${item.label}</div>`;
     }
-    str += `${item.children.map((child, childIdx)=>`
-              <el-row key="${childIdx}" :gutter="35">
-              ${loopCol(child, 'group', 20)}
-              </el-row>
-      `).join(' ')}`;
+    // 把前面的排版空格做出来
+    let _space = '    ';// 我的排版是4个空格缩进，所以这里初始值是4个空格
+    for (let c = 0; c < spaceCount; c++) {
+      _space += ' ';
+    }
+    str +=
+`${item.children.map((child, childIdx) =>`
+${_space}<el-row key="${childIdx}" :gutter="35">
+${_space}${loopCol(child, 'group', 20)}
+${_space}</el-row>
+`).join(' ')}`;
   }
   // 非分组的表单项
   else {
-    str = generateBasicElementFormItem(item, isInGroup);
+    str = generateBasicElementFormItem(item, isInGroup, spaceCount);
   }
-
   return str;
 };
 const loopCol = (obj, isGroup, spaceCount = 0) => {
   let str = '';
   for (let key in obj) {
     let item = obj[key];
-
-    // 分组内的el-col布局（代码上来说，一模一样，区别是排版的空格不同）
-    // if (isGroup) {
-    //   if (str.length) {
-    //     str += '\n              ';// 14个空格
-    //   }
-    //   str += `    <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
-    //               ${generatePreviewFormItem(item, isGroup)}
-    //               </el-col>`;
-    // }
-    // // 非分组内的el-col布局
-    // else {
-    //   if (str.length) {
-    //     str += '\n      ';// 6个空格
-    //   }
-    //   str += `    <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
-    //               ${generatePreviewFormItem(item, isGroup)}
-    //       </el-col>`;
-    // }
 
     if (str.length) {
       str += '\n';// 6个空格
@@ -425,7 +417,7 @@ const loopCol = (obj, isGroup, spaceCount = 0) => {
     // 这里的空格 ，注意手动补4个空格
     var _str =
 `    <el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
-    ${generatePreviewFormItem(item, isGroup, spaceCount)}
+${generatePreviewFormItem(item, isGroup, spaceCount + 4)}
     `;
     for (let c = 0; c < spaceCount; c++) {
       _str += ' ';
@@ -433,10 +425,6 @@ const loopCol = (obj, isGroup, spaceCount = 0) => {
     _str += '</el-col>';
 
     str += _str;
-//     str +=
-// `<el-col key="${key}" :span="${item.width}" style="${colStyle(item)}">
-// ${generatePreviewFormItem(item, isGroup)}
-// </el-col>`;
   }
 
   return str;
@@ -458,15 +446,32 @@ export const generateElementuiCode = (filename, formModel, list) => {
     `
 <template>
     <div class="wrapper">
-        <el-form class="${formClassStr}"
+        <!--    一定要等formModel先做出来以后再显示表单，否则若有多选框，则会报错    -->
+        <el-form v-if="Object.keys(formModel).length"
+                 ref="form"
+                 class="${formClassStr}"
                  size="${formModel.size}"
-                 label-width="${formModel.labelWidth}px">
+                 label-width="${formModel.labelWidth}px"
+                 v-model="formModel">
           ${formateList(list).map((it, index) => `
             <el-row :gutter="35" key="${index}">
             ${loopCol(it, null, 12)}
             </el-row>
           `).join(' ')}
-        </el-form>  
+        </el-form>
+        
+        <!--  下方的按钮组  -->
+        <toolboxButtons bottom :expand.sync="buttonsExpanded" class="worksheet-buttons-group">
+            <cus-button v-if="(opList.signin) || (boId&&opList.submit) || opList.transfer || opList.reject || opList.terminate"
+                  fill-primary border type="primary" size="mini" @click="confirmWorkflowHandle">确认</cus-button>
+            <!--   草稿状态肯定有保存，
+            如果是流程中则有必填时才需要有保存。
+            当有确认受理时，必须先确认受理 才能有保存         -->
+            <cus-button v-if="!this.isView || (this.isView && !opList.signin && mustList.length)"
+                  fill-primary border
+                  @click="saveHandle">保存</cus-button>
+            <cus-button primary border  type="warning" size="mini" @click="cancelSaveBasicInfo">取消</cus-button>
+        </toolboxButtons>
     </div>
 
 </template>
@@ -475,23 +480,28 @@ export const generateElementuiCode = (filename, formModel, list) => {
     import {openLoading,closeLoading} from "./utils/Common"
     // 工单公共js
     import {
-
+      saveForm_common,
       getFormInitData,
-
+      manageWorkFlow
     } from './utils/work_sheet_common.js'
-   export default {
-     data () {
-       return {
-         boId: null,// 工单id
-         businessType: null,
-         userId: sessionStorage.getItem("user_id"),
-         list: ${JSON.stringify(list)},
-         isView: false,// 表单的样式：预览或者是可编辑的
-         formModel: {}, // 表单的绑定值
-         options: ${JSON.stringify(allOptions)},
-         fileName: '', // 附件名字
-         fileList: [], // 附件列表
-       }
+    export default {
+        name: 'mainForm',
+        data () {
+            return {
+               boId: null,// 工单id
+               businessType: null,
+               userId: sessionStorage.getItem("user_id"),
+               list: ${JSON.stringify(list)},
+               isView: false,// 表单的样式：预览或者是可编辑的
+               formModel: {}, // 表单的绑定值
+               opList: {},//操作按钮显示的状态
+               mustList: [],// 必填字段们
+               hideList: [],// 隐藏字段们
+               options: ${JSON.stringify(allOptions)},
+               fileName: '', // 附件名字
+               fileList: [], // 附件列表
+               buttonsExpanded: true,// 默认隐藏按钮组
+            }
      },
      created(){
          // 处理浏览器传参
@@ -539,6 +549,28 @@ export const generateElementuiCode = (filename, formModel, list) => {
             sessionStorage.getItem('access_token')
           );
         },
+        /**
+        * 点击了保存按钮
+        */
+        saveHandle() {
+          const that = this;
+          let form = this.$refs.form;
+          let successCb = ()=>{
+            manageWorkFlow.call(that, ['.wrapper']);
+          };
+          saveForm_common.call(this, form, successCb)
+        },
+        
+        // 取消，返回列表页
+        cancelSaveBasicInfo() {
+          this.$router.push({
+            path: "/cusFormList",// todo 这里改成你的列表页的路由
+            query:{
+              status: this.status,
+              code: this.formCode,
+              workflowCode: this.businessType
+            }});
+        }
      }
    }
 </script>

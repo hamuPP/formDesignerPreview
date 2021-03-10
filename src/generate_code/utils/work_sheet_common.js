@@ -391,7 +391,7 @@ export const getFormModel = (that, n, valueFieldKey, useInitData, tables) => {
   return obj;
 };
 
-// 根据表单的code获取建单人等初始信息(642行)
+// (642行)根据表单的code获取建单人等初始信息
 export const getFormInitData = function(code, loadingTarget) {
   const that = this;
   getFormInitDataService({formCode: code})
@@ -451,6 +451,33 @@ export const getFormInitData = function(code, loadingTarget) {
         }
       });
     })
+};
+
+// （966行）保存表单
+export const saveForm_common = function(form, successCb){
+  const that = this;
+  debugger;
+  form.validate((valid, obj) => {
+    if (valid) {
+      // 假如字段里有id,则不要id，后台的这里不需要id
+      if(that.formModel.id){
+        delete that.formModel.id;
+      }
+      let formatedFormModelData = formateFormModel.call(that, that.formModel);
+      formatedFormModelData.tables = getTableData.call(that);
+      if (that.boId) {
+        this.updateFormData(formatedFormModelData, successCb);
+        getCurNodeCode.call(that);
+      } else {
+        this.saveFormData(formatedFormModelData);
+      }
+    }
+    // 校验失败
+    else {
+      this.validateFormFileds(obj);
+      return false;
+    }
+  });
 };
 `;
 
