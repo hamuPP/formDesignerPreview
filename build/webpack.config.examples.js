@@ -17,6 +17,9 @@ module.exports = {
     publicPath: '',
     filename: '[name].js',
   },
+  resolve: {
+    extensions: ['.js', '.vue', '.json']
+  },
   devServer: {
     host: HOST || config.dev.host,
 

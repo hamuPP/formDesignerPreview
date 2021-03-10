@@ -4,6 +4,7 @@
 import './plugins/element.js'
 import CusMsgbox from './components/cus_msgbox/index.js'
 import CusButton from './components/CusButton/index.vue'
+import toolboxButtons from './components/ToolboxButtons'
 
 // 之所以不直接引用previeForm页面，是为了预留以后有多余的配置可以配置表单以外的内容，
 // 例如表单的包裹样式，这不属于表单主体的功能
@@ -12,6 +13,7 @@ import FormDesigner from './components/previewFormContainer.vue'
 FormDesigner.install = function (_v) {
   if (_v) {
     _v.component('CusButton', CusButton);
+    _v.component('toolboxButtons', toolboxButtons)
     _v.prototype.$cusAlert = CusMsgbox.alert;
   }
 };

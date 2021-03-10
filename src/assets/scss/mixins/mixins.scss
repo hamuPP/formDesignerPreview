@@ -110,6 +110,7 @@ $--color-purple2: rgb(245, 177, 179) !default;
 		width: 100%;
 		white-space: nowrap;
 		padding-left: 10px;
+		text-align: start;
 	}
 	// ---默认的尺寸与颜色--start--
 	.el-form-item__label{
@@ -126,6 +127,7 @@ $--color-purple2: rgb(245, 177, 179) !default;
 		line-height: $--form-input-height--default;
 	}
 	.el-radio-group{
+		text-align: start;
 		height: $--form-input-height--default;
 		.el-radio{
 			line-height: $--form-input-height--default;
@@ -138,6 +140,7 @@ $--color-purple2: rgb(245, 177, 179) !default;
 	.el-rate{
 		height: $--form-input-height--default;
 		padding-left: 15px;
+		text-align: start;
 		.el-rate__icon{
 			font-size: 18px;
 			line-height: $--form-input-height--default;

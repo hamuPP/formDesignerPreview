@@ -1,0 +1,101 @@
+// base color
+$primary-color: #1890FF;
+$divider: #F0F0F0;
+$white: #FFFFFF;
+$gray: #BBBBBB;
+$active-color: #0d4ede;
+$active-hover-color: #1890FF;
+$logout: #CE0C0F;
+
+// header
+$header-background: #001529;
+
+// sidebar
+$sidebarBackgroundColor: #001529;
+$sidebarActiveBackgroundColor: $primary-color;
+$sidebarTextColor: #DCDCDC;
+$sidebarActiveTextColor: #FFFFFF;
+
+// 头部相关样式 --start--
+$HEADER_HEIGHT: 47px;
+$HEADER_MENU_HEIGHT: 36px;
+// 头部相关样式 --end--
+
+$FOOTER_HEIGHT: 26px;
+
+// cus-form组件的样式--start--
+$CUS_FORM_LABEL_BORDER_COLOR: rgb(196, 226, 254);
+$CUS_FORM_CONTENT_BORDER_COLOR: rgb(192, 210, 241);
+$CUS_FORM_LABEL_BACKGROUND_COLOR: #e4f5ff;
+$CUS_FORM_LABEL_FONT_COLOR: rgb(113, 141, 196);
+$CUS_FORM_INPUT_HEIGHT: 30px;
+// cus-form组件的样式--end--
+
+// cus-button相关的样式--start--
+$CUS_BUTTON_FONT_COLOR_PRIMARY: #175EFF;
+$CUS_BUTTON_FONT_COLOR_PRIMARY2: #5181FF;
+// cus-button相关的样式--end--
+$TOOLBOX_BUTTONS_HEIGHT: 46px;
+
+// 消息提示弹窗相关样式--start--
+$CUS_MSGBOX_LABEL_BORDER_COLOR: rgb(196, 226, 254);
+$CUS_MSGBOX_BORDER_COLOR: #A1D2FF;
+$CUS_MSGBOX_BOX_SHADOW_COLOR: #C0D8FF;
+$CUS_MSGBOX_SUCCESS_COLOR: #DAFFCB;
+$CUS_MSGBOX_SUCCESS_FONT_COLOR: #00D42D;
+$CUS_MSGBOX_inquiry_COLOR: #FFEDD1;
+$CUS_MSGBOX_inquiry_FONT_COLOR: #FF9102;
+$CUS_MSGBOX_warning_COLOR: #FFEDD1;
+$CUS_MSGBOX_warning_FONT_COLOR: #FF9102;
+$CUS_MSGBOX_ICON_FONT_SIZE: 36px;
+// 消息提示弹窗相关样式--end--
+
+// dialog专用的样式
+$--dialog-header-primary-font-color: #fff !default;
+$--dialog-header-primary-background-color: #52bee5 !default;
+$--dialog-footer-primary-background-color: #eee;
+$--dialog-footer-primary-border-top-color: #ddd;
+
+$--dialog-header-primary2-font-color: #fff !default;
+$--dialog-header-primary2-background-color: #4f96e1 !default;
+$--dialog-footer-primary2-background-color: #e2e9f0;
+$--dialog-footer-primary2-border-top-color: #e2e9f0;
+$--dialog-button-primary2-background-color: #1b6ef6;
+$--dialog-button-primary2-border-color: #1b6ef6;
+// dialog专用的样式 --end--
+
+// 系统设置公共颜色部分--start--
+$commonColor:#239ce9;
+$commonBlackColor:#000;
+$commonAddIcon:#0DBC15;
+$commonBlueIcon:#409EFF;
+$commonDelIcon:#f00;
+$commonWhiteIcon:#bbb;
+$curentLocation:#666;
+$tableBorder:#e1e1e1;
+$tableBackgroundColor:#f2f2f2;
+$tableThColor:#333;
+$commonWhite:#fff;
+$buttonHoverColor:#259fdd;
+$commonRed:red;
+$dialogHeaderColor:#80B0F9;
+$dialogFooterColor:#eee;
+$dialogFooterBorder:#ddd;
+$commonBtnColor:#5181FF;
+// 系统设置公共颜色部分--end--
+
+/* 首页 */
+$home-background:#edf2f8;
+$home-common-white:#fff;
+$home-date:#fe911a;
+$home-common-black:#000;
+$home-order-num:#fe5454;
+$home-font:#999;
+$home-box-border:#eeeeee;
+$home-table-border:#f2f2f2;
+$home-td-color:#666;
+$bg-blue: #638AD1; /* 页脚的背景色 */
+$bg-blue-icon: #4EBEFF; /* 客服小图标背景色 */
+$color-red: #FF4C34;/* 红色文字 */
+$color-blue-active: #5888FF; /* 文字选中颜色 */
+$bg-header: #F9FBFF; /* 板块头部背景色 */
