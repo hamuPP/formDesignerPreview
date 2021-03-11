@@ -21,6 +21,7 @@
 		// 重写报错提示的样式，使其可以在显示时自动撑开
 		.el-form-item__error{
 			position: static;
+			text-align: start;
 		}
 	}
 	// 不同的皮肤

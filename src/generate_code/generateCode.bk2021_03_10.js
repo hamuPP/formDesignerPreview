@@ -7,6 +7,10 @@
  * 2.远程接口以及关联查询的方法还没有加上
  * 3.校验的方法还没加上
  * 4.附件的逻辑还没有加上
+ *
+ * 这是我之前写的附带了流程代码一起下载的表单下载功能，虽然还没写完，先不删掉。
+ * 因为今天去和qml、dcl过了一下，只需要下载表单的代码就够了。
+ *
  */
 import README from './README.js';
 import listPage from './views/list_page.js';
@@ -446,21 +450,37 @@ export const generateElementuiCode = (filename, formModel, list) => {
   IndexVueContent =
     `
 <template>
-<!-- todo 这个v-if的判断是否有必要？ -->
-    <el-form v-if="Object.keys(formModel).length"
-             class="${formClassStr}"
-             size="${formModel.size}"
-             label-width="${formModel.labelWidth}px"
-             :model="formModel"
-             ref="fdForm"
-             :rules="rules"
-             :disabled="view">
-      ${formateList(list).map((it, index) => `
-        <el-row :gutter="35" key="${index}">
-        ${loopCol(it, null, 12)}
-        </el-row>
-      `).join(' ')}
-    </el-form>
+    <div class="wrapper">
+        <!--    一定要等formModel先做出来以后再显示表单，否则若有多选框，则会报错    -->
+        <el-form v-if="Object.keys(formModel).length"
+                 ref="form"
+                 class="${formClassStr}"
+                 size="${formModel.size}"
+                 label-width="${formModel.labelWidth}px"
+                 :model="formModel"
+                 :rules="formRules"
+                 :disabled="isView">
+          ${formateList(list).map((it, index) => `
+            <el-row :gutter="35" key="${index}">
+            ${loopCol(it, null, 12)}
+            </el-row>
+          `).join(' ')}
+        </el-form>
+        
+        <!--  下方的按钮组  -->
+        <toolboxButtons bottom :expand.sync="buttonsExpanded" class="worksheet-buttons-group">
+            <cus-button v-if="(opList.signin) || (boId&&opList.submit) || opList.transfer || opList.reject || opList.terminate"
+                  fill-primary border type="primary" size="mini" @click="confirmWorkflowHandle">确认</cus-button>
+            <!--   草稿状态肯定有保存，
+            如果是流程中则有必填时才需要有保存。
+            当有确认受理时，必须先确认受理 才能有保存         -->
+            <cus-button v-if="!this.isView || (this.isView && !opList.signin && mustList.length)"
+                  fill-primary border
+                  @click="saveHandle">保存</cus-button>
+            <cus-button primary border  type="warning" size="mini" @click="cancelSaveBasicInfo">取消</cus-button>
+        </toolboxButtons>
+    </div>
+
 </template>
 
 <script>
@@ -477,32 +497,7 @@ export const generateElementuiCode = (filename, formModel, list) => {
       manageWorkFlow
     } from './utils/work_sheet_common.js'
     export default {
-        name: 'previewForm',
-        props: {
-            // 是否为预览模式，模式是编辑模式啦
-            view: {
-              type: Boolean,
-              default: false,
-            },
-            // 表单的id
-            id: {
-              type: [Number, String],
-              default: null
-            },
-            rules: {
-              type: Object,
-              default () {
-                return {}
-              }
-            },
-            // 表单的绑定值
-            formModel: {
-              type: Object,
-              default () {
-                return {};
-              }
-            },
-        },
+        name: 'mainForm',
         data () {
             return {
                boId: null,// 工单id
@@ -523,23 +518,32 @@ export const generateElementuiCode = (filename, formModel, list) => {
                options: ${JSON.stringify(allOptions)},
                fileName: '', // 附件名字
                fileList: [], // 附件列表
+               buttonsExpanded: true,// 默认隐藏按钮组
             }
      },
      created(){
+         // 处理浏览器传参
+         if(this.$route.query.status === 'completed'){
+           this.isView = true;
+         }
+         this.boId = this.$route.query.boId || null;// 有id是编辑，无id是新增
+         this.businessType = this.$route.query.businessType;
+         this.formCode = this.$route.query.formCode;
+         this.status = this.$route.query.status;
         // 查询所有下拉、单选、多选的选项数据 todo
-       
+        
+         // 根据表单的code获取表单模板的信息
+        if(this.formCode){
+          openLoading({
+            scope: this,
+            target: ['.wrapper']
+          });
+          // 查询表单的建单人等初始信息
+          getFormInitData.call(this, this.formCode, ['.wrapper']);
+        }
       
      },
      methods: {
-          // todo 检查下面2个方法的返回值
-               // 这些方法是给外部使用的一些便利方法
-      // 获取form的vue实例,因为外部调用需要操作el-form
-      getFormIns () {
-        return this.$refs.form.$refs.fdForm;
-      },
-      getFormItemsIns () {
-        return this.$refs.form.$refs.fdFormItem;
-      },
         // 查询所有下拉、单选、多选的选项数据
    
         // 下拉框的选中值改变后的事件
