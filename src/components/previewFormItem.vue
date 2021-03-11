@@ -99,8 +99,9 @@
         </template>
       </div>
     </template>
+    <!-- 富文本组件 -->
     <template v-else-if="data.type==='richText'">
-      <div :class="'richText'+data.frontId"></div>
+      <div style="color:black" :class="'richText'+data.frontId"></div>
     </template>
   <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
     <el-form-item
@@ -123,7 +124,6 @@
             clearable
             :disabled="data.disabled"
             v-model="data.defaultName"
-            :placeholder="formModel[data.code]||''"
             @clear='clearExpress'
             v-on:click.native.stop="openPerRoleDialog()"
           >
@@ -480,6 +480,14 @@
       // relationPreQueryParam(n, o){
       //   debugger;
       // }
+      formModel:{
+        handler(n,o){
+          if(this.data.type=='richText'){
+            this.editor.txt.html(this.formModel[this.data.code])
+          }
+        },
+        deep:true
+      }
     },
     data () {
       return {
@@ -630,28 +638,32 @@
         this.contentEle = this.$el.querySelector('.el-form-item__content .el-textarea');
         this.setLabelEleHeight(this.contentEle.offsetHeight + 'px');
       }
-
+      console.log(333);
       this.renderUploadStyles();
-       let className ='.richText'+this.data.frontId
+      if(this.data.type=='richText'){
+      let className ='.richText'+this.data.frontId
       const editor = new wangEditor(className);
       editor.config.uploadImgServer = this.data.uploadUrl||''
       // 配置alt选项
       editor.config.showLinkImgAlt = false
-      editor.config.zIndex = 500
+      editor.config.zIndex = 50
       // 配置超链接
       editor.config.showLinkImgHref = false
       editor.config.excludeMenus = [
         'emoticon',
-        'video'
+        'video',
+         'image',
       ]
     // 配置 onchange 回调函数，将数据同步到 vue 中
       editor.config.onchange = (newHtml) => {
       this.editorData = newHtml;
-      this.editorHtml = editor.txt.html()
+      this.formModel[this.data.code] = editor.txt.html()
       };
     // 创建编辑器
       editor.create();
       this.editor = editor;
+      }
+    
     },
     methods: {
       renderUploadStyles () {
@@ -932,7 +944,7 @@
       personSure(usersData,names,ids){// usersData:选中的人，用于弹框回显，names：选中的人，用于展示
         this.data.defaultName=names
         this.data.defaultValueArr=[...usersData]
-        this.formModel[this.data.code]=names
+        this.formModel[this.data.code]=ids
       },
           //清空选中人员
       clearExpress(){

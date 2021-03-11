@@ -180,9 +180,10 @@ export default {
     //根据下拉框值改变表单元素状态
     selectChange(data) {
       if (data.length > 0) {
-        data.forEach((item) => {
-          this.fdFormItems.forEach((itArr) => {
-            itArr.forEach((it) => {
+        let fn=(params)=>{
+          data.forEach(item=>{
+            params.forEach(itArr=>{
+            itArr.forEach(it=>{
               if (it.type == "table") {
                 if (item.code == it.code && item.label == it.tName) {
                   if (item.state == "edit") {
@@ -199,8 +200,10 @@ export default {
                     it.readonly = false;
                   }
                 }
-              } else {
-                if (item.code == it.code && item.label == it.label) {
+              }else if(it.type=='group'){
+                fn(it.children)
+              }else{
+                 if (item.code == it.code && item.label == it.label) {
                   if (item.state == "edit") {
                     it.disabled = false;
                     it.hidden = false;
@@ -216,17 +219,27 @@ export default {
                   }
                 }
               }
-            });
-          });
-        });
+            })
+          })
+      
+          })
+        }
+        fn(this.fdFormItems)
       } else {
-        this.fdFormItems.forEach((itArr) => {
-          itArr.forEach((it) => {
-            it.disabled = false;
-            it.hidden = false;
-            it.readonly = false;
-          });
-        });
+        let fn=(params)=>{
+          params.forEach(itArr=>{
+           itArr.forEach(it=>{
+             if(it.type=='group'){
+               fn(it.children)
+             }else{
+                it.disabled = false;
+                it.hidden = false;
+                it.readonly = false;
+             }
+           })
+          })
+        }
+        fn(this.fdFormItems)
       }
     },
   },
