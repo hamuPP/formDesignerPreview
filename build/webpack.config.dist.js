@@ -21,6 +21,13 @@ module.exports = {
         library: 'FormPreview',
         umdNamedDefine: true
     },
+    resolve: {
+      extensions: ['.js', '.vue', '.json'],
+      // alias: {
+      //   'vue$': 'vue/dist/vue.esm.js',
+      //   '@': resolve('src'),
+      // }
+    },
     module: {
         // noParse: /es6-promise\.js$/,
         rules: [{
