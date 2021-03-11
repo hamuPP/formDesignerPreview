@@ -327,7 +327,7 @@
     <!--   业务公共字段-流水号     -->
     <el-input v-else-if="data.type === 'sheetFlowCode'"
             :ref="data.ref"
-            v-model="data.defaultValue"
+            v-model="formModel[data.code]"
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
@@ -336,7 +336,7 @@
     <!--   业务公共字段-操作人     -->
     <el-input v-else-if="data.type === 'operator'"
             :ref="data.ref"
-            v-model="data.defaultValue"
+            v-model="formModel[data.code]"
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
@@ -345,7 +345,7 @@
     <!--   业务公共字段-操作人部门     -->
     <el-input v-else-if="data.type === 'operatorDept'"
             :ref="data.ref"
-            v-model="data.defaultValue"
+            v-model="formModel[data.code]"
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
@@ -353,7 +353,7 @@
     <!--   业务公共字段-操作人联系方式     -->
     <el-input v-else-if="data.type === 'operatorMobile'"
             :ref="data.ref"
-            v-model="data.defaultValue"
+            v-model="formModel[data.code]"
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
@@ -363,7 +363,7 @@
     <el-input
             v-else-if="data.type === 'operatorRole'"
             :ref="data.ref"
-            v-model="data.defaultValue"
+            v-model="formModel[data.code]"
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
@@ -373,7 +373,7 @@
             v-else-if="data.type === 'operateTime'"
             :ref="data.ref"
             value-format="yyyy-MM-dd HH:mm:ss"
-            v-model="data.defaultValue"
+            v-model="formModel[data.code]"
             type="datetime"
             :disabled="data.disabled"
             :computereadonly="data.readonly"
@@ -414,7 +414,7 @@
       @personSure="personSure"
     ></personEditDialog>
     <rogroupEditDialog
-      
+
       ref="rogroupEditDialog"
       @rogroup="rogroup"
     ></rogroupEditDialog>
@@ -932,7 +932,7 @@
             }
           })
         }
-         
+
       },
            // 打开选择人员或角色弹框
     openPerRoleDialog() {

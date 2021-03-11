@@ -36,6 +36,33 @@ export const initWorkFlowService = (reqData)=>{
   })
 };
 
+// (41行)
+export const getWorkflowInsService = (reqData)=>{
+  return axios({
+    method: 'post',
+    url: WORKFLOW_BASE + 'getInstance',
+    data: reqData
+  })
+};
+
+// （49行）
+export const saveCusComplaintService = (reqData)=>{
+  return axios({
+    method: 'post',
+    url: \`\${WORKFLOW_FORM}saveFormData\`,
+    data: reqData,
+  })
+};
+
+// (65行)获取业务表单的数据
+export const getFormBuzData = (reqData)=>{
+  return axios({
+    method: 'post',
+    url: \`\${WORKFLOW_FORM}getFormData\`,
+    params: reqData,
+  })
+};
+
 // （74行）
 export const setParameterService = (reqData)=>{
   return axios({
@@ -53,6 +80,16 @@ export function getFormInitDataService(data){
     params: data,
   })
 }
+
+export function getFiles({method, params, url}){
+ debugger;
+ return axios({
+    method: 'get',
+    url: url,
+    params: params
+  })
+}
+
 `;
 
 export default text;
