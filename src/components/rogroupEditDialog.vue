@@ -86,7 +86,8 @@ export default {
     },
     //树结构加载节点
     loadNode(node, resolve, cb) {
-      if (node.level === 0) {
+     if(this.codeType){
+        if (node.level === 0) {
         this.node = node;
       }
 
@@ -99,6 +100,7 @@ export default {
             resolve(res.data.data);
           }
         });
+     }
       // if (this.methods == "post") {
       //   getTreePostAPI(this.url, this.methods, req).then((res) => {
       //     if (res && res.data && res.data.code == "0000") {
