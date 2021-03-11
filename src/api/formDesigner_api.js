@@ -60,10 +60,10 @@ export function getUser (data) {
 }
 
 // 下拉树的自定义接口post
-export function getTreePostAPI(url, method,data) {
+export function getTreePostAPI(data) {
   return axios({
-    url: baseUrl + url,
-    method: method,
+    url: baseUrl + '/workflow/tree/queryTree',
+    method: 'post',
     data:data
   })
 }

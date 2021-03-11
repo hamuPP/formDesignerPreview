@@ -99,6 +99,9 @@
         </template>
       </div>
     </template>
+    <template v-else-if="data.type==='richText'">
+      <div :class="'richText'+data.frontId"></div>
+    </template>
   <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
     <el-form-item
           v-else-if="data.type !== 'uploadFile' || (data.type === 'uploadFile' && !view)"
@@ -117,18 +120,15 @@
           prop="paramExpress"
         >
           <el-input
-            style="width: calc(100% - 40px);"
-            readonly
-             :rows='3'
-            resize="none"
+            clearable
             :disabled="data.disabled"
             v-model="data.defaultName"
-            type="textarea"
             :placeholder="formModel[data.code]||''"
+            @clear='clearExpress'
             v-on:click.native.stop="openPerRoleDialog()"
           >
           </el-input>
-          <el-button
+          <!-- <el-button
             size="mini"
             type="danger"
             circle
@@ -137,7 +137,7 @@
             icon="el-icon-delete"
             style="margin-bottom: 22px;margin-left:4px"
              @click="clearExpress()"
-          ></el-button>
+          ></el-button> -->
         </el-form-item>
       </template>
      <!-- 下拉树组件 -->
@@ -147,17 +147,14 @@
           prop="paramExpress"
         >
           <el-input
-            style="width: calc(100% - 40px);"
-            readonly
-            :rows='3'
+            clearable
             :disabled="data.disabled"
-            resize="none"
             v-model="data.defaultValueArr"
-            type="textarea"
+           @clear='clearGogroup'
             v-on:click.native.stop="openTreeDialog()"
           >
           </el-input>
-          <el-button
+          <!-- <el-button
             size="mini"
             type="danger"
             circle
@@ -166,7 +163,7 @@
             icon="el-icon-delete"
             style="margin-bottom: 22px;margin-left:4px"
             @click="clearGogroup()"
-          ></el-button>
+          ></el-button> -->
         </el-form-item>
     </template>
     <!--  区分输入组件的类型      -->
@@ -432,6 +429,7 @@
 </template>
 
 <script>
+  import wangEditor from "wangeditor";
   import {commonRequest, getCodeTypeData} from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
@@ -507,7 +505,9 @@
           MsgBoxType: "", //消息提示框类型
           MsgText: "",
         },
-        formSetting:[]//表单元素状态控制
+        formSetting:[],//表单元素状态控制
+        editor:null,
+        editorHtml:'',
       }
     },
     created () {
@@ -625,13 +625,33 @@
       }
     },
     mounted () {
-      if (this.data.type === 'textarea'||this.data.type=='user'||this.data.type=='tree') {
+      if (this.data.type === 'textarea') {
         this.labelEle = this.$el.getElementsByClassName('el-form-item__label')[0];
         this.contentEle = this.$el.querySelector('.el-form-item__content .el-textarea');
         this.setLabelEleHeight(this.contentEle.offsetHeight + 'px');
       }
 
       this.renderUploadStyles();
+       let className ='.richText'+this.data.frontId
+      const editor = new wangEditor(className);
+      editor.config.uploadImgServer = this.data.uploadUrl||''
+      // 配置alt选项
+      editor.config.showLinkImgAlt = false
+      editor.config.zIndex = 500
+      // 配置超链接
+      editor.config.showLinkImgHref = false
+      editor.config.excludeMenus = [
+        'emoticon',
+        'video'
+      ]
+    // 配置 onchange 回调函数，将数据同步到 vue 中
+      editor.config.onchange = (newHtml) => {
+      this.editorData = newHtml;
+      this.editorHtml = editor.txt.html()
+      };
+    // 创建编辑器
+      editor.create();
+      this.editor = editor;
     },
     methods: {
       renderUploadStyles () {
