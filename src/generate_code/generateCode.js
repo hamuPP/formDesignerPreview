@@ -464,18 +464,6 @@ export const generateElementuiCode = (filename, formModel, list) => {
 </template>
 
 <script>
-    // api相关
-    import {
-        saveCusComplaintService
-    } from './api/api.js'
-    import {openLoading,closeLoading} from "./utils/Common"
-    import {getElementTopDistance,} from "./utils/utils";
-    // 工单公共js
-    import {
-      saveForm_common,
-      getFormInitData,
-      manageWorkFlow
-    } from './utils/work_sheet_common.js'
     export default {
         name: 'previewForm',
         props: {
@@ -505,24 +493,10 @@ export const generateElementuiCode = (filename, formModel, list) => {
         },
         data () {
             return {
-               boId: null,// 工单id
-               businessType: null,
-               userId: sessionStorage.getItem("user_id"),
-               formItems: ${JSON.stringify(list)},
-               isView: false,// 表单的样式：预览或者是可编辑的
-               formModel: {}, // 表单的绑定值
-               // 上一次的表单数据，指使用查询表单数据接口得到的值，或者是点击了保存成功后的表单值，
-               // 这是用来和新值做对比判断是否有变更的。
-               // 业务场景：当用户更改了表单输入框内的内容后就直接点了'提交'，应该给他先保存表单内容
-               lastFormData: {},
-               formRules: {}, // 表单的校验规则
-               flatFdFormList: [],// 平级的表单字段集合
-               opList: {},//操作按钮显示的状态
-               mustList: [],// 必填字段们
-               hideList: [],// 隐藏字段们
+            
                options: ${JSON.stringify(allOptions)},
-               fileName: '', // 附件名字
-               fileList: [], // 附件列表
+             // todo 不确定是否需要的东西  fileName: '', // 附件名字
+             // todo 不确定是否需要的东西  fileList: [], // 附件列表
             }
      },
      created(){
@@ -552,12 +526,12 @@ export const generateElementuiCode = (filename, formModel, list) => {
           // do your own business
         },
         
-        // 添加附件信息
+        // 添加附件信息 todo 不确定是否需要的东西
         addFileName () {
           this.fileName = this.$refs.file.files[0].name;
         },
         
-        // 下载地址
+        // 下载地址 todo 不确定是否需要的东西
         getDownURL (row) {
           return (
             this.data.downloadServiceUrl +
@@ -566,83 +540,7 @@ export const generateElementuiCode = (filename, formModel, list) => {
             sessionStorage.getItem('access_token')
           );
         },
-        // 依次校验表单项，并且滚动到当前位置
-        validateFormFileds(obj) {
-          // 找到第一个校验失败的条目即可
-          let firstProp = Object.keys(obj)[0];
-          // 找到匹配的label
-          let label = document.querySelector(".el-form-item__label[for=" + firstProp + "]");
-          let groupDiv = null;
-          if (label) {
-            groupDiv = label.parentElement;
-            let elementTopDistance = getElementTopDistance(groupDiv);// 元素是否在可视区域内
-            elementTopDistance && elementTopDistance > 0 && (window.scrollTo(0, elementTopDistance))
-          }
-        },
-        /**
-        * 点击了保存按钮
-        */
-        saveHandle() {
-          const that = this;
-          let form = this.$refs.form;
-          let successCb = ()=>{
-            manageWorkFlow.call(that, ['.wrapper']);
-          };
-          saveForm_common.call(this, form, successCb)
-        },
-              
-        // 新增表单数据
-        saveFormData(req) {
-          const that = this;
-          saveCusComplaintService(req)
-            .then(res => {
-              if (res.data && res.data.code == '0000') {
-                // 保存成功
-                this.$cusAlert('保存成功', {
-                  type: "success",// warning
-                  modal: false,
-                  center: false,
-                  showConfirmButton: false
-                });
-                // 更新路由，以及重新请求一下表单数据，得到流水号
-                if(!this.boId){
-                  updateRouter.call(this, 'boId', res.data.data);
-                  this.getFlowCode(res.data.data);
-                }
-                this.boId = res.data.data || "";
-                // 给上传附件增加一些新的查询参数
-                this.setFileUploadParam();
-                // 更新表单里的id
-                this.formModel.id = this.boId;
-                // 保存成功，更新lastFormData
-                this.lastFormData = JSON.parse(JSON.stringify(this.formModel))
-                manageWorkFlow.call(that, ['.editing-sheet']);
-              } else {
-                // 保存失败
-                let errMsg = res.data.msg || '请稍后再试';
-                this.$cusAlert(errMsg, {
-                  type: "warning",// warning
-                  modal: false,
-                  center: false,
-                  showConfirmButton: false,
-                });
-              }
-            })
-            .catch(e => {
-              // debugger;
-            })
-        },
       
-        // 取消，返回列表页
-        cancelSaveBasicInfo() {
-          this.$router.push({
-            path: "/cusFormList",// todo 这里改成你的列表页的路由
-            query:{
-              status: this.status,
-              code: this.formCode,
-              workflowCode: this.businessType
-            }});
-        }
      }
    }
 </script>
