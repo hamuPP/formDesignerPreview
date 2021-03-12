@@ -39,7 +39,7 @@
   </div>
 </template>
   <script>
-import { getTreePostAPI } from "@/views/flow/api/formDesigner/formDesigner/formDesigner_api";
+import { getTreePostAPI } from "../api/formDesigner_api";
 export default {
   name: "selectTree",
   props: {

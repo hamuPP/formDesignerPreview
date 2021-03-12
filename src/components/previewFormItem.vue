@@ -147,24 +147,6 @@
           prop="paramExpress"
         >
          <selectTree :data='data' :formModel='formModel'></selectTree>
-          <!-- <el-input
-            clearable
-            :disabled="data.disabled"
-            v-model="data.defaultValueArr"
-           @clear='clearGogroup'
-            v-on:click.native.stop="openTreeDialog()"
-          >
-          </el-input> -->
-          <!-- <el-button
-            size="mini"
-            type="danger"
-            circle
-            title="清除"
-             :disabled="data.disabled"
-            icon="el-icon-delete"
-            style="margin-bottom: 22px;margin-left:4px"
-            @click="clearGogroup()"
-          ></el-button> -->
         </el-form-item>
     </template>
     <!--  区分输入组件的类型      -->
@@ -956,28 +938,28 @@
         this.formModel[this.data.code]=''
       },
             //打开下拉树弹框
-    openTreeDialog(){
-      if (this.$refs.rogroupEditDialog&&!this.data.disabled) {
-          this.$refs.rogroupEditDialog.show(this.data);
-        }
-    },
-    //将下拉树选择的值显示在input中
-    rogroup({value,name}){
-      this.data.defaultValueArr = name
-      this.data.defaultValue=''
-      this.formModel[this.data.code]=''
-      value.forEach(item=>{
-        this.data.defaultValue+=item.id+','
-        this.formModel[this.data.code]+=item.id+','
-      })
-    },
-    //清空下拉树选中的值
-    clearGogroup(){
-      event.stopPropagation();
-      this.data.defaultValueArr = ''
-      this.data.defaultValue=''
-      this.formModel[this.data.code]=''
-    },
+    // openTreeDialog(){
+    //   if (this.$refs.rogroupEditDialog&&!this.data.disabled) {
+    //       this.$refs.rogroupEditDialog.show(this.data);
+    //     }
+    // },
+    // //将下拉树选择的值显示在input中
+    // rogroup({value,name}){
+    //   this.data.defaultValueArr = name
+    //   this.data.defaultValue=''
+    //   this.formModel[this.data.code]=''
+    //   value.forEach(item=>{
+    //     this.data.defaultValue+=item.id+','
+    //     this.formModel[this.data.code]+=item.id+','
+    //   })
+    // },
+    // //清空下拉树选中的值
+    // clearGogroup(){
+    //   event.stopPropagation();
+    //   this.data.defaultValueArr = ''
+    //   this.data.defaultValue=''
+    //   this.formModel[this.data.code]=''
+    // },
       //新增行
     addTableRow(event) {
       event.stopPropagation();
