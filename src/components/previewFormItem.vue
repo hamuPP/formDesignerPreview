@@ -22,7 +22,7 @@
             {{ data.title.value }}
           </div> -->
           <div style="text-align: right; margin-bottom: 5px">
-            <el-button type="primary" round size="mini" @click="addTableRow"
+            <el-button type="primary" round size="mini" @click="addTableRow "  :disabled="data.readonly"
               >新增行</el-button
             >
           </div>
@@ -146,14 +146,15 @@
           class="form-item suffix-button"
           prop="paramExpress"
         >
-          <el-input
+         <selectTree :data='data' :formModel='formModel'></selectTree>
+          <!-- <el-input
             clearable
             :disabled="data.disabled"
             v-model="data.defaultValueArr"
            @clear='clearGogroup'
             v-on:click.native.stop="openTreeDialog()"
           >
-          </el-input>
+          </el-input> -->
           <!-- <el-button
             size="mini"
             type="danger"
@@ -433,11 +434,12 @@
   import {commonRequest, getCodeTypeData} from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
+    import selectTree from "./selectTree"
   import personEditDialog from "./personEditDialog.vue";
   import rogroupEditDialog from "./rogroupEditDialog.vue";
   export default {
     name: 'previewFormItem',
-    components:{MessageBox,personEditDialog,rogroupEditDialog},
+    components:{MessageBox,personEditDialog,rogroupEditDialog,selectTree},
     props: {
       // 是否为预览模式，模式是编辑模式啦
       view: {
