@@ -1,0 +1,56 @@
+/**
+ * 照搬的以前jsw在jx写的代码
+ * Created by tangyue on 21/3/12
+ */
+.anchorPoint{
+	z-index: 999;
+	background-color: #ffffff;
+	box-shadow: 0px 5px 5px 0px rgba(219, 227, 235, 0.2);
+	position: fixed;
+	width: 160px;
+	top: 40%;
+	right: 0;
+	transition: width 0.5s;
+	-moz-transition: width 0.5s; /* Firefox 4 */
+	-webkit-transition: width 0.5s; /* Safari 和 Chrome */
+	-o-transition: width 0.5s; /* Opera */
+	.el-icon-d-arrow-right{
+		position: absolute;
+		background: #007BFF;
+		border-radius: 50%;
+		width: 40px;
+		height: 40px;
+		line-height: 40px;
+		font-size: 18px;
+		text-align: center;
+		top: 50%;
+		cursor: pointer;
+		margin-top: -20px;
+		// transform: translateY(-50%);
+		right: 0;
+		z-index: 999;
+	}
+	.shrinkIcon{
+		transform: rotate(180deg);
+	}
+	li{
+		position: relative;
+		height: 55px;
+		line-height: 55px;
+		width: 110px;
+		padding-left: 15px;
+		color: #606266;
+		cursor: pointer;
+		.iconfont{
+			font-weight: bold;
+			font-size: 12px;
+		}
+	}
+
+	// li.active{
+	//     color: #5181FF;
+	// }
+}
+.noWanchorPoint{
+	width: 0;
+}
