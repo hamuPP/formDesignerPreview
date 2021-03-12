@@ -138,28 +138,30 @@
 	}
 }
 
-// 分组-- todo 目前分组组件就没用过，不确定这个样式是否有效是否正确
-@include b(group) {
-	box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
-	background: #fff;
-	margin: 0 0 10px;
-	padding: 10px;
-	// 加上下面的伪类的写法，主要是因为分组内有浮动元素，分组的高度没有被撑开
-	&:after,
-	&::after
-	{
-		content: '';
-		clear: both;
-		display: block;
-	}
+// 分组 --start--
+@include b(form-group) {
+	//box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+	//background: #fff;
+	//margin: 0 0 10px;
+	//padding: 10px;
+	//// 加上下面的伪类的写法，主要是因为分组内有浮动元素，分组的高度没有被撑开
+	//&:after,
+	//&::after
+	//{
+	//	content: '';
+	//	clear: both;
+	//	display: block;
+	//}
+	border-top: 1px solid #dcdcdc;
 	// 分组的头部
 	@include e(header){
 		color: #333;
-		font-size: 14px;
-		font-weight: bold;
-		padding: 10px 20px;
-		border-bottom: 1px solid #ebeef5;
-		margin-bottom: 10px;
+		font-size: 16px;
+		font-weight: 400;
+		margin: 10px 0;
+		//padding: 10px 20px;
+		//border-bottom: 1px solid #ebeef5;
+		//margin-bottom: 10px;
 	}
 }
 // 表单的样式 --end--
