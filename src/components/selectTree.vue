@@ -26,14 +26,18 @@
       </el-tree>
       <el-input
         class="treeInput"
+        readonly
         @click.native.stop="open"
-        v-model="data.defaultValueArr.value"
-        @clear="clear"
-        :disabled="data.disabled.value"
+        v-model="data.defaultValueArr"
+        :disabled="data.disabled"
         slot="reference"
-        :clearable="true"
         :suffix-icon="icon"
-      >
+        ><i
+          @click="clear"
+          v-if="data.defaultValueArr"
+          slot="suffix"
+          class="el-icon-close"
+        ></i>
       </el-input>
     </el-popover>
   </div>
@@ -43,12 +47,12 @@ import { getTreePostAPI } from "../api/formDesigner_api";
 export default {
   name: "selectTree",
   props: {
-      data: {
-        type: Object,
-        default () {
-          return {}
-        }
+    data: {
+      type: Object,
+      default() {
+        return {};
       },
+    },
     formModel: {
       type: Object,
       default() {
@@ -84,11 +88,13 @@ export default {
       treeWidth: 0,
     };
   },
+  created() {
+    this.codeType = this.data.optionSetting_codeType;
+  },
   mounted() {
     this.treeWidth = this.$el.getElementsByClassName(
       "treeInput"
     )[0].offsetWidth;
-    this.codeType = this.data.optionSetting_codeType;
   },
   watch: {
     data: {
@@ -107,6 +113,7 @@ export default {
   methods: {
     //打开下拉树
     open() {
+      this.isCheck = this.data.isCheck;
       // this.isCheck = this.data.isCheck.value;
       // if (this.codeType) {
       //   this.flag = true;
@@ -157,7 +164,7 @@ export default {
       this.data.defaultValue = "";
       this.formModel[this.data.code] = "";
       dataList.forEach((item) => {
-        this.data.defaultValue.value += item.id + ",";
+        this.data.defaultValue += item.id + ",";
         this.formModel[this.data.code] += item.id + ",";
       });
     },
@@ -175,7 +182,7 @@ export default {
 </script>
  <style lang="scss">
 .selectTree {
-  height: 360px;
+  height: 300px;
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -186,6 +193,14 @@ export default {
   }
 }
 .treeInput {
-  cursor: pointer;
+  input {
+    cursor: pointer;
+  }
+  .el-icon-close:before {
+    cursor: pointer;
+  }
+.el-input__inner{
+    padding-right:45px
+  }
 }
 </style>
