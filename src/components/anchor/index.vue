@@ -10,7 +10,7 @@
           :class="{'noWanchorPoint':!isShoWanchorPoint}" >
         <div class="el-icon-d-arrow-right" :class="{'shrinkIcon':!isShoWanchorPoint}" @click.stop="clickWanchorPoint"></div>
         <el-radio-group v-model="catalogCur">
-          <li v-for="(item,index) in list" :key="index"  @click="jump(index)">
+          <li v-for="(item,index) in list" :key="index"  @click="jump(index)" class="anchorPoint-li">
             <!-- <span class="icon iconfont icondanxuanweixuan"></span>
             <span>{{item}}</span> -->
             <el-radio :label="index">{{item}}</el-radio>
