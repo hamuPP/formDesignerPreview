@@ -37,6 +37,7 @@
                 v-for="(cItem, cKey) in child"
                 :key="cKey"
                 :span="cItem.width"
+                :style="colStyle(cItem)"
               >
                 <previewFormItem
                   ref="fdFormItem"
@@ -61,7 +62,6 @@
           :data="item"
           :labelWidth="fdFormData.labelWidth"
           :lineMarginBottom="fdFormData.lineMarginBottom"
-          @selectChange="selectChange"
         ></previewFormItem>
         <!--   非分组的表单项  --end--   -->
       </el-col>
@@ -149,6 +149,11 @@ export default {
       `fd-form fd-form--preview ${this.skin} ${this.fdFormData.customClassName}` +
       (this.fdFormData.size ? ` fd-form--${this.fdFormData.size}` : "");
   },
+  mounted(){
+    this.$bus.$on('selectChange',(data)=>{
+      this.selectChange(data)
+    })
+  },
   methods: {
     colStyle(item) {
       let str = "";
@@ -193,7 +198,7 @@ export default {
                   } else if (item.state == "disabled") {
                     it.disabled = true;
                     it.hidden = false;
-                    it.readonly = false;
+                    it.readonly = true;
                   } else if (item.state == "hidden") {
                     it.disabled = false;
                     it.hidden = true;

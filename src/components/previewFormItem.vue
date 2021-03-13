@@ -21,7 +21,8 @@
           >
             {{ data.title.value }}
           </div> -->
-          <div style="text-align: right; margin-bottom: 5px">
+          <h3 style="margin:6px 0;float:left">{{data.tName}}</h3>
+          <div style="text-align: right; margin-bottom: 5px">  
             <el-button type="primary" round size="mini" @click="addTableRow "  :disabled="data.readonly"
               >新增行</el-button
             >
@@ -101,6 +102,7 @@
     </template>
     <!-- 富文本组件 -->
     <template v-else-if="data.type==='richText'">
+       <h3 style="margin:6px 0">{{data.label}}</h3>
       <div style="color:black" :class="'richText'+data.frontId"></div>
     </template>
   <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
@@ -396,11 +398,11 @@
       ref="personEditDialog"
       @personSure="personSure"
     ></personEditDialog>
-    <rogroupEditDialog
+    <!-- <rogroupEditDialog
 
       ref="rogroupEditDialog"
       @rogroup="rogroup"
-    ></rogroupEditDialog>
+    ></rogroupEditDialog> -->
     </el-form-item>
     <MessageBox
       :showMessage.sync="MessageConfig.showMessage"
@@ -910,9 +912,9 @@
           this.formSetting.forEach(item=>{
             if(item.value==val&&item.editSettingArray){
               data = JSON.parse(JSON.stringify(item.editSettingArray))
-              this.$emit('selectChange',data)
+              this.$bus.$emit('selectChange',data)
             }else if(item.editSettingArray){
-              this.$emit('selectChange',data)
+              this.$bus.$emit('selectChange',data)
             }
           })
         }

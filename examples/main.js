@@ -12,7 +12,7 @@ import FormDesigner from '../src/formPreview.js';
 import '../src/assets/scss/index.scss';
 
 import App from './app.vue';
-
+Vue.prototype.$bus = new Vue()
 Vue.component('FormDesigner', FormDesigner);
 
 // Vue.use(VueRouter);
