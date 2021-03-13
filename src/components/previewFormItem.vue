@@ -2,7 +2,7 @@
 * Created by tangyue on 20/10/23
 */
 <template>
-  <div>
+  <div class="fd-form-item">
   <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件,并且table没有label,所以单独提出来  -->
     <template v-if="data.type === 'table'">
       <div
@@ -22,7 +22,7 @@
             {{ data.title.value }}
           </div> -->
           <h3 style="margin:6px 0;float:left;color:black">{{data.tName}}</h3>
-          <div style="text-align: right; margin-bottom: 5px">  
+          <div style="text-align: right; margin-bottom: 5px">
             <el-button type="primary" round size="mini" @click="addTableRow "  :disabled="data.readonly"
               >新增行</el-button
             >
