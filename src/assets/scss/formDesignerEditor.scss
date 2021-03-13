@@ -1,6 +1,6 @@
 /**
  * Created by tangyue on 21/1/28
- * styles for only editing mode
+ * styles added for only editing mode。但是如果要正确显示一个编辑器，则该文件以及formDesigner.scss都需要引入
  */
 @import './common/vars';
 @import './mixins/mixins';
@@ -143,31 +143,16 @@
 
 			// 附件上传组
 			@include e(upload-file){
-				border: solid 1px #ccdaf4;
 				.input-box{
-					margin-right: 160px;
-					display: block;
+
 				}
 				.file-btn{
-					float: right;
-					width: 56px;
-					height: 34px;
-					line-height: 32px;
-					padding: 0;
-					text-align: center;
-					margin-left: 20px;
+
 				}
 				.open-file-btn{
-					overflow: hidden;
-					border: 1px solid #99d3f5;
-					display: inline-block;
-					position: relative;
+
 					input{
-						position: absolute;
-						font-size: 100px;
-						right: 0;
-						top: 0;
-						opacity: 0;
+
 					}
 				}
 			}

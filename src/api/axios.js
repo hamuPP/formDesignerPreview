@@ -54,7 +54,12 @@ axios.interceptors.response.use(function (response) {
       case 401:
         sessionStorage.removeItem('access_token');
         err.message = err.response.data.msg;
-        alertMessage(err.message);
+        alertMessage('要求用户的身份认证');
+        try{
+          window.location = window.location.origin;
+        }catch(e){
+
+        }
         break;
       case 403:
         err.message = '拒绝访问';
