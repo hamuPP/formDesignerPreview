@@ -21,7 +21,7 @@
           >
             {{ data.title.value }}
           </div> -->
-          <h3 style="margin:6px 0;float:left">{{data.tName}}</h3>
+          <h3 style="margin:6px 0;float:left;color:black">{{data.tName}}</h3>
           <div style="text-align: right; margin-bottom: 5px">  
             <el-button type="primary" round size="mini" @click="addTableRow "  :disabled="data.readonly"
               >新增行</el-button
@@ -102,8 +102,14 @@
     </template>
     <!-- 富文本组件 -->
     <template v-else-if="data.type==='richText'">
-       <h3 style="margin:6px 0">{{data.label}}</h3>
+       <h3 style="margin:6px 0;color:black">{{data.label}}</h3>
       <div style="color:black" :class="'richText'+data.frontId"></div>
+    </template>
+      <!-- HTML块 -->
+    <template v-else-if="data.type==='html'">
+      <h3 style="margin:6px 0;color:black">{{data.label}}</h3>
+      <div style="min-height:200px;border:1px solid #b9c2dd" v-html="data.htmlValue">
+      </div>
     </template>
   <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
     <el-form-item
@@ -473,7 +479,16 @@
             this.editor.txt.html(this.formModel[this.data.code])
           }
         },
-        deep: true
+        deep:true
+      },
+      'data.disabled'(n,o){
+        if(this.data.type=='richText'){
+           if(n){
+            this.editor.$textElem.attr('contenteditable', false)
+          }else{
+            this.editor.$textElem.attr('contenteditable', true)
+          }
+        }
       }
     },
     data () {
