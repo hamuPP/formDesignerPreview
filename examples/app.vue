@@ -17,6 +17,8 @@
                   :formModel="formModel"
                   :fdFormItems="fdFormItems"
                   :fdFormData="fdFormData"
+                  showAnchor
+                  useCustormRule
     ></FormDesigner>
   </div>
 </template>

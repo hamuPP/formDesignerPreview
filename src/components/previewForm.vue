@@ -25,7 +25,7 @@
         <!--    如果是有分组的(分组的自定义样式是套在分组的元素上的)  --start--  -->
         <template v-if="item.type === 'group'">
           <div class="fd-form-group" :class="item.className">
-            <div v-if="item.label" class="fd-form-group__header">
+            <div v-if="item.label" class="fd-form-group__header" :id="item.frontId">
               {{ item.label }}
             </div>
             <el-row
@@ -226,7 +226,7 @@ export default {
               }
             })
           })
-      
+
           })
         }
         fn(this.fdFormItems)

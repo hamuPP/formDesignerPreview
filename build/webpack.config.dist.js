@@ -79,13 +79,13 @@ module.exports = {
                     },
                     compress: {
                         warnings: false,
-                        drop_console: true,
-                        drop_debugger: true
+                        drop_console: false,
+                        drop_debugger: false
                     },
                 }
             }
         ),
       // 开启 BundleAnalyzerPlugin
-      new BundleAnalyzerPlugin(),
+      // new BundleAnalyzerPlugin(),
     ]
 };
