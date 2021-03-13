@@ -170,7 +170,15 @@
               :clearable="data.clearable"
     >
     </el-input>
+  <!-- 搜索 -->
+        <el-autocomplete v-else-if="data.type === 'search'"
+                   v-model="formModel[data.code]"
+                  :fetch-suggestions="querySearchAsync"
+                  placeholder="请输入内容"
+                   @select="handleSelect"
+        >
 
+        </el-autocomplete>
     <!--   单选组     -->
     <el-radio-group v-else-if="data.type === 'radio'"
                     :ref="data.ref"
@@ -421,7 +429,7 @@
 
 <script>
   import wangEditor from "wangeditor";
-  import {commonRequest, getCodeTypeData} from '../api/formDesigner_api';
+  import {commonRequest, getCodeTypeData,getNames} from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
     import selectTree from "./selectTree"
@@ -456,6 +464,10 @@
       lineMarginBottom: {
         type: Number,
         default: 0
+      },
+      formCode:{
+        type:String,
+        default:''
       }
     },
     computed: {
@@ -475,14 +487,19 @@
       // }
       formModel:{
         handler(n,o){
-          if(this.data.type=='richText'){
+          if(this.data.type=='richText'&&this.editorFlag){
+            this.editorFlag = false
             this.editor.txt.html(this.formModel[this.data.code])
+          }
+          if(this.formModel.id){
+            this.editorFlag = true
           }
         },
         deep:true
       },
       'data.disabled'(n,o){
         if(this.data.type=='richText'){
+
            if(n){
             this.editor.$textElem.attr('contenteditable', false)
           }else{
@@ -518,6 +535,7 @@
         formSetting:[],//表单元素状态控制
         editor:null,
         editorHtml:'',
+        editorFlag:false
       }
     },
     created () {
@@ -659,12 +677,12 @@
       editor.config.onchange = (newHtml) => {
       this.editorData = newHtml;
       this.formModel[this.data.code] = editor.txt.html()
+      console.log(this.data.code);
       };
     // 创建编辑器
       editor.create();
       this.editor = editor;
       }
-
     },
     methods: {
       renderUploadStyles () {
@@ -1046,6 +1064,44 @@
         }
       }
       this.currentIndex = null;
+      },
+      querySearchAsync(queryString, cb) {
+        if(queryString){
+          // getNames(url,)
+          if(!this.data.searchUrl){
+            let url = '/workflow/form/data/getNames'
+            let data={
+              fieldValue:this.formModel[this.data.code],
+              fieldCode:this.data.code,
+              formCode:this.formCode
+            }
+            let callBackArr = [];
+            if(!this.formCode||!this.data.code) return
+            getNames(url,data).then(res=>{
+              res.data.data.forEach(item=>{
+                if(item.indexOf(queryString)>-1){
+                  callBackArr.push({value:item,label:item})
+                }
+              })
+               cb(callBackArr);
+            })
+            
+          }
+          else{
+            getNames(this.data.searchUrl).then(res=>{
+               res.data.data.forEach(item=>{
+                if(item.indexOf(queryString)>-1){
+                  callBackArr.push(item)
+                }
+              })
+               cb(callBackArr);
+            })
+              
+          }
+        }
+      },
+      handleSelect(item) {
+        this.formModel[this.data.code]=item.label
       },
     }
   }
