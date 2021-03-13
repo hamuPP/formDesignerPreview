@@ -6,8 +6,19 @@ import {baseUrl} from './commonUrl';
 
 // 通用查询方法
 export function commonRequest ({params, data, method, url, headers = {}}) {
+  // 处理url。如果是以http或者https开头的，则直接使用；若否，则依次取baseUrl。和本地的ip
+  let _url = '';
+  if (url.startsWith('http:') || url.startsWith('https:')){
+    _url = url
+  }
+  else if (baseUrl) {
+    _url = baseUrl + url;
+  }
+  else {
+    _url = window.location.origin + url
+  }
   return axios({
-    url: (url.startsWith('http:') || url.startsWith('https:')) ? url : baseUrl + url,
+    url: _url,
     method: method,
     data: data,
     params: params,

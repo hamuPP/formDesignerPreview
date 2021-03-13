@@ -134,9 +134,7 @@
         let outerHeaderHeight = this.outerHeaderHeight || 0;
         let outerheightHeight = this.outerheightHeight || 0;
         this.$nextTick(_=>{
-          console.log('sss', this)
           let scrollItems = this.$el.querySelectorAll('.fd-form-group');
-          console.log('sss', scrollItems)
 
           // debugger;
           // let abc = this.$el;

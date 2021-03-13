@@ -310,7 +310,7 @@
       <ul class="file-list">
         <li v-for="(item,index) in fileList" :key="index">
           <a class="file-detail" :href="getDownURL(item)" download title="下载">{{item.name}}</a>
-          <i class="el-icon-delete" @click="delFile(item)"></i>
+          <i class="el-icon-delete file-del-icon" @click="delFile(item)"></i>
         </li>
       </ul>
     </div>
@@ -427,6 +427,7 @@
     import selectTree from "./selectTree"
   import personEditDialog from "./personEditDialog.vue";
   import rogroupEditDialog from "./rogroupEditDialog.vue";
+  import {baseUrl} from '../api/commonUrl';
   export default {
     name: 'previewFormItem',
     components:{MessageBox,personEditDialog,rogroupEditDialog,selectTree},
@@ -496,9 +497,9 @@
         fileName: '', // 附件名字
         fileList: [
           // {
-          //   name: 'todo'
+          //   name: '测试啊啊啊啊'
           // }, {
-          //   name: 'todo2'
+          //   name: '凉凉以就就'
           // },
         ], // 附件列表
         USER_UPLOAD_PARAM: null, // 仅对上传组件有用的自定义查询参数
@@ -639,7 +640,6 @@
         this.contentEle = this.$el.querySelector('.el-form-item__content .el-textarea');
         this.setLabelEleHeight(this.contentEle.offsetHeight + 'px');
       }
-      console.log(333);
       this.renderUploadStyles();
       if(this.data.type=='richText'){
       let className ='.richText'+this.data.frontId
@@ -664,7 +664,7 @@
       editor.create();
       this.editor = editor;
       }
-    
+
     },
     methods: {
       renderUploadStyles () {
@@ -698,7 +698,6 @@
           param.append('access_token', sessionStorage.getItem('access_token'));
 
           // 用户自定义添加的参数,这是例如在引用页面，用户可能需要再添加一些参数
-          debugger;
           if (this.USER_UPLOAD_PARAM) {
             for (let key in this.USER_UPLOAD_PARAM) {
               if (key) {
@@ -773,21 +772,36 @@
             url: this.data.listRequestUrl
           })
             .then(res => {
-              if (res && res.data && res.data.ok) {
-                this.fileList = res.data.data;
+              console.log('查询附件的值',res);
+              debugger;
+              if (res && res.data && res.data.code == '0000') {
+                this.fileList = res.data.data.data;
               } else {
                 this.fileList = [];
               }
             })
             .catch(e => {
+              debugger;
               console.log(e)
             })
         }
       },
       // 下载地址
       getDownURL (row) {
+        // 处理url。如果是以http或者https开头的，则直接使用；若否，则依次取baseUrl。和本地的ip
+        let url = this.data.downloadServiceUrl;
+        let _url = '';
+        if (url.startsWith('http:') || url.startsWith('https:')){
+          _url = url
+        }
+        else if (baseUrl) {
+          _url = baseUrl + url;
+        }
+        else {
+          _url = window.location.origin + url
+        }
         return (
-          this.data.downloadServiceUrl +
+           _url +
           row.id +
           '?access_token=' +
           sessionStorage.getItem('access_token')
