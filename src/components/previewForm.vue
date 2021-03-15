@@ -60,6 +60,7 @@
           :view="view"
           :formModel="formModel"
           :data="item"
+          :formCode='formCode'
           :labelWidth="fdFormData.labelWidth"
           :lineMarginBottom="fdFormData.lineMarginBottom"
         ></previewFormItem>
@@ -87,6 +88,7 @@ export default {
     return {
       skin: "", // 预设的表格的样式名称
       formClassStr: "",
+      formCode:''
     };
   },
   props: {
@@ -137,6 +139,8 @@ export default {
   },
   watch: {
     fdFormData(n, o) {
+      console.log(n);
+      this.formCode=n.code
       this.skin = n.skin;
       this.formClassStr =
         `fd-form fd-form--preview ${n.skin} ${n.customClassName}` +
@@ -145,6 +149,7 @@ export default {
   },
   created() {
     this.skin = this.fdFormData.skin;
+     this.formCode=this.fdFormData.code
     this.formClassStr =
       `fd-form fd-form--preview ${this.skin} ${this.fdFormData.customClassName}` +
       (this.fdFormData.size ? ` fd-form--${this.fdFormData.size}` : "");
@@ -153,6 +158,7 @@ export default {
     this.$bus.$on('selectChange',(data)=>{
       this.selectChange(data)
     })
+
   },
   methods: {
     colStyle(item) {

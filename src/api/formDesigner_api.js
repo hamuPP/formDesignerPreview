@@ -87,3 +87,12 @@ export function getTreeGetAPI(url, method,data) {
     params:data
   })
 }
+
+//得到收索字段列表
+export function getNames(url, data) {
+  return axios({
+    url: baseUrl + url,
+    method: 'get',
+    params:data
+  })
+}
