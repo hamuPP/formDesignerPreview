@@ -1066,8 +1066,8 @@
       this.currentIndex = null;
       },
       querySearchAsync(queryString, cb) {
+
         if(queryString){
-          // getNames(url,)
           if(!this.data.searchUrl){
             let url = '/workflow/form/data/getNames'
             let data={
@@ -1088,7 +1088,10 @@
             
           }
           else{
-            getNames(this.data.searchUrl).then(res=>{
+            let data = {
+              fieldValue:this.formModel[this.data.code],
+            }
+            getNames(this.data.searchUrl,data).then(res=>{
                res.data.data.forEach(item=>{
                 if(item.indexOf(queryString)>-1){
                   callBackArr.push(item)
