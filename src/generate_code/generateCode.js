@@ -83,14 +83,34 @@ const formateList = (dataList) => {
   return list;
 };
 
+// // 拉平我的表单项列表
+// const flatList = (dataList)=>{
+//   let resultList = [];
+//
+//   let fn = (list) => {
+//     list.forEach(it => {
+//       if(it.type === 'group'){
+//         fn(it.children)
+//       }else{
+//
+//       }
+//     });
+//   };
+//
+//   fn(dataList);
+//   return resultList
+// };
+
 const generateAllOptions = (list) => {
-  let fn = (list)=>{
+  let fn = (list) => {
     list.forEach(it => {
       if (it.type === 'group') {
         fn(it.children)
       } else {
         let {type, optionSetting, validationSetting} = it;
-        if (optionSetting === 'static') {
+        if (optionSetting && optionSetting.value === 'static') {
+          console.log('optionSetting_options', it.optionSetting_options)
+          debugger;// todo  检查层级，是否有个value
           allOptions[it.frontId] = it.optionSetting_options;
         }
         // todo 码表和远程接口还没有写
@@ -140,67 +160,62 @@ ${_space}        :clearable="${data.clearable}">
 ${_space}    </el-input>`;
   }
   // 单选组
-  else if(data.type === 'radio'){
-    innerStr = `<el-radio-group
-                    v-model="formModel.${data.code}"
-                    :disabled="${data.disabled}"
-                    :readonly="${data.readonly}"
-                    :clearable="${data.clearable}"
-                  >
-                  <el-radio v-for="radio in options[${data.frontId}]"
-                            :key="radio.value"
-                            :label="radio.value">
-                    {{radio.label}}
-                  </el-radio>
-    </el-radio-group>`;
+  else if (data.type === 'radio') {
+    innerStr = `${_space}    <el-radio-group
+${_space}        v-model="formModel.${data.code}"
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}">
+${_space}        <el-radio v-for="radio in options[${data.frontId}]"
+${_space}            :key="radio.value"
+${_space}            :label="radio.value">
+${_space}            {{radio.label}}
+${_space}        </el-radio>
+${_space}    </el-radio-group>`;
   }
   else if(data.type === 'checkbox'){
-    innerStr = ` <el-checkbox-group 
-                       v-model="formModel.${data.code}"
-                       :disabled="${data.disabled}"
-                       :readonly="${data.readonly}"
-                       :clearable="${data.clearable}"
-                      >
-      <el-checkbox v-for="(check, index) in options[${data.frontId}]"
-                   :key="index"
-                   :label="check.value">{{check.label}}
-      </el-checkbox>
-    </el-checkbox-group>`;
+    innerStr = `${_space}    <el-checkbox-group 
+${_space}        v-model="formModel.${data.code}"
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}">
+${_space}        <el-checkbox v-for="(check, index) in options[${data.frontId}]"
+${_space}            :key="index"
+${_space}            :label="check.value">{{check.label}}
+${_space}        </el-checkbox>
+${_space}    </el-checkbox-group>`;
   }
   else if(data.type === 'rate') {
-    innerStr = `<el-rate
-             v-model="formModel.${data.code}"
-             :disabled="${data.disabled}"
-             :readonly="${data.readonly}"
-             :clearable="${data.clearable}">
-    </el-rate>`
+    innerStr = `${_space}    <el-rate
+${_space}        v-model="formModel.${data.code}"
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+ ${_space}        :clearable="${data.clearable}">
+${_space}    </el-rate>`
   }
   else if (data.type === 'select') {
-    innerStr = ` <el-select
-                    v-model="formModel.${data.code}"
-                    :disabled="${data.disabled}"
-                    :readonly="${data.readonly}"
-                    :clearable="${data.clearable}"
-                    @change="selectChangeHand"
-    >
-      <el-option
-              v-for="item in options[${data.frontId}]"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-      </el-option>
-    </el-select>`;
+    innerStr = `${_space}    <el-select
+${_space}        v-model="formModel.${data.code}"
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}"
+${_space}        @change="selectChangeHand">
+${_space}            <el-option v-for="item in options[${data.frontId}]"
+${_space}            :key="item.value"
+${_space}            :label="item.label"
+${_space}            :value="item.value">
+${_space}            </el-option>
+${_space}    </el-select>`;
   }
   else if (data.type === 'datePicker') {
-    innerStr = `<el-date-picker
-                    v-model="formModel.${data.code}"
-                    type="${data.innerType}"
-                    value-format="${data.valueFormat}"
-                    :disabled="${data.disabled}"
-                    :readonly="${data.readonly}"
-                    :clearable="${data.clearable}"
-    >
-    </el-date-picker>`;
+    innerStr = `${_space}    <el-date-picker
+${_space}        v-model="formModel.${data.code}"
+${_space}        type="${data.innerType}"
+${_space}        value-format="${data.valueFormat}"
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}">
+${_space}    </el-date-picker>`;
   }
   else if(data.type === 'timePicker'){
     innerStr = `<el-time-picker
@@ -257,79 +272,79 @@ ${_space}    </el-input>`;
   }
   // 上传附件
   else if (data.type === 'uploadFile') {
-    innerStr = `<div class="fd-formItem__upload-file">
-                    <el-button type="primary" size="mini" @click="upFile" class="file-btn">上传</el-button>
-                    <a href="javascript:;" class="file-btn open-file-btn">
-                      浏览
-                      <input type="file" ref="file" name="file" @change="addFileName" />
-                    </a>
-                    <div class="input-box">
-                      <el-input v-model="fileName"></el-input>
-                    </div>
+    innerStr = `${_space}    <div class="fd-formItem__upload-file">
+${_space}        <el-button type="primary" size="mini" @click="upFile(${JSON.stringify(data.uploadSettings)})" class="file-btn">上传</el-button>
+${_space}        <a href="javascript:;" class="file-btn open-file-btn">
+${_space}            浏览
+${_space}            <input type="file" ref="file['${data.frontId}']" name="file" @change="addFileName('${data.frontId}')" />
+${_space}        </a>
+${_space}        <div class="input-box">
+${_space}            <el-input v-model="fileName['${data.frontId}']"></el-input>
+${_space}        </div>
               
-                    <ul class="file-list">
-                      <li v-for="(item,index) in fileList" :key="index">
-                        <a class="file-detail" :href="getDownURL(item)" download title="下载">{{item.name}}</a>
-                        <i class="el-icon-delete" @click="delFile(item)"></i>
-                      </li>
-                    </ul>
-                </div>`;
+${_space}        <ul class="file-list">
+${_space}            <li v-for="(item,index) in fileList['${data.frontId}']" :key="index">
+${_space}                <a class="file-detail" :href="getDownURL(item)" download title="下载">{{item.name}}</a>
+${_space}                <i class="el-icon-delete" @click="delFile(item)"></i>
+${_space}            </li>
+${_space}        </ul>
+${_space}    </div>`;
   }
   // 业务公共字段-流水号
   else if (data.type === 'sheetFlowCode') {
-    innerStr = `<el-input
-                  :disabled="${data.disabled}"
-                  :readonly="${data.readonly}"
-                  :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}">
-                </el-input>`;
+    innerStr = `${_space}    <el-input
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}"
+${_space}        v-model="formModel.${data.code}">
+${_space}    </el-input>`;
   }
   // 业务公共字段-操作人
   else if (data.type === 'operator') {
-    innerStr = `<el-input
-                  :disabled="${data.disabled}"
-                  :readonly="${data.readonly}"
-                  :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}">
-                </el-input>`;
+    innerStr = `${_space}    <el-input
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}"
+${_space}        v-model="formModel.${data.code}">
+${_space}    </el-input>`;
   }
   // 业务公共字段-操作人部门
   else if (data.type === 'operatorDept') {
-    innerStr = `<el-input
-                  :disabled="${data.disabled}"
-                  :readonly="${data.readonly}"
-                  :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}">
-                </el-input>`;
+    innerStr = `${_space}    <el-input
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}"
+${_space}        v-model="formModel.${data.code}">
+${_space}    </el-input>`;
   }
   // 业务公共字段-操作人联系方式
   else if (data.type === 'operatorMobile') {
-    innerStr = `<el-input
-                  :disabled="${data.disabled}"
-                  :readonly="${data.readonly}"
-                  :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}">
-                </el-input>`;
+    innerStr = `${_space}    <el-input
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}"
+${_space}        v-model="formModel.${data.code}">
+${_space}    </el-input>`;
   }
   // 业务公共字段-操作人当前角色
   else if (data.type === 'operatorRole') {
-    innerStr = `<el-input
-                  :disabled="${data.disabled}"
-                  :readonly="${data.readonly}"
-                  :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}">
-                </el-input>`;
+    innerStr = `${_space}    <el-input
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}"
+${_space}        v-model="formModel.${data.code}">
+${_space}    </el-input>`;
   }
   // 业务公共字段-操作时间
   else if (data.type === 'operateTime') {
-    innerStr = `<el-date-picker
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  :disabled="${data.disabled}"
-                  :readonly="${data.readonly}"
-                  :clearable="${data.clearable}"
-                  v-model="formModel.${data.code}"
-                  :computereadonly="${data.readonly}">
-                </el-date-picker>`;
+    innerStr = `${_space}    <el-date-picker
+${_space}        value-format="yyyy-MM-dd HH:mm:ss"
+${_space}        :disabled="${data.disabled}"
+${_space}        :readonly="${data.readonly}"
+${_space}        :clearable="${data.clearable}"
+${_space}        v-model="formModel.${data.code}"
+${_space}        :computereadonly="${data.readonly}">
+${_space}    </el-date-picker>`;
   }
   // 如果没有设置type，则都是input
   else {
@@ -384,7 +399,12 @@ const generatePreviewFormItem = (item, isInGroup, spaceCount = 0) => {
   // 如果本表单组件是分组
   if (item.type === 'group') {
     if (item.label) {
-      str += `<div class="fd-form-group__header">${item.label}</div>`;
+      // 把前面的排版空格做出来
+      let _groupHeadSpace = '';// 我的排版是4个空格缩进，所以这里初始值是4个空格
+      for (let c = 0; c < spaceCount; c++) {
+        _groupHeadSpace += ' ';
+      }
+      str += `${_groupHeadSpace}<div class="fd-form-group__header">${item.label}</div>`;
     }
     // 把前面的排版空格做出来
     let _space = '    ';// 我的排版是4个空格缩进，所以这里初始值是4个空格
@@ -490,13 +510,18 @@ export const generateElementuiCode = (filename, formModel, list) => {
                 return {};
               }
             },
+            flatFdFormList:{
+              type: Array,
+              default () {
+                return [];
+              }
+            },
         },
         data () {
             return {
-            
                options: ${JSON.stringify(allOptions)},
-             // todo 不确定是否需要的东西  fileName: '', // 附件名字
-             // todo 不确定是否需要的东西  fileList: [], // 附件列表
+               fileName: {}, // 附件名字
+               fileList: {}, // 附件列表
             }
      },
      created(){
@@ -512,7 +537,8 @@ export const generateElementuiCode = (filename, formModel, list) => {
         return this.$refs.form.$refs.fdForm;
       },
       getFormItemsIns () {
-        return this.$refs.form.$refs.fdFormItem;
+        debugger;
+        return this.flatFdFormList;
       },
         // 查询所有下拉、单选、多选的选项数据
    
@@ -521,14 +547,16 @@ export const generateElementuiCode = (filename, formModel, list) => {
           console.log(val);
           // do your own business
         },
-        // 上传到服务器 todo 
-        upFile(){
+        // 上传到服务器 todo
+        upFile(fid){
+          debugger;
           // do your own business
         },
         
-        // 添加附件信息 todo 不确定是否需要的东西
-        addFileName () {
-          this.fileName = this.$refs.file.files[0].name;
+        // 添加附件信息
+        addFileName (fid) {
+          this.$set(this.fileName, fid, this.$refs["file['" + fid + "']"].files[0].name)
+
         },
         
         // 下载地址 todo 不确定是否需要的东西
