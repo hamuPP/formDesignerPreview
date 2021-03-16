@@ -479,23 +479,32 @@
           parentName = parent.$options.name;
         }
         return parent;
+      },
+      editorTxt(){
+        if(this.data.type=='richText'){
+           return this.formModel[this.data.code]
+        }
+       
       }
     },
     watch: {
       // relationPreQueryParam(n, o){
       //   debugger;
       // }
-      formModel:{
+      // formModel:{
+      //   handler(n,o){
+      //     if(this.data.type=='richText'&&this.editorFlag){
+      //       this.editorFlag = false
+      //       this.editor.txt.html(this.formModel[this.data.code])
+      //     }
+
+      //   },
+      //   deep:true
+      // },
+      editorTxt:{
         handler(n,o){
-          if(this.data.type=='richText'&&this.editorFlag){
-            this.editorFlag = false
-            this.editor.txt.html(this.formModel[this.data.code])
-          }
-          if(this.formModel.id){
-            this.editorFlag = true
-          }
-        },
-        deep:true
+          this.editor.txt.html(this.formModel[this.data.code])
+        }
       },
       'data.disabled'(n,o){
         if(this.data.type=='richText'){
@@ -535,7 +544,7 @@
         formSetting:[],//表单元素状态控制
         editor:null,
         editorHtml:'',
-        editorFlag:false
+        editorFlag:true
       }
     },
     created () {
@@ -677,7 +686,6 @@
       editor.config.onchange = (newHtml) => {
       this.editorData = newHtml;
       this.formModel[this.data.code] = editor.txt.html()
-      console.log(this.data.code);
       };
     // 创建编辑器
       editor.create();
