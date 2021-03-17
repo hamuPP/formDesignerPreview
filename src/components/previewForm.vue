@@ -106,6 +106,7 @@ export default {
       type: [Number, String],
       default: null
     },
+    
     rules: {
       type: Object,
       default () {
