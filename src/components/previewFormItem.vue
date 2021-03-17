@@ -1102,7 +1102,7 @@
             getNames(this.data.searchUrl,data).then(res=>{
                res.data.data.forEach(item=>{
                 if(item.indexOf(queryString)>-1){
-                  callBackArr.push(item)
+                   callBackArr.push({value:item,label:item})
                 }
               })
                cb(callBackArr);
