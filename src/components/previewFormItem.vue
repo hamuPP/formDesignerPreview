@@ -1086,11 +1086,13 @@
             let callBackArr = [];
             if(!this.formCode||!this.data.code) return
             getNames(url,data).then(res=>{
-              res.data.data.forEach(item=>{
+              if(res&&res.data&&res.data.data){
+                res.data.data.forEach(item=>{
                 if(item.indexOf(queryString)>-1){
                   callBackArr.push({value:item,label:item})
                 }
               })
+              }
                cb(callBackArr);
             })
             
@@ -1099,12 +1101,15 @@
             let data = {
               fieldValue:this.formModel[this.data.code],
             }
+            let callBackArr = [];
             getNames(this.data.searchUrl,data).then(res=>{
-               res.data.data.forEach(item=>{
+               if(res&&res.data&&res.data.data){
+                 res.data.data.forEach(item=>{
                 if(item.indexOf(queryString)>-1){
                    callBackArr.push({value:item,label:item})
                 }
               })
+               }
                cb(callBackArr);
             })
               
