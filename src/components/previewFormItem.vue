@@ -582,7 +582,7 @@
             url: (optionSetting_tabContent.remoteUrl && optionSetting_tabContent.remoteUrl.value)? optionSetting_tabContent.remoteUrl.value : '/admin/sysdict/list',
             method: (optionSetting_tabContent.remoteMethods && optionSetting_tabContent.remoteMethods.value)? optionSetting_tabContent.remoteMethods.value: 'get',
             params: {
-              parentValue: 'root'// 这是我们字典后端接的查询参数
+              parentValue: optionSetting_tabContent.codeType.value || 'root'// 这是我们字典后端接的查询参数
             }
           });
         }
