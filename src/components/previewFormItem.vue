@@ -556,9 +556,12 @@
       }
       // 码表(调用接口，查询数据)
       else if (optionSetting === 'remote') {
-        // if (this.data.optionSetting_codeType) {
-        //   this.getCodeTypeList(this.data.optionSetting_codeType);
-        // }
+        if (this.data.optionSetting_codeType) {
+          this.getCodeTypeList(this.data.optionSetting_codeType);
+        }
+      }
+      // 字典表
+      else if(optionSetting === 'remoteDict'){
         const optionSetting_tabContent = this.data.optionSetting_tabContent;
         if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
           optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values)){
@@ -577,7 +580,6 @@
           }
         }
         else{
-          debugger;
           this.getRemoteUrlDatas({
             url: (optionSetting_tabContent.remoteUrl && optionSetting_tabContent.remoteUrl.value)? optionSetting_tabContent.remoteUrl.value : '/admin/sysdict/list',
             method: (optionSetting_tabContent.remoteMethods && optionSetting_tabContent.remoteMethods.value)? optionSetting_tabContent.remoteMethods.value: 'get',
