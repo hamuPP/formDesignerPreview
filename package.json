@@ -1,6 +1,6 @@
 {
 	"name": "t-vue-form-preview",
-	"version": "0.2.34",
+	"version": "0.2.35",
 	"main": "dist/FormPreview.min.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
