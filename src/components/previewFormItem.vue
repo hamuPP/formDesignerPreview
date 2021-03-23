@@ -465,10 +465,6 @@
         type: Number,
         default: 0
       },
-      formCode:{
-        type:String,
-        default:''
-      }
     },
     computed: {
       componentRootForm () {
@@ -544,7 +540,8 @@
         formSetting:[],//表单元素状态控制
         editor:null,
         editorHtml:'',
-        editorFlag:true
+        editorFlag:true,
+        formCode:'',
       }
     },
     created () {
@@ -1105,6 +1102,7 @@
         if(queryString){
           if(!this.data.searchUrl){
             let url = '/workflow/form/data/getNames'
+            this.formCode=this.$parent.$parent.$parent.$parent.$parent.$parent.formCode
             let data={
               fieldValue:this.formModel[this.data.code],
               fieldCode:this.data.code,
