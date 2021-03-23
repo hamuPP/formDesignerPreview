@@ -480,7 +480,7 @@
         if(this.data.type=='richText'){
            return this.formModel[this.data.code]
         }
-       
+
       }
     },
     watch: {
@@ -557,7 +557,36 @@
           this.getCodeTypeList(this.data.optionSetting_codeType);
         }
       }
-      // 远程接口 todo 查接口的逻辑还没有写 2021年02月07日18:08:58
+      // 字典表
+      else if(optionSetting === 'remoteDict'){
+        const optionSetting_tabContent = this.data.optionSetting_tabContent;
+        if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
+          optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values)){
+          // 整理出查询参数
+          debugger;
+          let queryP = this.getRelationQueryParams(optionSetting_tabContent);
+          debugger;
+          if (queryP) {
+            this.getRemoteUrlDatas({
+              url: (optionSetting_tabContent.remoteUrl && optionSetting_tabContent.remoteUrl.value)? optionSetting_tabContent.remoteUrl.value : '/admin/sysdict/list',
+              method: (optionSetting_tabContent.remoteMethods && optionSetting_tabContent.remoteMethods.value)? optionSetting_tabContent.remoteMethods.value: 'get',
+              ...queryP
+              // params: queryParam,
+              // data: queryParam
+            });
+          }
+        }
+        else{
+          this.getRemoteUrlDatas({
+            url: (optionSetting_tabContent.remoteUrl && optionSetting_tabContent.remoteUrl.value)? optionSetting_tabContent.remoteUrl.value : '/admin/sysdict/list',
+            method: (optionSetting_tabContent.remoteMethods && optionSetting_tabContent.remoteMethods.value)? optionSetting_tabContent.remoteMethods.value: 'get',
+            params: {
+              parentValue: optionSetting_tabContent.codeType.value || 'root'// 这是我们字典后端接的查询参数
+            }
+          });
+        }
+      }
+      // 远程接口
       else if (optionSetting === 'remoteUrl') {
         // 如果有前置关联关系设置的，则需要先检查其前置是否有值，有再查询
         // eslint-disable-next-line camelcase
@@ -565,31 +594,20 @@
         if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
           optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values)) {
           // 整理出查询参数
-          let queryParam = {};// 值版本
-          let queryParamKeys = {};// 键对应的版本
-          let flg = true;
-          let values = optionSetting_tabContent.relationSettings.values;
-          for (let key in values) {
-            let it = values[key];
-            var targetKey = it[1];// 找到前置关联的字段的名称；
-            if (targetKey) {
-              queryParam[key] = this.formModel[targetKey];
-              queryParamKeys[key] = targetKey;
-              // 只要有一个没值的，都算作false，即不去查后端
-              flg && (flg = Boolean(this.formModel[targetKey]));
-            } else {
-              flg = false;
+          let queryP = this.getRelationQueryParams(optionSetting_tabContent)
+
+          if (queryP) {
+            try{
+              this.getRemoteUrlDatas({
+                url: optionSetting_tabContent.remoteUrl.value,
+                method: optionSetting_tabContent.remoteMethods.value,
+                ...queryP
+              });
             }
-          }
-          this.relationPreQueryParam = queryParam;
-          this.relationPreQueryParamKeys = queryParamKeys;
-          if (flg) {
-            this.getRemoteUrlDatas({
-              url: optionSetting_tabContent.remoteUrl.value,
-              method: optionSetting_tabContent.remoteMethods.value,
-              params: queryParam,
-              data: queryParam
-            });
+            catch(e){
+              debugger;
+            }
+
           }
         }
         // 没有配置前置关联查询参数，则现在就查询后台接口
@@ -874,17 +892,27 @@
           url: url
         })
           .then(res => {
+            debugger;
             // 清空当前的选中值
             this.formModel[this.data.code] = '';
             // 清空当前的下拉数据们
             this.options = [];
             if (res.data && res.data.code == '0000') {
-              this.options = res.data.data.data.map(it => {
-                return {
-                  label: it.name,
-                  value: it.id
-                }
-              });
+              if(res.data.data.data && res.data.data.data.constructor === Array){
+                this.options = res.data.data.data.map(it => {
+                  return {
+                    label: it.name,
+                    value: it.id
+                  }
+                });
+              }else{
+                this.options = res.data.data.map(it => {
+                  return {
+                    label: it.lable,
+                    value: it.value
+                  }
+                });
+              }
             } else {
               this.$message({
                 showClose: true,
@@ -921,8 +949,8 @@
           const optionSetting_tabContent = this.data.optionSetting_tabContent;
 
           this.getRemoteUrlDatas({
-            url: optionSetting_tabContent.remoteUrl.value,
-            method: optionSetting_tabContent.remoteMethods.value,
+            url: optionSetting_tabContent.remoteUrl ? optionSetting_tabContent.remoteUrl.value : '/admin/sysdict/list',// 以现在的情况，如果不是，即是字典表查询
+            method: optionSetting_tabContent.remoteUrl? optionSetting_tabContent.remoteMethods.value : 'get',
             params: this.relationPreQueryParam,
             data: this.relationPreQueryParam
           });
@@ -945,7 +973,6 @@
           let formItem = FD_FORM_ITEM_LIST[i];
           for (let j in formItem.relationPreQueryParamKeys) {
             if (j && formItem.relationPreQueryParamKeys[j] && formItem.relationPreQueryParamKeys[j] === this.data.code) {
-              debugger;
               formItem.relationPreQueryParam[j] = val;
               // 假如该下拉框有选中值，再检查是否关联参数都齐了
               if (val) {
@@ -1093,7 +1120,7 @@
               }
                cb(callBackArr);
             })
-            
+
           }
           else{
             let data = {
@@ -1110,13 +1137,39 @@
                }
                cb(callBackArr);
             })
-              
+
           }
         }
       },
       handleSelect(item) {
         this.formModel[this.data.code]=item.label
       },
+      // 对于有设置前置关联的普通下拉和码表下拉，找到联动查询参数
+      getRelationQueryParams(optionSetting_tabContent){
+        let queryParam = {};// 值版本
+        let queryParamKeys = {};// 键对应的版本
+        let flg = true;
+        let values = optionSetting_tabContent.relationSettings.values;
+        for (let key in values) {
+          let it = values[key];
+          var targetKey = it[1];// 找到前置关联的字段的名称；
+          if (targetKey) {
+            queryParam[key] = this.formModel[targetKey];
+            queryParamKeys[key] = targetKey;
+            // 只要有一个没值的，都算作false，即不去查后端
+            flg && (flg = Boolean(this.formModel[targetKey]));
+          } else {
+            flg = false;
+          }
+        }
+        this.relationPreQueryParam = queryParam;
+        this.relationPreQueryParamKeys = queryParamKeys;
+
+        return flg? {
+          params: queryParam,
+          data: queryParam
+        }: flg;
+      }
     }
   }
 </script>
