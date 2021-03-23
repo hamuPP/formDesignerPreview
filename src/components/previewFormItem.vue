@@ -1150,7 +1150,6 @@
       },
       // 对于有设置前置关联的普通下拉和码表下拉，找到联动查询参数
       getRelationQueryParams(optionSetting_tabContent){
-        debugger;
         let queryParam = {};// 值版本
         let queryParamKeys = {};// 键对应的版本
         let flg = true;
