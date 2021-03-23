@@ -566,8 +566,8 @@
         if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
           optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values)){
           // 整理出查询参数
-          debugger;
           let queryP = this.getRelationQueryParams(optionSetting_tabContent);
+          console.log('queryP' + queryP, this.data)
           debugger;
           if (queryP) {
             this.getRemoteUrlDatas({
@@ -886,7 +886,7 @@
       },
 
       // 针对配置了数据来源是远程接口的表单项，查询远程接口的数据
-      getRemoteUrlDatas ({url, method, params, data}) {
+      getRemoteUrlDatas ({url, method, params, data, needClearFormValue}) {
         const that = this;
         commonRequest({
           params: params,
@@ -895,9 +895,10 @@
           url: url
         })
           .then(res => {
-            debugger;
-            // 清空当前的选中值
-            this.formModel[this.data.code] = '';
+            // 如果有needClearFormValue，则需要清空当前的选中值
+            if(needClearFormValue){
+              this.formModel[this.data.code] = '';
+            }
             // 清空当前的下拉数据们
             this.options = [];
             if (res.data && res.data.code == '0000') {
@@ -955,7 +956,8 @@
             url: optionSetting_tabContent.remoteUrl ? optionSetting_tabContent.remoteUrl.value : '/admin/sysdict/list',// 以现在的情况，如果不是，即是字典表查询
             method: optionSetting_tabContent.remoteUrl? optionSetting_tabContent.remoteMethods.value : 'get',
             params: this.relationPreQueryParam,
-            data: this.relationPreQueryParam
+            data: this.relationPreQueryParam,
+            needClearFormValue: true,// 是否需要清空当前表单项的绑定值
           });
         }
       },
@@ -1148,6 +1150,7 @@
       },
       // 对于有设置前置关联的普通下拉和码表下拉，找到联动查询参数
       getRelationQueryParams(optionSetting_tabContent){
+        debugger;
         let queryParam = {};// 值版本
         let queryParamKeys = {};// 键对应的版本
         let flg = true;
