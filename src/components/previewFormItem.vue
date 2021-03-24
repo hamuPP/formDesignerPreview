@@ -476,12 +476,12 @@
         }
         return parent;
       },
-      editorTxt(){
-        if(this.data.type=='richText'){
-           return this.formModel[this.data.code]
-        }
-
-      }
+      // editorTxt(){
+      //   if(this.data.type=='richText'){
+      //      return this.formModel[this.data.code]
+      //   }
+      //
+      // }
     },
     watch: {
       // relationPreQueryParam(n, o){
@@ -500,7 +500,8 @@
       editorTxt:{
         handler(n,o){
           this.editor.txt.html(this.formModel[this.data.code])
-        }
+        },
+        deep: true
       },
       'data.disabled'(n,o){
         if(this.data.type=='richText'){
@@ -542,6 +543,7 @@
         editorHtml:'',
         editorFlag:true,
         formCode:'',
+        editorTxt: ''
       }
     },
     created () {
@@ -563,8 +565,8 @@
         if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
           optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values)){
           // 整理出查询参数
-          debugger;
           let queryP = this.getRelationQueryParams(optionSetting_tabContent);
+          console.log('queryP' + queryP, this.data)
           debugger;
           if (queryP) {
             this.getRemoteUrlDatas({
@@ -674,6 +676,11 @@
           }
           this.rules = rules;
         }
+      }
+
+      // 处理富文本的值
+      if(this.data.type=='richText'){
+        this.editorTxt = this.formModel[this.data.code]
       }
     },
     mounted () {
@@ -883,7 +890,7 @@
       },
 
       // 针对配置了数据来源是远程接口的表单项，查询远程接口的数据
-      getRemoteUrlDatas ({url, method, params, data}) {
+      getRemoteUrlDatas ({url, method, params, data, needClearFormValue}) {
         const that = this;
         commonRequest({
           params: params,
@@ -892,9 +899,10 @@
           url: url
         })
           .then(res => {
-            debugger;
-            // 清空当前的选中值
-            this.formModel[this.data.code] = '';
+            // 如果有needClearFormValue，则需要清空当前的选中值
+            if(needClearFormValue){
+              this.formModel[this.data.code] = '';
+            }
             // 清空当前的下拉数据们
             this.options = [];
             if (res.data && res.data.code == '0000') {
@@ -952,7 +960,8 @@
             url: optionSetting_tabContent.remoteUrl ? optionSetting_tabContent.remoteUrl.value : '/admin/sysdict/list',// 以现在的情况，如果不是，即是字典表查询
             method: optionSetting_tabContent.remoteUrl? optionSetting_tabContent.remoteMethods.value : 'get',
             params: this.relationPreQueryParam,
-            data: this.relationPreQueryParam
+            data: this.relationPreQueryParam,
+            needClearFormValue: true,// 是否需要清空当前表单项的绑定值
           });
         }
       },

@@ -53,7 +53,6 @@
     mounted () {
       let FD = this.$refs.FD;
       let FD_form = FD.getFormIns();
-      console.log(FD_form)
     },
     beforeDestroy () {
 

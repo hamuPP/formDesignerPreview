@@ -47,12 +47,10 @@
           let groupHeaders = form.$el.getElementsByClassName('fd-form-group__header');// form组件的分组们的标题的集合
           if (groupHeaders && groupHeaders.length) {
             for (let i = 0, len = groupHeaders.length; i < len; i++) {
-              console.log(groupHeaders[i].innerText)
               this.list.push(groupHeaders[i].innerText);
             }
             this.catalogCur = 0;
           }
-          console.log(this.list);
         }catch(e){
           console.log(e)
           this.catalogCur = null;
