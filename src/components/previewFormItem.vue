@@ -476,12 +476,12 @@
         }
         return parent;
       },
-      editorTxt(){
-        if(this.data.type=='richText'){
-           return this.formModel[this.data.code]
-        }
-
-      }
+      // editorTxt(){
+      //   if(this.data.type=='richText'){
+      //      return this.formModel[this.data.code]
+      //   }
+      //
+      // }
     },
     watch: {
       // relationPreQueryParam(n, o){
@@ -500,7 +500,8 @@
       editorTxt:{
         handler(n,o){
           this.editor.txt.html(this.formModel[this.data.code])
-        }
+        },
+        deep: true
       },
       'data.disabled'(n,o){
         if(this.data.type=='richText'){
@@ -542,6 +543,7 @@
         editorHtml:'',
         editorFlag:true,
         formCode:'',
+        editorTxt: ''
       }
     },
     created () {
@@ -674,6 +676,11 @@
           }
           this.rules = rules;
         }
+      }
+
+      // 处理富文本的值
+      if(this.data.type=='richText'){
+        this.editorTxt = this.formModel[this.data.code]
       }
     },
     mounted () {
