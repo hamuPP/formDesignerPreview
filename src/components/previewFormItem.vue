@@ -176,6 +176,8 @@
                   :fetch-suggestions="querySearchAsync"
                   placeholder="请输入内容"
                    @select="handleSelect"
+                 :disabled="data.disabled"
+                 :readonly="data.readonly"
         >
 
         </el-autocomplete>
@@ -499,6 +501,7 @@
       // },
       editorTxt:{
         handler(n,o){
+          console.log(n,'ppp');
           this.editor.txt.html(this.formModel[this.data.code])
         },
         deep: true
@@ -1184,5 +1187,7 @@
 </script>
 
 <style scoped>
-
+.fd-form-item .el-autocomplete{
+  width: 100%;
+}
 </style>
