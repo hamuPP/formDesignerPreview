@@ -111,7 +111,6 @@
     created () {
       // 检查浏览器参数
       let searchParamObj = this.searchParamObj = getUrlQueryParams();
-      console.log(searchParamObj);
     },
     mounted () {
       const that = this;

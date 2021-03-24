@@ -93,6 +93,7 @@
 			position: relative;
 			cursor: move;
 			overflow-y: hidden;//主要是为了嵌套的表单项的高度
+			overflow-x: hidden;//主要是为了嵌套的select在显示下拉框时不至于横向滚动条一闪而过
 			.operate-border__top {
 				@include formItemOperateBorderStyle();
 				top: 0;
