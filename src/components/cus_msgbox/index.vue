@@ -284,7 +284,7 @@
         return true;
       },
       getFirstFocus() {
-        debugger;
+      
         const btn = this.$el.querySelector('.el-message-box__btns .cus-button');
         const title = this.$el.querySelector('.el-message-box__btns .cus-message-box__title');
         return btn || title;
