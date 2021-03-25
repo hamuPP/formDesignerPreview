@@ -10,6 +10,7 @@
       transition="fade-in-linear"
       v-model="visible"
       trigger="click"
+      :disabled="data.disabled"
     >
       <el-tree
         :props="props"
