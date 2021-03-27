@@ -53,6 +53,65 @@
         </template>
         <!--    如果是有分组的  --end--  -->
 
+        <!--    如果是tabs的 --start--  -->
+        <template v-if="item.type === 'tabs'">
+          <div class="fd-form-group fd-form-tabs" :class="item.className">
+           <div class="fd-form-tabs__header">
+             <div v-for="(item, index) in item.header"
+                  :key="index"
+                  class="fd-form-tabs__item" :class="{'active': currentActiveTabIndex === index}"
+                  @click.stop="tabsHeaderClickHand(index)">{{item}}
+             </div>
+           </div>
+            <div class="fd-form-tabs__body">
+              <div v-for="(b, bIndex) in item.children"
+                   :key="bIndex"
+                   class="fd-form-tabs__body-item"
+                   v-show="currentActiveTabIndex === bIndex">
+                <el-row v-for="(_b, _bIndex) in b" :key="bIndex" :gutter="35">
+                  <el-col
+                          v-for="(cItem, cKey) in _b"
+                          :key="cKey"
+                          :span="cItem.width"
+                          :style="colStyle(cItem)"
+                  >
+                    <previewFormItem
+                            ref="fdFormItem"
+                            :view="view"
+                            :formModel="formModel"
+                            :data="cItem"
+                            :labelWidth="fdFormData.labelWidth"
+                            :lineMarginBottom="fdFormData.lineMarginBottom"
+                    ></previewFormItem>
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+<!--            <el-row-->
+<!--                    v-for="(child, childIdx) in item.children"-->
+<!--                    :key="childIdx"-->
+<!--                    :gutter="35"-->
+<!--            >-->
+<!--              <el-col-->
+<!--                      v-for="(cItem, cKey) in child"-->
+<!--                      :key="cKey"-->
+<!--                      :span="cItem.width"-->
+<!--                      :style="colStyle(cItem)"-->
+<!--              >-->
+<!--                <previewFormItem-->
+<!--                        ref="fdFormItem"-->
+<!--                        :view="view"-->
+<!--                        :formModel="formModel"-->
+<!--                        :data="cItem"-->
+<!--                        :labelWidth="fdFormData.labelWidth"-->
+<!--                        :lineMarginBottom="fdFormData.lineMarginBottom"-->
+<!--                ></previewFormItem>-->
+<!--              </el-col>-->
+<!--            </el-row>-->
+          </div>
+        </template>
+        <!--    如果是tabs的 --end--  -->
+
         <!--   非分组的表单项  --start--   -->
         <previewFormItem
           v-else
@@ -88,7 +147,8 @@ export default {
     return {
       skin: "", // 预设的表格的样式名称
       formClassStr: "",
-      formCode:''
+      formCode:'',
+      currentActiveTabIndex: 0
     };
   },
   props: {
@@ -106,7 +166,7 @@ export default {
       type: [Number, String],
       default: null
     },
-    
+
     rules: {
       type: Object,
       default () {
@@ -254,6 +314,9 @@ export default {
         fn(this.fdFormItems)
       }
     },
+    tabsHeaderClickHand(index){
+      this.currentActiveTabIndex = index;
+    }
   },
 };
 </script>
