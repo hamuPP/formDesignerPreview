@@ -55,7 +55,7 @@
 
         <!--    如果是tabs的 --start--  -->
         <template v-else-if="item.type === 'tabs'">
-          <div class="fd-form-group fd-form-tabs" :class="item.className">
+          <div class="fd-form-group__tobedel fd-form-tabs" :class="item.className">
            <div class="fd-form-tabs__header">
              <div v-for="(item, index) in item.header"
                   :key="index"

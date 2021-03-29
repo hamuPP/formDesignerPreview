@@ -148,7 +148,32 @@ $--color-purple2: rgb(245, 177, 179) !default;
 			//vertical-align: middle;
 		}
 	}
-	// ---默认的尺寸与颜色--start--
+	.fd-form-tabs{
+		border: 1px solid #b9c2dd;
+		margin-bottom: 10px;
+		.fd-form-tabs__header{
+			&:after{
+				background-color: #e4e7ed;
+			}
+		}
+		.fd-form-tabs__item{
+			&.active{
+				color: #409eff;// 默认的tabs页签是白底蓝字
+				font-weight: bold;
+				&:after{
+					background: #409eff;
+				}
+			}
+			&:hover{
+				color: #409eff;
+			}
+		}
+		.fd-form-tabs__body{
+			padding: 7px 0;
+			min-height: 80px;
+		}
+	}
+	// ---默认的尺寸与颜色--end--
 	// 重设elementui的默认样式--end--
 }
 
