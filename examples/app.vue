@@ -17,7 +17,7 @@
                   :formModel="formModel"
                   :fdFormItems="fdFormItems"
                   :fdFormData="fdFormData"
-                  showAnchor
+                  :showAnchor="false"
                   useCustormRule
     ></FormDesigner>
   </div>
@@ -124,11 +124,23 @@
             }
 
             // 分组的
-            if (it.children && it.children.length) {
-              let metaChildren = [].concat(it.children);// 原始的子成员数据
+            if (it.type === 'group'){
+              if (it.children && it.children.length) {
+                let metaChildren = [].concat(it.children);// 原始的子成员数据
+                it.children = [];
+                fn(metaChildren, it);
+              }
+            } else if (it.type === 'tabs') {
+              let _metaC = [].concat(it.children);
               it.children = [];
-              fn(metaChildren, it);
+              _metaC.forEach(child => {
+                let _metaChildren = [].concat(child);// 原始的子成员数据
+                let _it = {};
+                fn(_metaChildren, _it);
+                it.children.push(_it.children)
+              });
             }
+
           });
         };
         fn(dataList);

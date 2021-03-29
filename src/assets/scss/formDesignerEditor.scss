@@ -58,7 +58,8 @@
 				min-height: 80px;
 				width: 100%;
 				float: left;// 为了当子元素增加后，这个元素的高度能撑开
-
+				padding-top: 7px;// 加一点padding;不然拖组件进来的时候太挤了、太难拖了
+				padding-bottom: 7px;// 加一点padding;不然拖组件进来的时候太挤了、太难拖了
 			}
 		}
 		@include e(transition) {
@@ -156,6 +157,18 @@
 
 					}
 				}
+			}
+		}
+
+		@include b(form-tabs) {
+			border: none;
+			.fd-form-tabs__header{
+				border-top: 1px solid #b9c2dd;
+				border-left: 1px solid #b9c2dd;
+				border-right: 1px solid #b9c2dd;
+			}
+			.fd-form__dragbox--inner{
+				border-top: none;
 			}
 		}
 	}

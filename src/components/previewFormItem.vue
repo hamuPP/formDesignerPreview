@@ -113,7 +113,7 @@
     </template>
   <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
     <el-form-item
-          v-else-if="data.type !== 'uploadFile' || (data.type === 'uploadFile' && !view)"
+           v-else-if="data.type !== 'uploadFile' || (data.type === 'uploadFile' && !view)"
           :prop="data.code"
           :label="data.label"
           :class="data.className"
