@@ -159,6 +159,18 @@
 				}
 			}
 		}
+
+		@include b(form-tabs) {
+			border: none;
+			.fd-form-tabs__header{
+				border-top: 1px solid #b9c2dd;
+				border-left: 1px solid #b9c2dd;
+				border-right: 1px solid #b9c2dd;
+			}
+			.fd-form__dragbox--inner{
+				border-top: none;
+			}
+		}
 	}
 }
 
