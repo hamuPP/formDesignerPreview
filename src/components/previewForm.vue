@@ -54,7 +54,7 @@
         <!--    如果是有分组的  --end--  -->
 
         <!--    如果是tabs的 --start--  -->
-        <template v-if="item.type === 'tabs'">
+        <template v-else-if="item.type === 'tabs'">
           <div class="fd-form-group fd-form-tabs" :class="item.className">
            <div class="fd-form-tabs__header">
              <div v-for="(item, index) in item.header"
@@ -68,7 +68,7 @@
                    :key="bIndex"
                    class="fd-form-tabs__body-item"
                    v-show="currentActiveTabIndex === bIndex">
-                <el-row v-for="(_b, _bIndex) in b" :key="bIndex" :gutter="35">
+                <el-row v-for="(_b, _bIndex) in b" :key="_bIndex" :gutter="35">
                   <el-col
                           v-for="(cItem, cKey) in _b"
                           :key="cKey"
