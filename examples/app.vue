@@ -170,7 +170,6 @@
             }
           })
           .catch(e => {
-            debugger;
             this.MessageConfig = {
               showMessage: true, // 打开消息提示框
               MsgBoxType: 'error', // 消息提示框类型

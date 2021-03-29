@@ -570,7 +570,6 @@
           // 整理出查询参数
           let queryP = this.getRelationQueryParams(optionSetting_tabContent);
           console.log('queryP' + queryP, this.data)
-          debugger;
           if (queryP) {
             this.getRemoteUrlDatas({
               url: (optionSetting_tabContent.remoteUrl && optionSetting_tabContent.remoteUrl.value)? optionSetting_tabContent.remoteUrl.value : '/admin/sysdict/list',
@@ -610,7 +609,7 @@
               });
             }
             catch(e){
-              debugger;
+             
             }
 
           }
@@ -772,7 +771,7 @@
             headers: {'Content-Type': 'multipart/form-data'}
           })
             .then(res => {
-              debugger;
+             
               if (res.data.ok) { // 上传成功
                 this.$message({
                   showClose: true,
@@ -793,7 +792,7 @@
               this.getFileList();
             })
             .catch(e => {
-              debugger;
+            
           })
         }
       },
@@ -824,7 +823,7 @@
           })
             .then(res => {
               console.log('查询附件的值',res);
-              debugger;
+            
               if (res && res.data && res.data.code == '0000') {
                 this.fileList = res.data.data.data;
               } else {
@@ -832,7 +831,7 @@
               }
             })
             .catch(e => {
-              debugger;
+             
               console.log(e)
             })
         }
@@ -888,7 +887,7 @@
             }
           })
           .catch(e => {
-            debugger
+         
           })
       },
 
