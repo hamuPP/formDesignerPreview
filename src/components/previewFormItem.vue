@@ -170,17 +170,6 @@
               :clearable="data.clearable"
     >
     </el-input>
-  <!-- 搜索 -->
-        <el-autocomplete v-else-if="data.type === 'search'"
-                   v-model="formModel[data.code]"
-                  :fetch-suggestions="querySearchAsync"
-                  placeholder="请输入内容"
-                   @select="handleSelect"
-                 :disabled="data.disabled"
-                 :readonly="data.readonly"
-        >
-
-        </el-autocomplete>
     <!--   单选组     -->
     <el-radio-group v-else-if="data.type === 'radio'"
                     :ref="data.ref"
@@ -325,6 +314,22 @@
       </ul>
     </div>
 
+      <!-- 计数器 -->
+      <el-input-number
+              v-else-if="data.type === 'calcNumber'"
+              :ref="data.ref.value"
+              v-model="formModel[data.code]"
+              class="inputNumber__self"
+              :step-strictly="data.stepStrictly"
+              :precision="data.precision"
+              :step="data.stepValue"
+              :controls="data.showButton"
+              :disabled="data.disabled"
+              :readonly="data.readonly"
+              :min="data.minValue"
+              :max="data.maxValue"
+      ></el-input-number>
+
     <!--   业务公共字段-流水号     -->
     <el-input v-else-if="data.type === 'sheetFlowCode'"
             :ref="data.ref"
@@ -384,7 +389,18 @@
     <!-- 如果没有设置type，则都是input --start-- -->
     <template v-else>
 <!--      <div style="color:red">{{data}}</div>-->
-      <el-input v-if="data.validationSetting && data.validationSetting.dataType.value === 'number'"
+      <!-- 搜索 -->
+      <el-autocomplete v-if="data.isAutocompletable"
+                       v-model="formModel[data.code]"
+                       :fetch-suggestions="querySearchAsync"
+                       placeholder="请输入内容"
+                       @select="handleSelect"
+                       :disabled="data.disabled"
+                       :readonly="data.readonly"
+      >
+      </el-autocomplete>
+
+      <el-input v-else-if="data.validationSetting && data.validationSetting.dataType.value === 'number'"
               :ref="data.ref"
               :disabled="data.disabled"
               :readonly="data.readonly"
@@ -590,7 +606,7 @@
           });
         }
       }
-      // 远程接口
+      // 远程接口（初版）
       else if (optionSetting === 'remoteUrl') {
         // 如果有前置关联关系设置的，则需要先检查其前置是否有值，有再查询
         // eslint-disable-next-line camelcase
@@ -609,7 +625,7 @@
               });
             }
             catch(e){
-             
+
             }
 
           }
@@ -621,6 +637,59 @@
             method: optionSetting_tabContent.remoteMethods.value
           });
         }
+      }
+      // 远程接口（2版）
+      else if (optionSetting === 'remoteUrl2') {
+        // todo 前置关联还没有加入
+        // 如果有前置关联关系设置的，则需要先检查其前置是否有值，有再查询
+        // eslint-disable-next-line camelcase
+        const optionSetting_tabContent = this.data.optionSetting_tabContent;
+        // if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
+        //   optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values)) {
+        //   // 整理出查询参数
+        //   let queryP = this.getRelationQueryParams(optionSetting_tabContent)
+        //
+        //   if (queryP) {
+        //     try{
+        //       this.getRemoteUrlDatas({
+        //         url: optionSetting_tabContent.remoteUrl.value,
+        //         method: optionSetting_tabContent.remoteMethods.value,
+        //         ...queryP
+        //       });
+        //     }
+        //     catch(e){
+        //
+        //     }
+        //
+        //   }
+        // }
+        // // 没有配置前置关联查询参数，则现在就查询后台接口
+        // else {
+          debugger
+          // 处理queryParams，拼接查询参数
+          let params = {};
+          let data = {};
+          let headers = {};
+          optionSetting_tabContent.queryParams.forEach(it =>{
+            if (it.paramType === 'params'){
+              params[it.paramName] = it.defaultValue;
+            }
+            else if (it.paramType === 'body'){
+              data[it.paramName] = it.defaultValue;
+            }
+            else if (it.paramType === 'header'){
+              headers[it.paramName] = it.defaultValue;
+            }
+          });
+          this.getRemoteUrlDatas({
+            url: optionSetting_tabContent.url,
+            method: optionSetting_tabContent.method,
+            data: data,
+            params: params,
+            headers: headers,
+            successCallback: optionSetting_tabContent.successCallback
+          });
+        // }
       }
       //判断是否有控制表单元素状态的下拉框
       if(formSetting_children){
@@ -771,7 +840,7 @@
             headers: {'Content-Type': 'multipart/form-data'}
           })
             .then(res => {
-             
+
               if (res.data.ok) { // 上传成功
                 this.$message({
                   showClose: true,
@@ -792,7 +861,7 @@
               this.getFileList();
             })
             .catch(e => {
-            
+
           })
         }
       },
@@ -823,7 +892,7 @@
           })
             .then(res => {
               console.log('查询附件的值',res);
-            
+
               if (res && res.data && res.data.code == '0000') {
                 this.fileList = res.data.data.data;
               } else {
@@ -831,7 +900,7 @@
               }
             })
             .catch(e => {
-             
+
               console.log(e)
             })
         }
@@ -887,18 +956,19 @@
             }
           })
           .catch(e => {
-         
+
           })
       },
 
       // 针对配置了数据来源是远程接口的表单项，查询远程接口的数据
-      getRemoteUrlDatas ({url, method, params, data, needClearFormValue}) {
+      getRemoteUrlDatas ({url, method, params, data, needClearFormValue, headers = {}, successCallback}) {
         const that = this;
         commonRequest({
+          url: url,
           params: params,
           data: data,
           method: method,
-          url: url
+          headers: headers
         })
           .then(res => {
             // 如果有needClearFormValue，则需要清空当前的选中值
@@ -907,29 +977,39 @@
             }
             // 清空当前的下拉数据们
             this.options = [];
-            if (res.data && res.data.code == '0000') {
-              if(res.data.data.data && res.data.data.data.constructor === Array){
-                this.options = res.data.data.data.map(it => {
-                  return {
-                    label: it.name,
-                    value: it.id
-                  }
-                });
-              }else{
-                this.options = res.data.data.map(it => {
-                  return {
-                    label: it.lable,
-                    value: it.value
-                  }
+            // 如果有自定义的回调函数，则执行自定义的
+            if(successCallback){
+              try{
+                let fn = new Function('resData', successCallback);
+                this.options = fn(res) || [];
+              }catch(e){
+                console.log(e)
+              }
+            }else{
+              if (res.data && res.data.code == '0000') {
+                if(res.data.data.data && res.data.data.data.constructor === Array){
+                  this.options = res.data.data.data.map(it => {
+                    return {
+                      label: it.name,
+                      value: it.id
+                    }
+                  });
+                }else{
+                  this.options = res.data.data.map(it => {
+                    return {
+                      label: it.lable,
+                      value: it.value
+                    }
+                  });
+                }
+              } else {
+                this.$message({
+                  showClose: true,
+                  message: res.data.codeMsg || res.data.msg || '查询失败',
+                  duration: 1500,
+                  type: 'warning'
                 });
               }
-            } else {
-              this.$message({
-                showClose: true,
-                message: res.data.codeMsg || res.data.msg || '查询失败',
-                duration: 1500,
-                type: 'warning'
-              });
             }
           })
           .catch(e => {
