@@ -314,6 +314,30 @@
       </ul>
     </div>
 
+      <!-- 新附件上传 -->
+      <el-upload
+              v-else-if="data.type === 'uploadNewFile'"
+              class="upload-demo"
+              action="string"
+              ref="newFile"
+              :show-file-list="false"
+              :auto-upload="true"
+              :http-request="uploadNewFile"
+              :multiple="data.isMultiple"
+      >
+        <el-button size="small" type="primary">点击上传</el-button>
+        <div class="el-upload__tip" @click.stop="()=>{}">只能上传{{data.upLoadFileType.join("、")}}文件，且不超过{{data.fileUploadSize}}KB</div>
+        <ul class="el-upload-list el-upload-list--text" @click.stop="()=>{}">
+          <li class="el-upload-list__item is-ready" v-for="(fileItem, fileIndex) in fileList" :key="fileIndex">
+            <a class="el-upload-list__item-name" :href="getDownURL(fileItem)" download title="下载">
+              <i class="el-icon-document"></i>
+              {{fileItem.name}}
+            </a>
+            <el-button size="mini" type="text" icon="el-icon-delete" @click.stop="deleteFile(fileItem)"></el-button>
+          </li>
+        </ul>
+      </el-upload>
+
       <!-- 计数器 -->
       <el-input-number
               v-else-if="data.type === 'calcNumber'"
@@ -329,6 +353,26 @@
               :min="data.minValue"
               :max="data.maxValue"
       ></el-input-number>
+
+      <!--   级联选择器   -->
+      <el-cascader
+              v-else-if="data.type === 'cascader'"
+              :ref="data.ref.value"
+              v-model="formModel[data.code]"
+              class="el_cascader_self"
+              :key.sync="data.cascaderKey"
+              collapse-tags
+              :disabled="data.disabled"
+              :readonly="data.readonly"
+              :clearable="data.clearable"
+              :filterable="data.filterable"
+              :placeholder="data.placeholder"
+              :props="{ multiple: data.isMultiple }"
+              :options="data.optionSetting.options && data.optionSetting.options.length > 0 ? data.optionSetting.options[0].children : []"
+              @change="selectCascaderChange($event, data)"
+
+      >
+      </el-cascader>
 
     <!--   业务公共字段-流水号     -->
     <el-input v-else-if="data.type === 'sheetFlowCode'"
@@ -447,7 +491,11 @@
 
 <script>
   import wangEditor from "wangeditor";
-  import {commonRequest, getCodeTypeData,getNames} from '../api/formDesigner_api';
+  import {
+    commonRequest,
+    getCodeTypeData,
+    getNames,
+    uploadFiles} from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
     import selectTree from "./selectTree"
@@ -569,6 +617,7 @@
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting, validationSetting,formSetting_children} = this.data;
       if(type=='tree') return
+      debugger;
       if (optionSetting === 'static') {
         this.options = this.data.optionSetting_options;
       }
@@ -670,7 +719,12 @@
           let params = {};
           let data = {};
           let headers = {};
-          optionSetting_tabContent.queryParams.forEach(it =>{
+          for(let i = 0,len = optionSetting_tabContent.queryParams.length;i < len; i++){
+            let it = optionSetting_tabContent.queryParams[i];
+            // 空键名的不要
+            if(!it.paramName){
+              break;
+            }
             if (it.paramType === 'params'){
               params[it.paramName] = it.defaultValue;
             }
@@ -680,7 +734,8 @@
             else if (it.paramType === 'header'){
               headers[it.paramName] = it.defaultValue;
             }
-          });
+          }
+
           this.getRemoteUrlDatas({
             url: optionSetting_tabContent.url,
             method: optionSetting_tabContent.method,
@@ -1260,7 +1315,103 @@
           params: queryParam,
           data: queryParam
         }: flg;
-      }
+      },
+      // 新附件上传 上传文件
+      uploadNewFile(params) {
+        debugger;
+        let fileName = params.file.name;
+        debugger
+        let pos = fileName.lastIndexOf(".");
+        console.log("获取当前data,upload", this.data)
+        let lastName = fileName.substring(pos, fileName.length);
+        if (
+          this.data.upLoadFileType && this.data.upLoadFileType.indexOf(lastName.toLowerCase()) === -1
+        ) {
+          let tipTxt = ""
+          this.data.upLoadFileType.length > 0 && this.data.upLoadFileType.map((value, index) => {
+            if (index === 0) {
+              tipTxt += `${value}`
+            } else {
+              tipTxt += `、${value}`
+            }
+          })
+          this.$message.error(`文件必须为${tipTxt}类型`);
+          // this.resetCompressData()
+          return false;
+        }
+        // 限制上传文件的大小
+        const isLt = params.file.size / 1024 > this.data.fileUploadSize;
+        if (isLt) {
+          this.$message.error(`上传文件大小不得大于${this.data.fileUploadSize}KB!`);
+          return false
+        }
+        debugger
+        if (this.fileList.length >= this.data.totalUploadCounts) {
+          debugger
+          this.$message.error(`上传文件的数量不能超过${this.data.totalUploadCounts}个`);
+          return false
+        }
+        // 判断文件是否为空
+        if (false) {
+          this.$message({
+            showClose: true,
+            message: "请选择上传的目标文件!",
+            duration: 1000,
+            type: "warning"
+          });
+          return false;
+        } else {
+          // 找到配置的请求体、接口地址、查询方式
+          let param = new FormData();
+          param.append("files", params.file);
+          param.append("access_token", sessionStorage.getItem("access_token"));
+          // param.append('typeId', 1);
+          console.log("上传文件的自定义参数", this.customParams);
+          param.append("boId", "1376349548590534656")
+          param.append("businessType", "jlitreq")
+          // 向后端发送请求
+          return new Promise((resolve, reject) => {
+            uploadFiles(param)
+              .then(res => {
+                //   debugger;
+                if (res.data && res.code == "0000") {
+                  // 上传成功
+                  this.$message({
+                    showClose: true,
+                    message: "上传成功",
+                    duration: 1500,
+                    type: "success"
+                  });
+                  this.getFileList()
+                  resolve(params)
+                } else {
+                  this.$message({
+                    showClose: true,
+                    message: res.data.codeMsg || res.data.msg || "上传失败",
+                    duration: 1500,
+                    type: "warning"
+                  });
+
+                  reject(false)
+                }
+                // 改为不论上传成功与否，都请求列表数据
+                // this.getFileList();
+              })
+              .catch(e => {
+                this.$message({
+                  showClose: true,
+                  message: "上传失败",
+                  duration: 1500,
+                  type: "warning"
+                });
+                reject(false)
+              }).finally(() => {
+
+            })
+          })
+
+        }
+      },
     }
   }
 </script>
