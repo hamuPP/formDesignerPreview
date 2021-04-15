@@ -3,7 +3,7 @@ const text =
 const openLoading = (opt)=>{
     let {scope, target} = opt;
     let customClass;
-    scope.loadingInstance={};
+    scope.loadingInstance || (scope.loadingInstance={});
     //需要加多个loading的情况
     if(target.constructor==Array){
     customClass = 'sap-loading1';

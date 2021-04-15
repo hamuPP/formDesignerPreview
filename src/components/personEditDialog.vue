@@ -184,6 +184,7 @@ export default {
     //树节点点击
     handleNodeClick(data) {
       this.currentClickedOrgId = data.id;
+      this.configPage.currentPage = 1
       this.getTableData(); //获取人员列表
     },
     // 请求组织下的人员
