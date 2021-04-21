@@ -230,7 +230,8 @@
                     :ref="data.ref"
                     v-model="formModel[data.code]"
                     :type="data.innerType"
-                    :value-format="data.valueFormat"
+                    :format="data.isCustormFormat? data.custormFormat : data.format"
+                    :value-format="data.isCustormValueFormat ? data.custormValueFormat : data.valueFormat"
                     :disabled="data.disabled"
                     :readonly="data.readonly"
                     :clearable="data.clearable"
@@ -241,7 +242,8 @@
     <el-time-picker v-else-if="data.type === 'timePicker'"
                     :ref="data.ref"
                     v-model="formModel[data.code]"
-                    :value-format="data.valueFormat"
+                    :format="data.isCustormFormat? data.custormFormat : data.format"
+                    :value-format="data.isCustormValueFormat ? data.custormValueFormat : data.valueFormat"
                     :disabled="data.disabled"
                     :readonly="data.readonly"
                     :clearable="data.clearable"
@@ -542,12 +544,6 @@
         }
         return parent;
       },
-      // editorTxt(){
-      //   if(this.data.type=='richText'){
-      //      return this.formModel[this.data.code]
-      //   }
-      //
-      // }
     },
     watch: {
       // relationPreQueryParam(n, o){
@@ -614,12 +610,20 @@
       }
     },
     created () {
-      // 检查如果有码表配置的，查询其数据
-      let {type, optionSetting, validationSetting,formSetting_children} = this.data;
-      if(type=='tree') return
       debugger;
+      // 检查如果有码表配置的，查询其数据
+      let {type, optionSetting, validationSetting, formSetting_children} = this.data;
+      if (type == 'tree'){return;}
+
       if (optionSetting === 'static') {
-        this.options = this.data.optionSetting_options;
+        this.options = this.data.optionSetting_tabContent.map(it=>{
+          if(it.label && it.label.value){
+            return {
+              label: it.label.value,
+              value: it.value.value
+            }
+          }
+        });
       }
       // 码表(调用接口，查询数据)
       else if (optionSetting === 'remote') {
@@ -692,29 +696,9 @@
         // todo 前置关联还没有加入
         // 如果有前置关联关系设置的，则需要先检查其前置是否有值，有再查询
         // eslint-disable-next-line camelcase
-        const optionSetting_tabContent = this.data.optionSetting_tabContent;
-        // if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
-        //   optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values)) {
-        //   // 整理出查询参数
-        //   let queryP = this.getRelationQueryParams(optionSetting_tabContent)
-        //
-        //   if (queryP) {
-        //     try{
-        //       this.getRemoteUrlDatas({
-        //         url: optionSetting_tabContent.remoteUrl.value,
-        //         method: optionSetting_tabContent.remoteMethods.value,
-        //         ...queryP
-        //       });
-        //     }
-        //     catch(e){
-        //
-        //     }
-        //
-        //   }
-        // }
+        const optionSetting_tabContent = JSON.parse(JSON.stringify(this.data.optionSetting_tabContent))
+
         // // 没有配置前置关联查询参数，则现在就查询后台接口
-        // else {
-          debugger
           // 处理queryParams，拼接查询参数
           let params = {};
           let data = {};
@@ -744,7 +728,6 @@
             headers: headers,
             successCallback: optionSetting_tabContent.successCallback
           });
-        // }
       }
       //判断是否有控制表单元素状态的下拉框
       if(formSetting_children){
@@ -816,28 +799,9 @@
         this.setLabelEleHeight(this.contentEle.offsetHeight + 'px');
       }
       this.renderUploadStyles();
-      if(this.data.type=='richText'){
-      let className ='.richText'+this.data.frontId
-      const editor = new wangEditor(className);
-      editor.config.uploadImgServer = this.data.uploadUrl||''
-      // 配置alt选项
-      editor.config.showLinkImgAlt = false
-      editor.config.zIndex = 50
-      // 配置超链接
-      editor.config.showLinkImgHref = false
-      editor.config.excludeMenus = [
-        'emoticon',
-        'video',
-         'image',
-      ]
-    // 配置 onchange 回调函数，将数据同步到 vue 中
-      editor.config.onchange = (newHtml) => {
-      this.editorData = newHtml;
-      this.formModel[this.data.code] = editor.txt.html()
-      };
-    // 创建编辑器
-      editor.create();
-      this.editor = editor;
+      if (this.data.type == 'richText') {
+        // 配置富文本编辑器的参数以及各种回调函数
+        this.initRichTextSettings();
       }
     },
     methods: {
@@ -1036,11 +1000,14 @@
             if(successCallback){
               try{
                 let fn = new Function('resData', successCallback);
+                debugger;
                 this.options = fn(res) || [];
               }catch(e){
                 console.log(e)
               }
-            }else{
+            }
+            // 没有自定义的回调函数，则执行默认逻辑
+            else{
               if (res.data && res.data.code == '0000') {
                 if(res.data.data.data && res.data.data.data.constructor === Array){
                   this.options = res.data.data.data.map(it => {
@@ -1412,6 +1379,43 @@
 
         }
       },
+
+      // 配置富文本编辑器的参数以及各种回调函数
+      initRichTextSettings(){
+        const that = this;
+        debugger;
+        let className = '.richText' + this.data.frontId;
+        const editor = new wangEditor(className);
+        editor.config.height = this.data.height || 200;// 高度(200是我settings.js中设置的最小值)
+        editor.config.showLinkImg = false;
+        // 使用服务器上传图片与使用base64图片不能同时存在
+        // editor.config.uploadImgServer = this.data.uploadUrl||''
+        editor.config.uploadImgShowBase64 = true;
+
+        // 配置alt选项
+        editor.config.showLinkImgAlt = false
+        editor.config.zIndex = 50
+        // 配置超链接
+        editor.config.showLinkImgHref = false
+        editor.config.excludeMenus = [
+          'emoticon',
+          'video'
+          // 'image',
+        ];
+        // 配置 onchange 回调函数，将数据同步到 vue 中
+        editor.config.onchange = (newHtml) => {
+          this.editorData = newHtml;
+          this.formModel[this.data.code] = editor.txt.html()
+        };
+        editor.config.pasteTextHandle = function(pasteStr){
+          debugger;
+          // return '<img src="https://www.wangeditor.com/imgs/ali-pay.jpeg"/>'
+          return pasteStr;
+        };
+        // 创建编辑器
+        editor.create();
+        this.editor = editor;
+      }
     }
   }
 </script>
