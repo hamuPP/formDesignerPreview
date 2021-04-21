@@ -51,13 +51,124 @@
               :width="col.width"
             >
               <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row[col.prop]"
-                  v-if="currentIndex == scope.$index"
-                ></el-input>
-                <span style="margin-left: 10px" v-else>{{
-                  scope.row[col.prop]
-                }}</span>
+                <div v-if="col.componentTypeValue === 'input' ">
+                  <!--密码组件-->
+                  <div v-if="col.componentTypeValueAttr.dataType.value === 'password'">
+                    <el-input
+                            v-if="currentIndex == scope.$index"
+                            :ref="data.ref.value"
+                            @click.native.stop
+                            v-model="scope.row[col.prop]"
+                            :disabled="col.componentTypeValueAttr.disabled.value"
+                            :readonly="col.componentTypeValueAttr.readonly.value"
+                            :clearable="col.componentTypeValueAttr.clearable.value"
+                            type="password"
+                    ></el-input>
+                    <span style="margin-left: 10px" v-else>{{
+                        scope.row[col.prop]
+                      }}</span>
+                  </div>
+                  <!--数字组件-->
+                  <div v-else-if="col.componentTypeValueAttr.dataType.value === 'number'">
+                    <el-input
+                            v-if="currentIndex == scope.$index"
+                            :ref="data.ref.value"
+                            @click.native.stop
+                            v-model.number="scope.row[col.prop]"
+                            :disabled="col.componentTypeValueAttr.disabled.value"
+                            :readonly="col.componentTypeValueAttr.readonly.value"
+                            :clearable="col.componentTypeValueAttr.clearable.value"
+                            type="number"
+                    ></el-input>
+                    <span style="margin-left: 10px" v-else>{{
+                        scope.row[col.prop]
+                      }}</span>
+                  </div>
+                  <!--自动搜索组件-->
+                  <div v-else-if="col.componentTypeValueAttr.dataType.value === 'url'">
+                    <el-autocomplete v-if="currentIndex == scope.$index"
+                                     v-model="scope.row[col.prop]"
+                                     placeholder="请输入内容"
+                                     @click.native.stop
+                                     :disabled="col.componentTypeValueAttr.disabled.value"
+                                     :readonly="col.componentTypeValueAttr.readonly.value"
+                                     :clearable="col.componentTypeValueAttr.clearable.value"
+                    >
+                    </el-autocomplete>
+                    <span style="margin-left: 10px" v-else>{{
+                        scope.row[col.prop]
+                      }}</span>
+                  </div>
+                  <!-- 默认的文本框展示 -->
+                  <div v-else>
+                    <el-input
+                            v-model="scope.row[col.prop]"
+                            v-if="currentIndex == scope.$index"
+                            :disabled="col.componentTypeValueAttr.disabled.value"
+                            :readonly="col.componentTypeValueAttr.readonly.value"
+                            :clearable="col.componentTypeValueAttr.clearable.value"
+                    ></el-input>
+                    <span style="margin-left: 10px" v-else>{{
+                      scope.row[col.prop]
+                    }}</span>
+                  </div>
+                </div>
+                <div v-else-if="col.componentTypeValue === 'select' ">
+                  <el-select
+                          v-model="scope.row[col.prop]"
+                          class="el_select_self"
+                          v-if="currentIndex == scope.$index"
+                          placeholder="请选择"
+                          :filterable="col.componentTypeValueAttr.filterable.value"
+                          :disabled="col.componentTypeValueAttr.disabled.value"
+                          :readonly="col.componentTypeValueAttr.readonly.value"
+                          :clearable="col.componentTypeValueAttr.clearable.value"
+                  >
+                    <el-option
+                            v-for="item in col.options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                  </el-select>
+                  <span style="margin-left: 10px" v-else>{{
+
+                    getShowTableLabelForValue(scope.row[col.prop], col.options)
+                  }}</span>
+                </div>
+                <div v-else-if="col.componentTypeValue === 'inputNumber' ">
+                  <el-input-number
+                          v-if="currentIndex == scope.$index"
+                          v-model="scope.row[col.prop]"
+                          :min="col.componentTypeValueAttr.minValue.value"
+                          :max="col.componentTypeValueAttr.maxValue.value"
+                          :step-strictly="col.componentTypeValueAttr.stepStrictly.value"
+                          :precision="col.componentTypeValueAttr.precision.value"
+                          :step="col.componentTypeValueAttr.stepValue.value"
+
+                  ></el-input-number>
+                  <span style="margin-left: 10px" v-else>{{
+                    scope.row[col.prop]
+                  }}</span>
+                </div>
+                <div v-else-if="col.componentTypeValue === 'datePicker' ">
+                  <el-date-picker
+                          class="el_datePicker_self"
+                          v-model="scope.row[col.prop]"
+                          :disabled="col.componentTypeValueAttr.disabled.value"
+                          :type="col.componentTypeValueAttr.innerType.value"
+                          :clearable="col.componentTypeValueAttr.clearable.value"
+                          :format="col.componentTypeValueAttr.selfShowValueFormat.value ? col.componentTypeValueAttr.inputFormatShow.value : col.componentTypeValueAttr.showValueFormat.value"
+                          :value-format="col.componentTypeValueAttr.selfValueFormat.value ? col.componentTypeValueAttr.inputFormatValue.value : col.componentTypeValueAttr.valueFormat.value"
+                          v-if="currentIndex == scope.$index"
+                          placeholder="选择日期">
+                  </el-date-picker>
+                  <span style="margin-left: 10px" v-else>{{
+
+                    getShowTableTextForDate(scope.row[col.prop], col.componentTypeValueAttr)
+                  }}</span>
+                </div>
+
               </template>
             </el-table-column>
             <el-table-column label="操作" width="100" align="center">
@@ -1415,6 +1526,28 @@
         // 创建编辑器
         editor.create();
         this.editor = editor;
+      },
+      // 动态表格下拉框根据value显示对应的label
+      getShowTableLabelForValue(value, options){
+        let resultArr = options.filter((item) => {
+          return item.value === value
+        })
+        return resultArr.length > 0 ? resultArr[0].label : ""
+      },
+      // 动态表格下显示自定义日期格式的文本
+      getShowTableTextForDate(value, attr){
+        //scope.row[col.prop] ? scope.row[col.prop] : col.componentTypeValueAttr.isDeafultNowDate.value ? moment().format('YYYY-MM-DD') : scope.row[col.prop]
+        if (attr.isDeafultNowDate.value) {
+          if (attr.selfShowValueFormat.value) {
+            return this.moment().format(attr.inputFormatShow.value)
+          }
+          return this.moment().format("YYYY-MM-DD")
+        } else {
+          if (attr.selfShowValueFormat.value) {
+            return value ? this.moment(value).format(attr.inputFormatShow.value) : this.moment().format(attr.inputFormatShow.value)
+          }
+          return value ? this.moment(value).format("YYYY-MM-DD") : ""
+        }
       }
     }
   }
