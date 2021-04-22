@@ -326,6 +326,7 @@
                :disabled="data.disabled"
                :readonly="data.readonly"
                :clearable="data.clearable"
+               :filterable="data.filterable"
                @change="selectChangeHand"
     >
       <el-option

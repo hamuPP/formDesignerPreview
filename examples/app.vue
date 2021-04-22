@@ -20,6 +20,9 @@
                   :showAnchor="false"
                   useCustormRule
     ></FormDesigner>
+
+    <h2>表单值</h2>
+    <div class="form-model-box">{{formModel}}</div>
   </div>
 </template>
 <script>
@@ -216,6 +219,13 @@
     .el-input{
       width: 200px;
     }
+  }
+
+  .form-model-box{
+    border: 1px solid #dcdcdc;
+    color: #333;
+    padding: 10px;
+    min-height: 100px;
   }
 
 </style>
