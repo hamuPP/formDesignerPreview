@@ -112,6 +112,14 @@ export function uploadFiles(data){
   })
 }
 
+// 根据某个码表的id获取对应码表下面的所有数据
+export function getPointCodeSheetData(data) {
+  return axios({
+    url: baseUrl + `/admin/sysdict/tree/${data.rootValue}`,
+    method: 'get'
+  })
+}
+
 // 删除附件
 export function delFile(data){
   return axios({

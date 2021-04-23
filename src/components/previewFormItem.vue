@@ -324,7 +324,6 @@
                :ref="data.ref"
                v-model="formModel[data.code]"
                :disabled="data.disabled"
-               :readonly="data.readonly"
                :clearable="data.clearable"
                :filterable="data.filterable"
                @change="selectChangeHand"
@@ -464,8 +463,8 @@
               :controls="data.showButton"
               :disabled="data.disabled"
               :readonly="data.readonly"
-              :min="data.minValue"
-              :max="data.maxValue"
+              :min="data.minValue || 0"
+              :max="data.maxValue || 0"
       ></el-input-number>
 
       <!--   级联选择器   -->
@@ -482,7 +481,7 @@
               :filterable="data.filterable"
               :placeholder="data.placeholder"
               :props="{ multiple: data.isMultiple }"
-              :options="data.optionSetting.options && data.optionSetting.options.length > 0 ? data.optionSetting.options[0].children : []"
+              :options="options && options.length? options[0].children : []"
               @change="selectCascaderChange($event, data)"
 
       >
@@ -609,7 +608,9 @@
     commonRequest,
     getCodeTypeData,
     getNames,
-    uploadFiles} from '../api/formDesigner_api';
+    uploadFiles,
+    getPointCodeSheetData
+  } from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
     import selectTree from "./selectTree"
@@ -722,8 +723,8 @@
       }
     },
     created () {
-      debugger;
       // 检查如果有码表配置的，查询其数据
+      debugger;
       let {type, optionSetting, validationSetting, formSetting_children} = this.data;
       if (type == 'tree'){return;}
 
@@ -842,6 +843,7 @@
           });
       }
       //判断是否有控制表单元素状态的下拉框
+      debugger;
       if(formSetting_children){
         this.formSetting = formSetting_children
       }
@@ -914,6 +916,20 @@
       if (this.data.type == 'richText') {
         // 配置富文本编辑器的参数以及各种回调函数
         this.initRichTextSettings();
+      }
+
+      if (this.data.type == 'cascader') {
+        if (!this.data.optionSetting_tabContent.codeType.value) {
+          return
+        }
+        // 查询码表数据option 并且渲染到页面
+        if (this.data.optionSetting === 'remoteDict') {
+          let params = {
+            rootValue: ""
+          }
+          params.rootValue = this.data.optionSetting_tabContent.codeType.value;
+          this.getCascaderOptions(params.rootValue, this.data.code);
+        }
       }
     },
     methods: {
@@ -1211,6 +1227,7 @@
           }
         }
         //判断当前下拉框是否有配置更改其他表单元素的状态
+        debugger;
         if(this.formSetting.length>0){
           let data=[]
           this.formSetting.forEach(item=>{
@@ -1323,47 +1340,101 @@
       this.currentIndex = null;
       },
       querySearchAsync(queryString, cb) {
+        debugger;
+        console.log(this.data)
+        // if(queryString){
+        //   if(!this.data.searchUrl){
+        //     let url = '/workflow/form/data/getNames'
+        //     this.formCode=this.$parent.$parent.$parent.$parent.$parent.$parent.formCode
+        //     let data={
+        //       fieldValue:this.formModel[this.data.code],
+        //       fieldCode:this.data.code,
+        //       formCode:this.formCode
+        //     }
+        //     let callBackArr = [];
+        //     if(!this.formCode||!this.data.code) return
+        //     getNames(url,data).then(res=>{
+        //       if(res&&res.data&&res.data.data){
+        //         res.data.data.forEach(item=>{
+        //         if(item.indexOf(queryString)>-1){
+        //           callBackArr.push({value:item,label:item})
+        //         }
+        //       })
+        //       }
+        //        cb(callBackArr);
+        //     })
+        //
+        //   }
+        //   else{
+        //     let data = {
+        //       fieldValue:this.formModel[this.data.code],
+        //     }
+        //     let callBackArr = [];
+        //     getNames(this.data.searchUrl,data).then(res=>{
+        //        if(res&&res.data&&res.data.data){
+        //          res.data.data.forEach(item=>{
+        //         if(item.indexOf(queryString)>-1){
+        //            callBackArr.push({value:item,label:item})
+        //         }
+        //       })
+        //        }
+        //        cb(callBackArr);
+        //     })
+        //
+        //   }
+        // }
+        const that = this;
 
         if(queryString){
-          if(!this.data.searchUrl){
-            let url = '/workflow/form/data/getNames'
-            this.formCode=this.$parent.$parent.$parent.$parent.$parent.$parent.formCode
-            let data={
-              fieldValue:this.formModel[this.data.code],
-              fieldCode:this.data.code,
-              formCode:this.formCode
+          let dt = this.data.searchUrl_tabContent;
+          // 拼接查询参数
+          let params = {
+            fieldValue: this.data.defaultValue.value
+          };
+          let data = {
+            fieldValue: this.data.defaultValue.value
+          };
+          let headers = {};
+          let urlAddress = "";
+          for(let i = 0,len = dt.queryParams.length;i < len; i++){
+            let it = dt.queryParams[i];
+            // 空键名的不要
+            if(!it.paramName && it.paramType !== 'urlParams'){
+              break;
             }
-            let callBackArr = [];
-            if(!this.formCode||!this.data.code) return
-            getNames(url,data).then(res=>{
-              if(res&&res.data&&res.data.data){
-                res.data.data.forEach(item=>{
-                if(item.indexOf(queryString)>-1){
-                  callBackArr.push({value:item,label:item})
-                }
-              })
+            if(it.paramType === 'params'){
+              params[it.paramName] = it.defaultValue;
+            }
+            else if(it.paramType === 'body'){
+              data[it.paramName] = it.defaultValue;
+            }
+            else if(it.paramType === 'header'){
+              headers[it.paramName] = it.defaultValue;
+            } else if (it.paramType === 'urlParams') {
+              let urlParams = [it.defaultValue ? it.defaultValue : ""]
+              urlAddress = dt.url[dt.url.length -1] === '/' ? `${dt.url}${urlParams[0]}` : `${dt.url}/${urlParams[0]}`
+              break
+            }
+          }
+
+          let req = {
+            url: urlAddress || dt.url,
+            method: dt.method,
+            data: data,
+            params: params,
+            headers: headers
+          };
+          commonRequest(req)
+            .then(res => {
+              try{
+                let fn = new Function('resData', dt.successCallback);
+                let todo = fn(res)
+                cb(todo)
+              }catch(e){
+                console.log(e)
               }
-               cb(callBackArr);
             })
-
-          }
-          else{
-            let data = {
-              fieldValue:this.formModel[this.data.code],
-            }
-            let callBackArr = [];
-            getNames(this.data.searchUrl,data).then(res=>{
-               if(res&&res.data&&res.data.data){
-                 res.data.data.forEach(item=>{
-                if(item.indexOf(queryString)>-1){
-                   callBackArr.push({value:item,label:item})
-                }
-              })
-               }
-               cb(callBackArr);
-            })
-
-          }
+            .catch(e=>{})
         }
       },
       handleSelect(item) {
@@ -1501,8 +1572,8 @@
         editor.config.height = this.data.height || 200;// 高度(200是我settings.js中设置的最小值)
         editor.config.showLinkImg = false;
         // 使用服务器上传图片与使用base64图片不能同时存在
-        // editor.config.uploadImgServer = this.data.uploadUrl||''
-        editor.config.uploadImgShowBase64 = true;
+        editor.config.uploadImgServer = this.data.uploadUrl||''
+        // editor.config.uploadImgShowBase64 = true;
 
         // 配置alt选项
         editor.config.showLinkImgAlt = false
@@ -1524,8 +1595,57 @@
           // return '<img src="https://www.wangeditor.com/imgs/ali-pay.jpeg"/>'
           return pasteStr;
         };
+
+        /**
+         * 自定义图片上传
+         * @param resultFiles 选中的文件列表
+         * @param insertImgFn 是获取图片 url 后，插入到编辑器的方法
+         */
+        editor.config.customUploadImg = function (resultFiles, insertImgFn) {
+          debugger;
+          // 拼接查询参数，并且向后台递交请求
+          let param = new FormData();
+          // param.append('boId', `images_${new Date().getTime()}`);
+          // param.append('businessType', 'images');
+          param.append('access_token', sessionStorage.getItem('access_token'));
+          resultFiles.forEach(file =>{
+            param.append('files', file);
+          });
+
+          commonRequest({
+            data: param,
+            method: 'POST',
+            url: that.data.uploadUrl,
+            headers: {'Content-Type': 'multipart/form-data'}
+          })
+            .then(res => {
+              debugger;
+              if(res && res.data && res.data.code == '0000'){
+                res.data.data.forEach(it =>{
+                  // insertImgFn(it.url)
+                  insertImgFn('//www.baidu.com/img/flexible/logo/pc/result@2.png')
+                });
+              }
+              else{
+                this.MessageConfig.showMessage = true;
+                this.MessageConfig.MsgBoxType = "warning";
+                this.MessageConfig.MsgText = (res.data && res.data.msg)? res.data.msg : "上传失败";
+              }
+            })
+            .catch(e => {
+              debugger;
+            })
+
+        }
+
         // 创建编辑器
         editor.create();
+
+        // 处理只读和禁用
+        if(this.data.readonly || this.data.disabled){
+          editor.disable();
+        }
+
         this.editor = editor;
       },
       // 动态表格下拉框根据value显示对应的label
@@ -1537,7 +1657,6 @@
       },
       // 动态表格下显示自定义日期格式的文本
       getShowTableTextForDate(value, attr){
-        //scope.row[col.prop] ? scope.row[col.prop] : col.componentTypeValueAttr.isDeafultNowDate.value ? moment().format('YYYY-MM-DD') : scope.row[col.prop]
         if (attr.isDeafultNowDate.value) {
           if (attr.selfShowValueFormat.value) {
             return this.moment().format(attr.inputFormatShow.value)
@@ -1549,7 +1668,38 @@
           }
           return value ? this.moment(value).format("YYYY-MM-DD") : ""
         }
-      }
+      },
+      // 页面加载获取对应值得下拉选项
+      getCascaderOptions(value, codeValue){
+        if (!value) {
+          return
+        }
+        let param = {
+          rootValue: value
+        }
+        debugger;
+        getPointCodeSheetData(param)
+          .then((res) => {
+          if (res && res.data && res.data.code == "0000") {
+            debugger
+            this.options = [res.data.data];
+          }
+        })
+          .catch(error => {
+            debugger;
+            this.options = [];
+            throw error
+        })
+          .finally(() => {
+        })
+      },
+
+      selectCascaderChange(ev,data){
+        if (ev && ev.length > 1 && data.isMultiple.value && ev.length > data.multItemCounts.value) {
+          this.$message.error("超出最大选项数量")
+
+        }
+      },
     }
   }
 </script>

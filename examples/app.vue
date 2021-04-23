@@ -105,11 +105,12 @@
           let count = 0;
           dataList.forEach(it => {
             let span = it.width;
+            let displayInline = it.displayInline;
 
-            // 假如有一项为24,则它自为一行，
+            // 假如有一项为24,或者它有'独占一行'的属性，则它自为一行，
             let index;
             let lastNum = count / BASE_COUNT;// 之前的表单项的总和
-            if (span == 24 && lastNum !== Math.floor(lastNum)) {
+            if ((span == 24 || displayInline) && (lastNum !== Math.floor(lastNum) || lastNum === 0)) {
               index = Math.ceil(lastNum);
               count = (index + 1) * 24;
             } else {
