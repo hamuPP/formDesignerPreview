@@ -119,6 +119,9 @@
 			height: $--form-input-height--large;
 			line-height: $--form-input-height--large;
 		}
+		.el-input-number{
+			line-height: $--form-input-height--large - 2px;
+		}
 		.el-date-editor{
 			.el-range-separator{
 				line-height: $--form-date-separator-height--large;

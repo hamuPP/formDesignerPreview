@@ -4,6 +4,8 @@
 import axios from './axios';
 import {baseUrl} from './commonUrl';
 
+let fileUploadUrl = `${baseUrl}`
+
 // 通用查询方法
 export function commonRequest ({params, data, method, url, headers = {}}) {
   // 处理url。如果是以http或者https开头的，则直接使用；若否，则依次取baseUrl。和本地的ip
@@ -94,5 +96,60 @@ export function getNames(url, data) {
     url: baseUrl + url,
     method: 'get',
     params:data
+  })
+}
+
+// 上传附件
+export function uploadFiles(data){
+  return axios({
+    method: 'post',
+    url: fileUploadUrl + '/senon-file-center/files/upload',
+    data: data,
+    attFile: true,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    }
+  })
+}
+
+// 根据某个码表的id获取对应码表下面的所有数据
+export function getPointCodeSheetData(data) {
+  return axios({
+    url: baseUrl + `/admin/sysdict/tree/${data.rootValue}`,
+    method: 'get'
+  })
+}
+
+// 删除附件
+export function delFile(data){
+  return axios({
+    method: 'DELETE',
+    url: fileUploadUrl + '/senon-file-center/files/del/' + data,
+  })
+}
+
+// 下载附件
+export function downLoadFile(data){
+  return axios({
+    method: 'DELETE',
+    url: fileUploadUrl + '/senon-file-center/files/download/' + data,
+  })
+}
+
+// 根据票据获取文件列表
+export function getUploadedFileList(data) {
+  return axios({
+    method: 'get',
+    url: fileUploadUrl + '/senon-file-center/files/getAllFiles',
+    myContentType: 'application/json',// 自定义content-type
+    params: data
+  })
+}
+
+// 删除附件(新)
+export function delFileNew(data){
+  return axios({
+    method: 'DELETE',
+    url: fileUploadUrl + '/senon-file-center/files/del/' + data,
   })
 }

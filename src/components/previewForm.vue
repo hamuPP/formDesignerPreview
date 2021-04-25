@@ -222,20 +222,20 @@ export default {
 
   },
   methods: {
-    colStyle(item) {
-      let str = "";
+    colStyle (item) {
+      let str = '';
       if (item.displayInline) {
-        str += "clear: both;";
+        str += 'clear: both;';
       }
       if (item.hidden) {
-        str += "display: none";
+        str += 'display: none';
       }
       return str;
     },
 
     /// //// 组件外会用到的方法：
     // 返回表单组件
-    getForm() {
+    getForm () {
       return this.$refs.fdForm;
     },
     // 返回表单里面的每个输入组件

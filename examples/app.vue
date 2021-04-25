@@ -18,8 +18,11 @@
                   :fdFormItems="fdFormItems"
                   :fdFormData="fdFormData"
                   :showAnchor="false"
-                  useCustormRule
+                  :useCustormRule="false"
     ></FormDesigner>
+
+    <h2>表单值</h2>
+    <div class="form-model-box">{{formModel}}</div>
   </div>
 </template>
 <script>
@@ -102,11 +105,12 @@
           let count = 0;
           dataList.forEach(it => {
             let span = it.width;
+            let displayInline = it.displayInline;
 
-            // 假如有一项为24,则它自为一行，
+            // 假如有一项为24,或者它有'独占一行'的属性，则它自为一行，
             let index;
             let lastNum = count / BASE_COUNT;// 之前的表单项的总和
-            if (span == 24 && lastNum !== Math.floor(lastNum)) {
+            if ((span == 24 || displayInline) && (lastNum !== Math.floor(lastNum) || lastNum === 0)) {
               index = Math.ceil(lastNum);
               count = (index + 1) * 24;
             } else {
@@ -216,6 +220,13 @@
     .el-input{
       width: 200px;
     }
+  }
+
+  .form-model-box{
+    border: 1px solid #dcdcdc;
+    color: #333;
+    padding: 10px;
+    min-height: 100px;
   }
 
 </style>
