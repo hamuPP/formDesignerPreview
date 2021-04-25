@@ -51,13 +51,124 @@
               :width="col.width"
             >
               <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row[col.prop]"
-                  v-if="currentIndex == scope.$index"
-                ></el-input>
-                <span style="margin-left: 10px" v-else>{{
-                  scope.row[col.prop]
-                }}</span>
+                <div v-if="col.componentTypeValue === 'input' ">
+                  <!--密码组件-->
+                  <div v-if="col.componentTypeValueAttr.dataType.value === 'password'">
+                    <el-input
+                            v-if="currentIndex == scope.$index"
+                            :ref="data.ref.value"
+                            @click.native.stop
+                            v-model="scope.row[col.prop]"
+                            :disabled="col.componentTypeValueAttr.disabled.value"
+                            :readonly="col.componentTypeValueAttr.readonly.value"
+                            :clearable="col.componentTypeValueAttr.clearable.value"
+                            type="password"
+                    ></el-input>
+                    <span style="margin-left: 10px" v-else>{{
+                        scope.row[col.prop]
+                      }}</span>
+                  </div>
+                  <!--数字组件-->
+                  <div v-else-if="col.componentTypeValueAttr.dataType.value === 'number'">
+                    <el-input
+                            v-if="currentIndex == scope.$index"
+                            :ref="data.ref.value"
+                            @click.native.stop
+                            v-model.number="scope.row[col.prop]"
+                            :disabled="col.componentTypeValueAttr.disabled.value"
+                            :readonly="col.componentTypeValueAttr.readonly.value"
+                            :clearable="col.componentTypeValueAttr.clearable.value"
+                            type="number"
+                    ></el-input>
+                    <span style="margin-left: 10px" v-else>{{
+                        scope.row[col.prop]
+                      }}</span>
+                  </div>
+                  <!--自动搜索组件-->
+                  <div v-else-if="col.componentTypeValueAttr.dataType.value === 'url'">
+                    <el-autocomplete v-if="currentIndex == scope.$index"
+                                     v-model="scope.row[col.prop]"
+                                     placeholder="请输入内容"
+                                     @click.native.stop
+                                     :disabled="col.componentTypeValueAttr.disabled.value"
+                                     :readonly="col.componentTypeValueAttr.readonly.value"
+                                     :clearable="col.componentTypeValueAttr.clearable.value"
+                    >
+                    </el-autocomplete>
+                    <span style="margin-left: 10px" v-else>{{
+                        scope.row[col.prop]
+                      }}</span>
+                  </div>
+                  <!-- 默认的文本框展示 -->
+                  <div v-else>
+                    <el-input
+                            v-model="scope.row[col.prop]"
+                            v-if="currentIndex == scope.$index"
+                            :disabled="col.componentTypeValueAttr.disabled.value"
+                            :readonly="col.componentTypeValueAttr.readonly.value"
+                            :clearable="col.componentTypeValueAttr.clearable.value"
+                    ></el-input>
+                    <span style="margin-left: 10px" v-else>{{
+                      scope.row[col.prop]
+                    }}</span>
+                  </div>
+                </div>
+                <div v-else-if="col.componentTypeValue === 'select' ">
+                  <el-select
+                          v-model="scope.row[col.prop]"
+                          class="el_select_self"
+                          v-if="currentIndex == scope.$index"
+                          placeholder="请选择"
+                          :filterable="col.componentTypeValueAttr.filterable.value"
+                          :disabled="col.componentTypeValueAttr.disabled.value"
+                          :readonly="col.componentTypeValueAttr.readonly.value"
+                          :clearable="col.componentTypeValueAttr.clearable.value"
+                  >
+                    <el-option
+                            v-for="item in col.options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                  </el-select>
+                  <span style="margin-left: 10px" v-else>{{
+
+                    getShowTableLabelForValue(scope.row[col.prop], col.options)
+                  }}</span>
+                </div>
+                <div v-else-if="col.componentTypeValue === 'inputNumber' ">
+                  <el-input-number
+                          v-if="currentIndex == scope.$index"
+                          v-model="scope.row[col.prop]"
+                          :min="col.componentTypeValueAttr.minValue.value"
+                          :max="col.componentTypeValueAttr.maxValue.value"
+                          :step-strictly="col.componentTypeValueAttr.stepStrictly.value"
+                          :precision="col.componentTypeValueAttr.precision.value"
+                          :step="col.componentTypeValueAttr.stepValue.value"
+
+                  ></el-input-number>
+                  <span style="margin-left: 10px" v-else>{{
+                    scope.row[col.prop]
+                  }}</span>
+                </div>
+                <div v-else-if="col.componentTypeValue === 'datePicker' ">
+                  <el-date-picker
+                          class="el_datePicker_self"
+                          v-model="scope.row[col.prop]"
+                          :disabled="col.componentTypeValueAttr.disabled.value"
+                          :type="col.componentTypeValueAttr.innerType.value"
+                          :clearable="col.componentTypeValueAttr.clearable.value"
+                          :format="col.componentTypeValueAttr.selfShowValueFormat.value ? col.componentTypeValueAttr.inputFormatShow.value : col.componentTypeValueAttr.showValueFormat.value"
+                          :value-format="col.componentTypeValueAttr.selfValueFormat.value ? col.componentTypeValueAttr.inputFormatValue.value : col.componentTypeValueAttr.valueFormat.value"
+                          v-if="currentIndex == scope.$index"
+                          placeholder="选择日期">
+                  </el-date-picker>
+                  <span style="margin-left: 10px" v-else>{{
+
+                    getShowTableTextForDate(scope.row[col.prop], col.componentTypeValueAttr)
+                  }}</span>
+                </div>
+
               </template>
             </el-table-column>
             <el-table-column label="操作" width="100" align="center">
@@ -177,6 +288,7 @@
                     :disabled="data.disabled"
                     :readonly="data.readonly"
                     :clearable="data.clearable"
+                    @change="selectChangeHand"
                   >
       <el-radio v-for="radio in options"
                 :key="radio.value"
@@ -213,8 +325,8 @@
                :ref="data.ref"
                v-model="formModel[data.code]"
                :disabled="data.disabled"
-               :readonly="data.readonly"
                :clearable="data.clearable"
+               :filterable="data.filterable"
                @change="selectChangeHand"
     >
       <el-option
@@ -352,8 +464,8 @@
               :controls="data.showButton"
               :disabled="data.disabled"
               :readonly="data.readonly"
-              :min="data.minValue"
-              :max="data.maxValue"
+              :min="data.minValue || 0"
+              :max="data.maxValue || 0"
       ></el-input-number>
 
       <!--   级联选择器   -->
@@ -370,7 +482,7 @@
               :filterable="data.filterable"
               :placeholder="data.placeholder"
               :props="{ multiple: data.isMultiple }"
-              :options="data.optionSetting.options && data.optionSetting.options.length > 0 ? data.optionSetting.options[0].children : []"
+              :options="options && options.length? options[0].children : []"
               @change="selectCascaderChange($event, data)"
 
       >
@@ -492,12 +604,18 @@
 </template>
 
 <script>
+  const FORM_IMG_URL = window.g && window.g.formImgUrl? window.g.formImgUrl : 'http://192.168.11.203:9000';
+
   import wangEditor from "wangeditor";
   import {
     commonRequest,
     getCodeTypeData,
     getNames,
-    uploadFiles} from '../api/formDesigner_api';
+    uploadFiles,
+    getPointCodeSheetData,
+    getUploadedFileList,
+    delFileNew,
+  } from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
     import selectTree from "./selectTree"
@@ -592,7 +710,7 @@
         USER_UPLOAD_SEARCH_LIST_PARAM: null, // 仅对上传组件有用的自定义查询参数
         relationPreQueryParam: {}, // 关联前置查询参数(键值的形式的)
         relationPreQueryParamKeys: {}, // 关联前置查询参数(键对应的记录)
-        rules: {},
+        rules: null,
         tableData:[],//表格数据
         currentIndex:null,//用于行内编辑
         delRolIndex:null,//用于删除
@@ -610,10 +728,9 @@
       }
     },
     created () {
-      debugger;
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting, validationSetting, formSetting_children} = this.data;
-      if (type == 'tree'){return;}
+      if (type === 'tree'){return;}
 
       if (optionSetting === 'static') {
         this.options = this.data.optionSetting_tabContent.map(it=>{
@@ -635,7 +752,8 @@
       else if(optionSetting === 'remoteDict'){
         const optionSetting_tabContent = this.data.optionSetting_tabContent;
         if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
-          optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values)){
+          optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values))
+        {
           // 整理出查询参数
           let queryP = this.getRelationQueryParams(optionSetting_tabContent);
           console.log('queryP' + queryP, this.data)
@@ -729,7 +847,7 @@
             successCallback: optionSetting_tabContent.successCallback
           });
       }
-      //判断是否有控制表单元素状态的下拉框
+      // 判断是否有控制表单元素状态的下拉框
       if(formSetting_children){
         this.formSetting = formSetting_children
       }
@@ -739,9 +857,15 @@
           let rules = [];
           // 必填
           if (validationSetting.required && validationSetting.required.selected) {
-            rules.push({ required: true, message: '请输入必填信息', trigger: 'blur' });
+            // 区分输入组件的类型，书写不同的触发模式
+            let triggerType = 'blur';
+            if(this.data.type === 'calcNumber' || this.data.type === 'select'){
+              triggerType = ['change', 'blur']
+            }
+            rules.push({ required: true, message: '请输入必填信息', trigger: triggerType });
           }
           // 数据类型
+
           if (validationSetting.dataType && validationSetting.dataType.selected) {
             let validationDataValue = validationSetting.dataType.value;
             let txt = '';
@@ -793,6 +917,9 @@
       }
     },
     mounted () {
+      if(this.data.type === 'uploadNewFile'){
+        this.getNewFileList();
+      }
       if (this.data.type === 'textarea') {
         this.labelEle = this.$el.getElementsByClassName('el-form-item__label')[0];
         this.contentEle = this.$el.querySelector('.el-form-item__content .el-textarea');
@@ -802,6 +929,20 @@
       if (this.data.type == 'richText') {
         // 配置富文本编辑器的参数以及各种回调函数
         this.initRichTextSettings();
+      }
+
+      if (this.data.type == 'cascader') {
+        if (!this.data.optionSetting_tabContent.codeType.value) {
+          return
+        }
+        // 查询码表数据option 并且渲染到页面
+        if (this.data.optionSetting === 'remoteDict') {
+          let params = {
+            rootValue: ""
+          }
+          params.rootValue = this.data.optionSetting_tabContent.codeType.value;
+          this.getCascaderOptions(params.rootValue, this.data.code);
+        }
       }
     },
     methods: {
@@ -886,6 +1027,7 @@
       },
       // 查询附件列表
       getFileList () {
+        debugger;
         if (this.data.listRequestUrl) {
           // 遍历配置的请求体，加上这些参数
           let queryData = {};
@@ -923,6 +1065,34 @@
               console.log(e)
             })
         }
+      },
+      getNewFileList(){
+        debugger;
+        this.fileList = []
+        let param = {
+          boId: "1376349548590534656",
+          businessType: "jlitreq"
+        }
+        getUploadedFileList(param).then(res => {
+          if (res && res.data && res.data.code == "0000") {
+            this.fileList = res.data.data.data;
+            // TODO this.$emit("getUploadedFileList", this.fileList)
+          }
+        });
+      },
+      //新文件上传删除附件
+      deleteFile(row) {
+        delFileNew(row.id).then(response => {
+          this.$message({
+            showClose: true,
+            message: "删除成功!",
+            duration: 1000,
+            type: "success"
+          });
+          this.getFileList();
+        }).catch((error) => {
+          this.$message.error("删除文件失败")
+        })
       },
       // 下载地址
       getDownURL (row) {
@@ -1079,6 +1249,7 @@
 
       // 下拉框的选中值改变后的事件
       selectChangeHand (val) {
+        debugger;
         const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
 
         // 检查当前表单中的所有表单项的前置关联查询参数
@@ -1099,6 +1270,7 @@
           }
         }
         //判断当前下拉框是否有配置更改其他表单元素的状态
+        debugger;
         if(this.formSetting.length>0){
           let data=[]
           this.formSetting.forEach(item=>{
@@ -1211,47 +1383,101 @@
       this.currentIndex = null;
       },
       querySearchAsync(queryString, cb) {
+        debugger;
+        console.log(this.data)
+        // if(queryString){
+        //   if(!this.data.searchUrl){
+        //     let url = '/workflow/form/data/getNames'
+        //     this.formCode=this.$parent.$parent.$parent.$parent.$parent.$parent.formCode
+        //     let data={
+        //       fieldValue:this.formModel[this.data.code],
+        //       fieldCode:this.data.code,
+        //       formCode:this.formCode
+        //     }
+        //     let callBackArr = [];
+        //     if(!this.formCode||!this.data.code) return
+        //     getNames(url,data).then(res=>{
+        //       if(res&&res.data&&res.data.data){
+        //         res.data.data.forEach(item=>{
+        //         if(item.indexOf(queryString)>-1){
+        //           callBackArr.push({value:item,label:item})
+        //         }
+        //       })
+        //       }
+        //        cb(callBackArr);
+        //     })
+        //
+        //   }
+        //   else{
+        //     let data = {
+        //       fieldValue:this.formModel[this.data.code],
+        //     }
+        //     let callBackArr = [];
+        //     getNames(this.data.searchUrl,data).then(res=>{
+        //        if(res&&res.data&&res.data.data){
+        //          res.data.data.forEach(item=>{
+        //         if(item.indexOf(queryString)>-1){
+        //            callBackArr.push({value:item,label:item})
+        //         }
+        //       })
+        //        }
+        //        cb(callBackArr);
+        //     })
+        //
+        //   }
+        // }
+        const that = this;
 
         if(queryString){
-          if(!this.data.searchUrl){
-            let url = '/workflow/form/data/getNames'
-            this.formCode=this.$parent.$parent.$parent.$parent.$parent.$parent.formCode
-            let data={
-              fieldValue:this.formModel[this.data.code],
-              fieldCode:this.data.code,
-              formCode:this.formCode
+          let dt = this.data.searchUrl_tabContent;
+          // 拼接查询参数
+          let params = {
+            fieldValue: this.data.defaultValue.value
+          };
+          let data = {
+            fieldValue: this.data.defaultValue.value
+          };
+          let headers = {};
+          let urlAddress = "";
+          for(let i = 0,len = dt.queryParams.length;i < len; i++){
+            let it = dt.queryParams[i];
+            // 空键名的不要
+            if(!it.paramName && it.paramType !== 'urlParams'){
+              break;
             }
-            let callBackArr = [];
-            if(!this.formCode||!this.data.code) return
-            getNames(url,data).then(res=>{
-              if(res&&res.data&&res.data.data){
-                res.data.data.forEach(item=>{
-                if(item.indexOf(queryString)>-1){
-                  callBackArr.push({value:item,label:item})
-                }
-              })
+            if(it.paramType === 'params'){
+              params[it.paramName] = it.defaultValue;
+            }
+            else if(it.paramType === 'body'){
+              data[it.paramName] = it.defaultValue;
+            }
+            else if(it.paramType === 'header'){
+              headers[it.paramName] = it.defaultValue;
+            } else if (it.paramType === 'urlParams') {
+              let urlParams = [it.defaultValue ? it.defaultValue : ""]
+              urlAddress = dt.url[dt.url.length -1] === '/' ? `${dt.url}${urlParams[0]}` : `${dt.url}/${urlParams[0]}`
+              break
+            }
+          }
+
+          let req = {
+            url: urlAddress || dt.url,
+            method: dt.method,
+            data: data,
+            params: params,
+            headers: headers
+          };
+          commonRequest(req)
+            .then(res => {
+              try{
+                let fn = new Function('resData', dt.successCallback);
+                let todo = fn(res)
+                cb(todo)
+              }catch(e){
+                console.log(e)
               }
-               cb(callBackArr);
             })
-
-          }
-          else{
-            let data = {
-              fieldValue:this.formModel[this.data.code],
-            }
-            let callBackArr = [];
-            getNames(this.data.searchUrl,data).then(res=>{
-               if(res&&res.data&&res.data.data){
-                 res.data.data.forEach(item=>{
-                if(item.indexOf(queryString)>-1){
-                   callBackArr.push({value:item,label:item})
-                }
-              })
-               }
-               cb(callBackArr);
-            })
-
-          }
+            .catch(e=>{})
         }
       },
       handleSelect(item) {
@@ -1340,8 +1566,8 @@
           return new Promise((resolve, reject) => {
             uploadFiles(param)
               .then(res => {
-                //   debugger;
-                if (res.data && res.code == "0000") {
+                  debugger;
+                if (res && res.data && res.data.code == "0000") {
                   // 上传成功
                   this.$message({
                     showClose: true,
@@ -1349,7 +1575,7 @@
                     duration: 1500,
                     type: "success"
                   });
-                  this.getFileList()
+                  this.getNewFileList()
                   resolve(params)
                 } else {
                   this.$message({
@@ -1383,14 +1609,13 @@
       // 配置富文本编辑器的参数以及各种回调函数
       initRichTextSettings(){
         const that = this;
-        debugger;
         let className = '.richText' + this.data.frontId;
         const editor = new wangEditor(className);
         editor.config.height = this.data.height || 200;// 高度(200是我settings.js中设置的最小值)
         editor.config.showLinkImg = false;
         // 使用服务器上传图片与使用base64图片不能同时存在
-        // editor.config.uploadImgServer = this.data.uploadUrl||''
-        editor.config.uploadImgShowBase64 = true;
+        editor.config.uploadImgServer = this.data.uploadUrl || '';
+        // editor.config.uploadImgShowBase64 = true;
 
         // 配置alt选项
         editor.config.showLinkImgAlt = false
@@ -1412,10 +1637,109 @@
           // return '<img src="https://www.wangeditor.com/imgs/ali-pay.jpeg"/>'
           return pasteStr;
         };
+
+        /**
+         * 自定义图片上传
+         * @param resultFiles 选中的文件列表
+         * @param insertImgFn 是获取图片 url 后，插入到编辑器的方法
+         */
+        editor.config.customUploadImg = function (resultFiles, insertImgFn) {
+          debugger;
+          // 拼接查询参数，并且向后台递交请求
+          let param = new FormData();
+          // param.append('boId', `images_${new Date().getTime()}`);
+          // param.append('businessType', 'images');
+          param.append('access_token', sessionStorage.getItem('access_token'));
+          resultFiles.forEach(file =>{
+            param.append('files', file);
+          });
+
+          commonRequest({
+            data: param,
+            method: 'POST',
+            url: that.data.uploadUrl,
+            headers: {'Content-Type': 'multipart/form-data'}
+          })
+            .then(res => {
+              debugger;
+              if(res && res.data && res.data.code == '0000'){
+                res.data.data.forEach(it =>{
+                  insertImgFn(FORM_IMG_URL + it.url)
+                });
+              }
+              else{
+                this.MessageConfig.showMessage = true;
+                this.MessageConfig.MsgBoxType = "warning";
+                this.MessageConfig.MsgText = (res.data && res.data.msg)? res.data.msg : "上传失败";
+              }
+            })
+            .catch(e => {
+              debugger;
+            })
+
+        }
+
         // 创建编辑器
         editor.create();
+
+        // 处理只读和禁用
+        if(this.data.readonly || this.data.disabled){
+          editor.disable();
+        }
+
         this.editor = editor;
-      }
+      },
+      // 动态表格下拉框根据value显示对应的label
+      getShowTableLabelForValue(value, options){
+        let resultArr = options.filter((item) => {
+          return item.value === value
+        })
+        return resultArr.length > 0 ? resultArr[0].label : ""
+      },
+      // 动态表格下显示自定义日期格式的文本
+      getShowTableTextForDate(value, attr){
+        if (attr.isDeafultNowDate.value) {
+          if (attr.selfShowValueFormat.value) {
+            return this.moment().format(attr.inputFormatShow.value)
+          }
+          return this.moment().format("YYYY-MM-DD")
+        } else {
+          if (attr.selfShowValueFormat.value) {
+            return value ? this.moment(value).format(attr.inputFormatShow.value) : this.moment().format(attr.inputFormatShow.value)
+          }
+          return value ? this.moment(value).format("YYYY-MM-DD") : ""
+        }
+      },
+      // 页面加载获取对应值得下拉选项
+      getCascaderOptions(value, codeValue){
+        if (!value) {
+          return
+        }
+        let param = {
+          rootValue: value
+        }
+        debugger;
+        getPointCodeSheetData(param)
+          .then((res) => {
+          if (res && res.data && res.data.code == "0000") {
+            debugger
+            this.options = [res.data.data];
+          }
+        })
+          .catch(error => {
+            debugger;
+            this.options = [];
+            throw error
+        })
+          .finally(() => {
+        })
+      },
+
+      selectCascaderChange(ev, data){
+        if (ev && ev.length > 1 && data.isMultiple && ev.length > data.multItemCounts) {
+          this.$message.error("超出最大选项数量")
+        }
+      },
     }
   }
 </script>
@@ -1424,4 +1748,9 @@
 .fd-form-item .el-autocomplete{
   width: 100%;
 }
+</style>
+<style>
+  .el-upload--text{
+    text-align: left !important;
+  }
 </style>
