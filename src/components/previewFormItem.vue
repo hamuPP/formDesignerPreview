@@ -232,7 +232,6 @@
             'marginBottom': data.type === 'dividingLine'? 0 : lineMarginBottom + 'px'
           }"
           :rules="componentRootForm.useCustormRule? null: rules">
-      <div style="color: red;">{{rules}}</div>
 
         <!-- 选择人员树组件 -->
       <template v-if="data.type==='user'">
@@ -711,7 +710,7 @@
         USER_UPLOAD_SEARCH_LIST_PARAM: null, // 仅对上传组件有用的自定义查询参数
         relationPreQueryParam: {}, // 关联前置查询参数(键值的形式的)
         relationPreQueryParamKeys: {}, // 关联前置查询参数(键对应的记录)
-        rules: {},
+        rules: null,
         tableData:[],//表格数据
         currentIndex:null,//用于行内编辑
         delRolIndex:null,//用于删除
@@ -731,7 +730,7 @@
     created () {
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting, validationSetting, formSetting_children} = this.data;
-      if (type == 'tree'){return;}
+      if (type === 'tree'){return;}
 
       if (optionSetting === 'static') {
         this.options = this.data.optionSetting_tabContent.map(it=>{
@@ -848,8 +847,7 @@
             successCallback: optionSetting_tabContent.successCallback
           });
       }
-      //判断是否有控制表单元素状态的下拉框
-      debugger;
+      // 判断是否有控制表单元素状态的下拉框
       if(formSetting_children){
         this.formSetting = formSetting_children
       }
@@ -861,12 +859,13 @@
           if (validationSetting.required && validationSetting.required.selected) {
             // 区分输入组件的类型，书写不同的触发模式
             let triggerType = 'blur';
-            if(this.data.type === 'calcNumber'){
-              triggerType = 'change'
+            if(this.data.type === 'calcNumber' || this.data.type === 'select'){
+              triggerType = ['change', 'blur']
             }
             rules.push({ required: true, message: '请输入必填信息', trigger: triggerType });
           }
           // 数据类型
+
           if (validationSetting.dataType && validationSetting.dataType.selected) {
             let validationDataValue = validationSetting.dataType.value;
             let txt = '';

@@ -18,7 +18,7 @@
                   :fdFormItems="fdFormItems"
                   :fdFormData="fdFormData"
                   :showAnchor="false"
-                  useCustormRule
+                  :useCustormRule="false"
     ></FormDesigner>
 
     <h2>表单值</h2>
