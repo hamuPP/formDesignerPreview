@@ -232,6 +232,7 @@
             'marginBottom': data.type === 'dividingLine'? 0 : lineMarginBottom + 'px'
           }"
           :rules="componentRootForm.useCustormRule? null: rules">
+      <div style="color: red;">{{rules}}</div>
 
         <!-- 选择人员树组件 -->
       <template v-if="data.type==='user'">
@@ -288,6 +289,7 @@
                     :disabled="data.disabled"
                     :readonly="data.readonly"
                     :clearable="data.clearable"
+                    @change="selectChangeHand"
                   >
       <el-radio v-for="radio in options"
                 :key="radio.value"
@@ -603,13 +605,17 @@
 </template>
 
 <script>
+  const FORM_IMG_URL = window.g && window.g.formImgUrl? window.g.formImgUrl : 'http://192.168.11.203:9000';
+
   import wangEditor from "wangeditor";
   import {
     commonRequest,
     getCodeTypeData,
     getNames,
     uploadFiles,
-    getPointCodeSheetData
+    getPointCodeSheetData,
+    getUploadedFileList,
+    delFileNew,
   } from '../api/formDesigner_api';
   import {isObjEmpty} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
@@ -724,7 +730,6 @@
     },
     created () {
       // 检查如果有码表配置的，查询其数据
-      debugger;
       let {type, optionSetting, validationSetting, formSetting_children} = this.data;
       if (type == 'tree'){return;}
 
@@ -748,7 +753,8 @@
       else if(optionSetting === 'remoteDict'){
         const optionSetting_tabContent = this.data.optionSetting_tabContent;
         if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
-          optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values)){
+          optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values))
+        {
           // 整理出查询参数
           let queryP = this.getRelationQueryParams(optionSetting_tabContent);
           console.log('queryP' + queryP, this.data)
@@ -853,7 +859,12 @@
           let rules = [];
           // 必填
           if (validationSetting.required && validationSetting.required.selected) {
-            rules.push({ required: true, message: '请输入必填信息', trigger: 'blur' });
+            // 区分输入组件的类型，书写不同的触发模式
+            let triggerType = 'blur';
+            if(this.data.type === 'calcNumber'){
+              triggerType = 'change'
+            }
+            rules.push({ required: true, message: '请输入必填信息', trigger: triggerType });
           }
           // 数据类型
           if (validationSetting.dataType && validationSetting.dataType.selected) {
@@ -907,6 +918,9 @@
       }
     },
     mounted () {
+      if(this.data.type === 'uploadNewFile'){
+        this.getNewFileList();
+      }
       if (this.data.type === 'textarea') {
         this.labelEle = this.$el.getElementsByClassName('el-form-item__label')[0];
         this.contentEle = this.$el.querySelector('.el-form-item__content .el-textarea');
@@ -1014,6 +1028,7 @@
       },
       // 查询附件列表
       getFileList () {
+        debugger;
         if (this.data.listRequestUrl) {
           // 遍历配置的请求体，加上这些参数
           let queryData = {};
@@ -1051,6 +1066,34 @@
               console.log(e)
             })
         }
+      },
+      getNewFileList(){
+        debugger;
+        this.fileList = []
+        let param = {
+          boId: "1376349548590534656",
+          businessType: "jlitreq"
+        }
+        getUploadedFileList(param).then(res => {
+          if (res && res.data && res.data.code == "0000") {
+            this.fileList = res.data.data.data;
+            // TODO this.$emit("getUploadedFileList", this.fileList)
+          }
+        });
+      },
+      //新文件上传删除附件
+      deleteFile(row) {
+        delFileNew(row.id).then(response => {
+          this.$message({
+            showClose: true,
+            message: "删除成功!",
+            duration: 1000,
+            type: "success"
+          });
+          this.getFileList();
+        }).catch((error) => {
+          this.$message.error("删除文件失败")
+        })
       },
       // 下载地址
       getDownURL (row) {
@@ -1207,6 +1250,7 @@
 
       // 下拉框的选中值改变后的事件
       selectChangeHand (val) {
+        debugger;
         const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
 
         // 检查当前表单中的所有表单项的前置关联查询参数
@@ -1523,8 +1567,8 @@
           return new Promise((resolve, reject) => {
             uploadFiles(param)
               .then(res => {
-                //   debugger;
-                if (res.data && res.code == "0000") {
+                  debugger;
+                if (res && res.data && res.data.code == "0000") {
                   // 上传成功
                   this.$message({
                     showClose: true,
@@ -1532,7 +1576,7 @@
                     duration: 1500,
                     type: "success"
                   });
-                  this.getFileList()
+                  this.getNewFileList()
                   resolve(params)
                 } else {
                   this.$message({
@@ -1566,13 +1610,12 @@
       // 配置富文本编辑器的参数以及各种回调函数
       initRichTextSettings(){
         const that = this;
-        debugger;
         let className = '.richText' + this.data.frontId;
         const editor = new wangEditor(className);
         editor.config.height = this.data.height || 200;// 高度(200是我settings.js中设置的最小值)
         editor.config.showLinkImg = false;
         // 使用服务器上传图片与使用base64图片不能同时存在
-        editor.config.uploadImgServer = this.data.uploadUrl||''
+        editor.config.uploadImgServer = this.data.uploadUrl || '';
         // editor.config.uploadImgShowBase64 = true;
 
         // 配置alt选项
@@ -1622,8 +1665,7 @@
               debugger;
               if(res && res.data && res.data.code == '0000'){
                 res.data.data.forEach(it =>{
-                  // insertImgFn(it.url)
-                  insertImgFn('//www.baidu.com/img/flexible/logo/pc/result@2.png')
+                  insertImgFn(FORM_IMG_URL + it.url)
                 });
               }
               else{
@@ -1694,10 +1736,9 @@
         })
       },
 
-      selectCascaderChange(ev,data){
-        if (ev && ev.length > 1 && data.isMultiple.value && ev.length > data.multItemCounts.value) {
+      selectCascaderChange(ev, data){
+        if (ev && ev.length > 1 && data.isMultiple && ev.length > data.multItemCounts) {
           this.$message.error("超出最大选项数量")
-
         }
       },
     }
@@ -1708,4 +1749,9 @@
 .fd-form-item .el-autocomplete{
   width: 100%;
 }
+</style>
+<style>
+  .el-upload--text{
+    text-align: left !important;
+  }
 </style>

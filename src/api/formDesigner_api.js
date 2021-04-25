@@ -135,3 +135,21 @@ export function downLoadFile(data){
     url: fileUploadUrl + '/senon-file-center/files/download/' + data,
   })
 }
+
+// 根据票据获取文件列表
+export function getUploadedFileList(data) {
+  return axios({
+    method: 'get',
+    url: fileUploadUrl + '/senon-file-center/files/getAllFiles',
+    myContentType: 'application/json',// 自定义content-type
+    params: data
+  })
+}
+
+// 删除附件(新)
+export function delFileNew(data){
+  return axios({
+    method: 'DELETE',
+    url: fileUploadUrl + '/senon-file-center/files/del/' + data,
+  })
+}
