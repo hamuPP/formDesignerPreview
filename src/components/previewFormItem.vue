@@ -265,7 +265,14 @@
           class="form-item suffix-button"
           prop="paramExpress"
         >
-         <selectTree :data='data' :formModel='formModel'></selectTree>
+         <selectTree
+                 nodeKey="value"
+                 :treeProps="treeProps"
+                 :data='data'
+                 :lazy="false"
+                 :staticTreeData="options"
+                 :formModel='formModel'>
+         </selectTree>
         </el-form-item>
     </template>
     <!--  区分输入组件的类型      -->
@@ -724,13 +731,19 @@
         editorHtml:'',
         editorFlag:true,
         formCode:'',
-        editorTxt: ''
+        editorTxt: '',
+        // 下拉树组件的props属性
+        treeProps: {
+          label: "label",
+          children: "children",
+          isLeaf: "leaf",
+        }
       }
     },
     created () {
+      debugger;
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting, validationSetting, formSetting_children} = this.data;
-      if (type === 'tree'){return;}
 
       if (optionSetting === 'static') {
         this.options = this.data.optionSetting_tabContent.map(it=>{
@@ -750,6 +763,7 @@
       }
       // 字典表
       else if(optionSetting === 'remoteDict'){
+        debugger;
         const optionSetting_tabContent = this.data.optionSetting_tabContent;
         if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
           optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values))

@@ -13,12 +13,13 @@
       :disabled="data.disabled"
     >
       <el-tree
-        :props="props"
+        :data="shownTreeData"
+        :props="treeProps"
         :load="loadNode"
-        lazy
+        :lazy="lazy"
         show-checkbox
         check-strictly
-        node-key="id"
+        :node-key="nodeKey"
         ref="rogroupEdit"
         @check="check"
         :key="treeKey"
@@ -27,7 +28,8 @@
       </el-tree>
       <el-input
         class="treeInput"
-        readonly
+        :readonly="!data.localSearchable"
+        @input="debounceInputChange"
         @click.native.stop="open"
         v-model="data.defaultValueArr"
         :disabled="data.disabled"
@@ -35,7 +37,7 @@
         :suffix-icon="icon"
         ><i
           @click="clear"
-          v-if="data.defaultValueArr"
+          v-if="data.clearable && data.defaultValueArr"
           slot="suffix"
           class="el-icon-close"
         ></i>
@@ -44,15 +46,43 @@
   </div>
 </template>
   <script>
-import { getTreePostAPI } from "../api/formDesigner_api";
+    import {debounce} from 'throttle-debounce';
+    import { getTreePostAPI } from "../api/formDesigner_api";
 export default {
   name: "selectTree",
   props: {
+    // element tree的props属性，主要不要和vue的props搞混了
+    treeProps: {
+      type: Object,
+      default(){
+        return {
+          label: "text",
+          children: "children",
+          isLeaf: "leaf",
+        }
+      }
+    },
     data: {
       type: Object,
       default() {
         return {};
       },
+    },
+    nodeKey: {
+      type: String,
+      default: 'id'
+    },
+    // 树的数据（非懒加载模式下用的）
+    staticTreeData: {
+      type: Array,
+      default(){
+        return []
+      }
+    },
+    // 是否懒加载，默认不是懒加载
+    lazy: {
+      type: Boolean,
+      default: false
     },
     formModel: {
       type: Object,
@@ -60,6 +90,18 @@ export default {
         return {};
       },
     },
+  },
+  computed: {
+    shownTreeData: {
+      get(){
+        if(this.previousQuery){
+          return this.filteredTreeData;
+        }
+        else{
+          return this.staticTreeData;
+        }
+      }
+    }
   },
   data() {
     return {
@@ -69,11 +111,6 @@ export default {
       graph: null,
       dialogVisible: false,
       title: "下拉树",
-      props: {
-        label: "text",
-        children: "children",
-        isLeaf: "leaf",
-      },
       currentClickedOrgId: "", // 当前点击的组织树的id
       roleName: "", //搜索条件
       tableData: [], //人员选择
@@ -87,15 +124,32 @@ export default {
       flag: false,
       treeKey: 1,
       treeWidth: 0,
+      previousQuery: null,// 上传搜索的信息
+      filteredTreeData: [],
     };
   },
   created() {
-    this.codeType = this.data.optionSetting_codeType;
+    this.debounceInputChange = debounce(0, (val) => {
+      this.inputChange(val);
+    });
+    // 如果当前是配置的码表
+    if(this.data.optionSetting === 'remote') {
+      this.codeType = this.data.optionSetting_codeType;
+    }
   },
   mounted() {
     this.treeWidth = this.$el.getElementsByClassName(
       "treeInput"
     )[0].offsetWidth;
+
+    // 根据defaultValue设置默认勾选的节点
+    if(this.data.defaultValue){
+      try{
+        this.$refs.rogroupEdit.setCheckedKeys(this.data.defaultValue.split(','));
+      }catch(e){
+        console.log(e)
+      }
+    }
   },
   watch: {
     data: {
@@ -139,16 +193,36 @@ export default {
       }
     },
     check(data, checkedObj) {
+      let maxCount = this.data.multItemCounts : 0;// 多选时最多可选项，如果是 null 则不限制
+
+      // 单选的情况
       if (!this.isCheck && this.$refs.rogroupEdit) {
         if (checkedObj.checkedKeys.length > 0) {
           this.$refs.rogroupEdit.setCheckedNodes([data]);
         }
       }
-      let dataList = [],
-        arr = [];
+
+      // 多选的情况
+      if(this.isCheck && maxCount){
+        if (checkedObj.checkedKeys.length > maxCount) {
+          let _keys = checkedObj.checkedKeys;
+          for(let i = 0,len = _keys.length;i<len;i++){
+            if(_keys[i] === data.value){
+              _keys.splice(i, 1, 0)
+            }
+          }
+
+          this.$message.error("超出最大选项数量");
+          this.$refs.rogroupEdit.setCheckedKeys(_keys);
+        }
+      }
+
+      let dataList = [];
+      let arr = [];
       let treeData = this.$refs.rogroupEdit.getCheckedNodes(true, false);
       treeData.forEach((item) => {
-        arr.push(item.text);
+        arr.push(item[this.treeProps.label]);
+
         if (this.roleType == "rolegroups") {
           dataList.push({
             id: item.id,
@@ -156,8 +230,8 @@ export default {
           });
         } else {
           dataList.push({
-            id: item.id,
-            name: item.text,
+            id: item[this.nodeKey],
+            name: item[this.treeProps.label]
           });
         }
       });
@@ -175,6 +249,17 @@ export default {
       this.data.defaultValueArr = "";
       this.data.defaultValue = "";
       this.formModel[this.data.code] = "";
+    },
+    inputChange(val){
+      this.previousQuery = val;
+      if (val) {
+        this.filteredTreeData = this.staticTreeData.filter(it =>{
+          return it[this.treeProps.label].indexOf(val) > -1
+        });
+      } else {
+        this.filteredTreeData = [];
+      }
+      debugger;
     },
   },
   beforeDestroy() {},
