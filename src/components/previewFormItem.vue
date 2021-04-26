@@ -2,7 +2,10 @@
 * Created by tangyue on 20/10/23
 */
 <template>
-  <div class="fd-form-item">
+  <div class="fd-form-item"
+       :class="{
+          uploadHeight: data.type === 'uploadNewFile'
+       }">
   <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件,并且table没有label,所以单独提出来  -->
     <template v-if="data.type === 'table'">
       <div
@@ -429,7 +432,7 @@
 
       <ul class="file-list">
         <li v-for="(item,index) in fileList" :key="index">
-          <a class="file-detail" :href="getDownURL(item)" download title="下载">{{item.name}}</a>
+          <a class="file-detail" :href="getDownURL(item, data.disabled)" download title="下载">{{item.name}}</a>
           <i class="el-icon-delete file-del-icon" @click="delFile(item)"></i>
         </li>
       </ul>
@@ -444,13 +447,14 @@
               :show-file-list="false"
               :auto-upload="true"
               :http-request="uploadNewFile"
+              :disabled="data.disabled"
               :multiple="data.isMultiple"
       >
         <el-button size="small" type="primary">点击上传</el-button>
         <div class="el-upload__tip" @click.stop="()=>{}">只能上传{{data.upLoadFileType.join("、")}}文件，且不超过{{data.fileUploadSize}}KB</div>
         <ul class="el-upload-list el-upload-list--text" @click.stop="()=>{}">
           <li class="el-upload-list__item is-ready" v-for="(fileItem, fileIndex) in fileList" :key="fileIndex">
-            <a class="el-upload-list__item-name" :href="getDownURL(fileItem)" download title="下载">
+            <a class="el-upload-list__item-name" :href="getDownURL(fileItem, data.disabled)" download title="下载">
               <i class="el-icon-document"></i>
               {{fileItem.name}}
             </a>
@@ -611,6 +615,7 @@
 </template>
 
 <script>
+  const downloadServiceUrl = window.g && window.g.downloadServiceUrl? window.g.downloadServiceUrl: '';
   const FORM_IMG_URL = window.g && window.g.formImgUrl? window.g.formImgUrl : 'http://192.168.11.203:9000';
 
   import wangEditor from "wangeditor";
@@ -1081,7 +1086,6 @@
         }
       },
       getNewFileList(){
-        debugger;
         this.fileList = []
         let param = {
           boId: "1376349548590534656",
@@ -1108,28 +1112,42 @@
           this.$message.error("删除文件失败")
         })
       },
-      // 下载地址
-      getDownURL (row) {
-        // 处理url。如果是以http或者https开头的，则直接使用；若否，则依次取baseUrl。和本地的ip
-        let url = this.data.downloadServiceUrl;
-        let _url = '';
-        if (url.startsWith('http:') || url.startsWith('https:')){
-          _url = url
-        }
-        else if (baseUrl) {
-          _url = baseUrl + url;
-        }
-        else {
-          _url = window.location.origin + url
-        }
-        return (
-           _url +
-          row.id +
-          '?access_token=' +
-          sessionStorage.getItem('access_token')
-        );
-      },
+      // // 下载地址
+      // getDownURL (row) {
+      //   debugger;
+      //   // 处理url。如果是以http或者https开头的，则直接使用；若否，则依次取baseUrl。和本地的ip
+      //   let url = this.data.downloadServiceUrl;
+      //   let _url = '';
+      //   if (url.startsWith('http:') || url.startsWith('https:')){
+      //     _url = url
+      //   }
+      //   else if (baseUrl) {
+      //     _url = baseUrl + url;
+      //   }
+      //   else {
+      //     _url = window.location.origin + url
+      //   }
+      //   return (
+      //      _url +
+      //     row.id +
+      //     '?access_token=' +
+      //     sessionStorage.getItem('access_token')
+      //   );
+      // },
       // 删除附件
+      // 新文件上传下载地址
+      getDownURL(row, disabled) {
+        if (disabled) {
+          return "#"
+        } else {
+          return (
+            downloadServiceUrl + "/" +
+            row.id +
+            "?access_token=" +
+            sessionStorage.getItem("access_token")
+          );
+        }
+      },
       delFile (row) {
         commonRequest({
           method: 'DELETE',
@@ -1142,7 +1160,9 @@
             duration: 1000,
             type: 'success'
           });
-          this.getFileList();
+
+          this.getNewFileList();
+          // this.getFileList();
         });
       },
       // 获取码表数据列表

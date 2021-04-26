@@ -193,7 +193,7 @@ export default {
       }
     },
     check(data, checkedObj) {
-      let maxCount = this.data.multItemCounts : 0;// 多选时最多可选项，如果是 null 则不限制
+      let maxCount = this.data.multItemCounts || 0;// 多选时最多可选项，如果是 null 则不限制
 
       // 单选的情况
       if (!this.isCheck && this.$refs.rogroupEdit) {
