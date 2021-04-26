@@ -65,6 +65,7 @@
                             :disabled="col.componentTypeValueAttr.disabled.value"
                             :readonly="col.componentTypeValueAttr.readonly.value"
                             :clearable="col.componentTypeValueAttr.clearable.value"
+                            @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                             type="password"
                     ></el-input>
                     <span style="margin-left: 10px" v-else>{{
@@ -81,6 +82,7 @@
                             :disabled="col.componentTypeValueAttr.disabled.value"
                             :readonly="col.componentTypeValueAttr.readonly.value"
                             :clearable="col.componentTypeValueAttr.clearable.value"
+                            @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                             type="number"
                     ></el-input>
                     <span style="margin-left: 10px" v-else>{{
@@ -110,13 +112,14 @@
                             :disabled="col.componentTypeValueAttr.disabled.value"
                             :readonly="col.componentTypeValueAttr.readonly.value"
                             :clearable="col.componentTypeValueAttr.clearable.value"
+                            @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                     ></el-input>
                     <span style="margin-left: 10px" v-else>{{
                       scope.row[col.prop]
                     }}</span>
                   </div>
                 </div>
-                <div v-else-if="col.componentTypeValue === 'select' ">
+                <div v-else-if="col.componentTypeValue === 'select'">
                   <el-select
                           v-model="scope.row[col.prop]"
                           class="el_select_self"
@@ -124,8 +127,8 @@
                           placeholder="请选择"
                           :filterable="col.componentTypeValueAttr.filterable.value"
                           :disabled="col.componentTypeValueAttr.disabled.value"
-                          :readonly="col.componentTypeValueAttr.readonly.value"
                           :clearable="col.componentTypeValueAttr.clearable.value"
+                          @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                   >
                     <el-option
                             v-for="item in col.options"
@@ -148,6 +151,7 @@
                           :step-strictly="col.componentTypeValueAttr.stepStrictly.value"
                           :precision="col.componentTypeValueAttr.precision.value"
                           :step="col.componentTypeValueAttr.stepValue.value"
+                          @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
 
                   ></el-input-number>
                   <span style="margin-left: 10px" v-else>{{
@@ -164,6 +168,8 @@
                           :format="col.componentTypeValueAttr.selfShowValueFormat.value ? col.componentTypeValueAttr.inputFormatShow.value : col.componentTypeValueAttr.showValueFormat.value"
                           :value-format="col.componentTypeValueAttr.selfValueFormat.value ? col.componentTypeValueAttr.inputFormatValue.value : col.componentTypeValueAttr.valueFormat.value"
                           v-if="currentIndex == scope.$index"
+                          @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
+
                           placeholder="选择日期">
                   </el-date-picker>
                   <span style="margin-left: 10px" v-else>{{
@@ -618,6 +624,7 @@
   const downloadServiceUrl = window.g && window.g.downloadServiceUrl? window.g.downloadServiceUrl: '';
   const FORM_IMG_URL = window.g && window.g.formImgUrl? window.g.formImgUrl : 'http://192.168.11.203:9000';
 
+  import moment from "moment"
   import wangEditor from "wangeditor";
   import {
     commonRequest,
@@ -628,7 +635,7 @@
     getUploadedFileList,
     delFileNew,
   } from '../api/formDesigner_api';
-  import {isObjEmpty} from '../util/common.js';
+  import {isObjEmpty, validateRegType} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
     import selectTree from "./selectTree"
   import personEditDialog from "./personEditDialog.vue";
@@ -709,6 +716,7 @@
     },
     data () {
       return {
+        moment: moment,
         options: [], // 针对下拉框等的下拉数据
         fileName: '', // 附件名字
         fileList: [
@@ -1397,24 +1405,124 @@
     },
     //确认编辑行
     handleUse(index, row) {
+      debugger;
       event.stopPropagation();
-      //  this.MessageConfig.showMessage = true;
-      //   this.MessageConfig.MsgBoxType = "success";
-      //   this.MessageConfig.MsgText = "应用成功";
+      var isValidate = true
+      // 在应用时提示有必填项的校验
+      for (let item of this.data.tableCols) {
+        debugger;
+        if (!row[item.prop] && row[item.prop] !== 0 && item.componentTypeValueAttr.required.selected) {
+          this.$message.error(`请填写列名为："${item.label}"的必填项!`)
+          isValidate = false
+          break;
+        } else {
+          // col.componentTypeValueAttr, scope.row[col.prop], col.prop
+          isValidate = this.validateTabColRules(item, item.componentTypeValueAttr, row[item.prop], item.prop)
+          if (!isValidate) {
+            break;
+          }
+        }
+      }
+      //
+      if (isValidate) {
+        this.MessageConfig.showMessage = true;
+        this.MessageConfig.MsgBoxType = "success";
+        this.MessageConfig.MsgText = "应用成功";
         this.currentIndex = null;
+        this.dealTableColumnData()
+      }
     },
+      // 动态表格文本框组件是开启设置规则进行校验
+      validateTabColRules(col, inputVal, colValue, propName){
+        if (!inputVal || !col) {
+          return true
+        }
+        let isValidate = true
+        let inputValueType = inputVal.dataType ? inputVal.dataType.value : ""
+        let propColName = "" // 当前列的列名
+        // 获取当前列的表头名称
+
+        for (let item of this.data.tableCols) {
+          if (propName === item.prop) {
+            propColName = item.label
+          }
+        }
+        // 判断必填
+        if (inputVal.required.selected) {
+          if (!colValue) {
+            this.$message.error(`列名为："${propColName}"的数据不能为空`)
+            isValidate = false
+            return isValidate
+          }
+        }
+
+        // 判断选择的数据类型
+        if (col.componentTypeValue === "input" && inputVal.dataType.selected) {
+          isValidate = validateRegType(colValue, inputValueType)
+          for (let opItem of inputVal.dataType.options) {
+            if (inputValueType === opItem.value) {
+              !isValidate && this.$message.error(`列名为："${propColName}"、数据格式为"${opItem.label}"的数据验证失败`)
+              break;
+            }
+          }
+          if (!isValidate) {
+            return isValidate
+          }
+        }
+        // 判断自定义正则表达式
+        if (inputVal.regExpPattern.selected && inputVal.regExpPattern.value) {
+          isValidate = validateRegType(colValue, "", inputVal.regExpPattern.value)
+          if (!isValidate) {
+            this.$message.error(`列名为："${propColName}"、数据格式为自定义正则表达式的数据验证失败`)
+            return isValidate
+          }
+        }
+        // 验证长度
+        if(inputVal.lengthControl.selected && (Array.isArray(colValue) || Object.prototype.toString.call(colValue) === "[object String]")) {
+          if (inputVal.lengthControl.min > colValue.length) {
+            isValidate = false
+            this.$message.error(`列名为："${propColName}"的数据长度不能小于最小长度为${inputVal.lengthControl.min}`)
+            return isValidate
+          }
+          if (inputVal.lengthControl.max < colValue.length) {
+            isValidate = false
+            this.$message.error(`列名为："${propColName}"的数据长度不能大于最大长度为${inputVal.lengthControl.max}`)
+            return isValidate
+          }
+        }
+        return isValidate
+      },
     //取消编辑
     handleCancel(index, row) {
       event.stopPropagation();
-      this.data.tableData[index] = JSON.parse(JSON.stringify(this.defaultData));
       for(let key in this.data.tableData[index]){
         for(let dekey in this.defaultData){
           if(key==dekey){
-              this.data.tableData[index][key]=this.defaultData[dekey]
-            }
+            this.data.tableData[index][key]=this.defaultData[dekey]
+          }
         }
       }
       this.currentIndex = null;
+      this.dealTableColumnData()
+      },
+      // 遍历所有得table row数据 判断对应得类型 显示对应得值
+      dealTableColumnData(){
+        this.data.tableData.length > 0 && this.data.tableData.map((item,index) => {
+          if (item) {
+            for(var colItem in item){
+              this.data.tableCols.value.map((tableItem, tableIndex) => {
+                if (tableItem.componentTypeValue === "input") {
+                  (tableItem.prop === colItem) && (item[colItem] = item[colItem].toString())
+                } else if (tableItem.componentTypeValue === "inputNumber") {
+                  (tableItem.prop === colItem) && (item[colItem] = Number(item[colItem]))
+                } else if (tableItem.componentTypeValue === "select") {
+                } else if (tableItem.componentTypeValue === "datePicker") {
+                  (tableItem.prop === colItem) && (item[colItem] = item[colItem] ? moment(item[colItem]).format("YYYY-MM-DD"): "")
+                }
+              })
+            }
+          }
+        })
       },
       querySearchAsync(queryString, cb) {
         debugger;
