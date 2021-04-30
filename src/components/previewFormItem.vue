@@ -268,7 +268,34 @@
           ></el-button> -->
         </el-form-item>
       </template>
-     <!-- 下拉树组件 -->
+
+      <!-- 新选择人员树组件 -->
+      <template v-else-if="data.type==='newUser'">
+        <el-form-item
+        >
+          <el-input
+                  :disabled="data.disabled"
+                  v-model="data.defaultName"
+                  :clearable="data.clearable"
+                  v-on:click.native.stop="openNewPerRoleDialog(data.isMultiple)"
+                  @clear='clearExpress'
+          >
+          </el-input>
+          <!-- <el-button
+            size="mini"
+            type="danger"
+            circle
+             :disabled="data.disabled.value"
+            title="清除"
+            icon="el-icon-delete"
+            style="margin-bottom: 22px;margin-left:4px"
+             @click="clearExpress()" -->
+          <!-- ></el-button> -->
+        </el-form-item>
+      </template>
+
+
+      <!-- 下拉树组件 -->
       <template v-else-if="data.type==='tree'">
         <el-form-item
           class="form-item suffix-button"
@@ -611,6 +638,13 @@
       @rogroup="rogroup"
     ></rogroupEditDialog> -->
     </el-form-item>
+    <!--新版选人组件弹出框-->
+    <newPersonEditDialog
+            ref="newPersonEditDialog"
+            :sourceTreeList="data.treeTabList ? data.treeTabList.selectedList : []"
+            :isMultiple="data.isMultiple ? data.isMultiple.value : false"
+            @personSure="personSure"
+    ></newPersonEditDialog>
     <MessageBox
       :showMessage.sync="MessageConfig.showMessage"
       :MessageConfig="MessageConfig"
@@ -639,11 +673,12 @@
   import MessageBox from "./MessageBox.vue";
     import selectTree from "./selectTree"
   import personEditDialog from "./personEditDialog.vue";
+  import newPersonEditDialog from "./newPersonEditDialog";
   import rogroupEditDialog from "./rogroupEditDialog.vue";
   import {baseUrl} from '../api/commonUrl';
   export default {
     name: 'previewFormItem',
-    components:{MessageBox,personEditDialog,rogroupEditDialog,selectTree},
+    components:{MessageBox,personEditDialog,newPersonEditDialog,rogroupEditDialog,selectTree},
     props: {
       // 是否为预览模式，模式是编辑模式啦
       view: {
@@ -1108,6 +1143,7 @@
       },
       //新文件上传删除附件
       deleteFile(row) {
+        debugger;
         delFileNew(row.id).then(response => {
           this.$message({
             showClose: true,
@@ -1115,7 +1151,7 @@
             duration: 1000,
             type: "success"
           });
-          this.getFileList();
+          this.getNewFileList();
         }).catch((error) => {
           this.$message.error("删除文件失败")
         })
@@ -1157,6 +1193,7 @@
         }
       },
       delFile (row) {
+        debugger;
         commonRequest({
           method: 'DELETE',
           url: this.data.delFileUrl + row.id
@@ -1169,6 +1206,7 @@
             type: 'success'
           });
 
+          debugger;
           this.getNewFileList();
           // this.getFileList();
         });
@@ -1653,11 +1691,8 @@
       },
       // 新附件上传 上传文件
       uploadNewFile(params) {
-        debugger;
         let fileName = params.file.name;
-        debugger
         let pos = fileName.lastIndexOf(".");
-        console.log("获取当前data,upload", this.data)
         let lastName = fileName.substring(pos, fileName.length);
         if (
           this.data.upLoadFileType && this.data.upLoadFileType.indexOf(lastName.toLowerCase()) === -1
@@ -1680,9 +1715,7 @@
           this.$message.error(`上传文件大小不得大于${this.data.fileUploadSize}KB!`);
           return false
         }
-        debugger
         if (this.fileList.length >= this.data.totalUploadCounts) {
-          debugger
           this.$message.error(`上传文件的数量不能超过${this.data.totalUploadCounts}个`);
           return false
         }
@@ -1708,7 +1741,6 @@
           return new Promise((resolve, reject) => {
             uploadFiles(param)
               .then(res => {
-                  debugger;
                 if (res && res.data && res.data.code == "0000") {
                   // 上传成功
                   this.$message({
@@ -1786,11 +1818,12 @@
          * @param insertImgFn 是获取图片 url 后，插入到编辑器的方法
          */
         editor.config.customUploadImg = function (resultFiles, insertImgFn) {
+          console.log('开始上传')
           debugger;
           // 拼接查询参数，并且向后台递交请求
           let param = new FormData();
-          // param.append('boId', `images_${new Date().getTime()}`);
-          // param.append('businessType', 'images');
+          console.log('开始上传 :token:', sessionStorage.getItem('access_token'))
+
           param.append('access_token', sessionStorage.getItem('access_token'));
           resultFiles.forEach(file =>{
             param.append('files', file);
@@ -1880,6 +1913,23 @@
       selectCascaderChange(ev, data){
         if (ev && ev.length > 1 && data.isMultiple && ev.length > data.multItemCounts) {
           this.$message.error("超出最大选项数量")
+        }
+      },
+
+      // 打开新人员选择弹框
+      openNewPerRoleDialog() {
+        debugger;
+        if (this.$refs.newPersonEditDialog && !this.data.disabled){
+          debugger;
+          this.$refs.newPersonEditDialog.show(
+            this.data.defaultValueArr,
+            this.data,
+            !this.data.isMultiple,
+            {
+              sourceTreeList: this.data.treeTabList.selectedList.length > 0 ? this.data.treeTabList.selectedList : [this.data.treeTabList.options[0]],
+              isMultiple: this.data.isMultiple.value
+            }
+          );
         }
       },
     }
