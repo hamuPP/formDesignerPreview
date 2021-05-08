@@ -624,6 +624,10 @@
               :readonly="data.readonly"
               :clearable="data.clearable"
               v-model="formModel[data.code]"
+              @click="inputClickHand"
+              @change="inputChangeHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
       ></el-input>
     </template>
 
@@ -1932,6 +1936,50 @@
           );
         }
       },
+      inputClickHand () {
+        // 尝试把自定义函数字符串转为函数并执行
+        if(this.data && this.data.click){
+          try {
+            let fnc = new Function(this.data.click);
+            fnc(this.formModel[this.data.code])
+          } catch (e) {
+            throw e;
+          }
+        }
+      },
+      inputChangeHand () {
+        // 尝试把自定义函数字符串转为函数并执行
+        if(this.data && this.data.change) {
+          try {
+            let fnc = new Function(this.data.change);
+            fnc(this.formModel[this.data.code])
+          } catch (e) {
+            throw e;
+          }
+        }
+      },
+      inputFocusHand () {
+        // 尝试把自定义函数字符串转为函数并执行
+        if(this.data && this.data.focus){
+          try {
+            let fnc = new Function(this.data.focus);
+            fnc(this.formModel[this.data.code])
+          } catch (e) {
+            throw e;
+          }
+        }
+      },
+      inputBlurHand () {
+        // 尝试把自定义函数字符串转为函数并执行
+        if(this.data && this.data.blur){
+          try {
+            let fnc = new Function(this.data.blur);
+            fnc(this.formModel[this.data.code])
+          } catch (e) {
+            throw e;
+          }
+        }
+      }
     }
   }
 </script>

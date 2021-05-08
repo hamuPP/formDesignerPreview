@@ -141,7 +141,7 @@ const SKIN_OPTIONS = {
   },
 };
 export default {
-  name: "previewForm",
+  name: 'previewForm',
   components: { previewFormItem },
   data() {
     return {
@@ -206,11 +206,11 @@ export default {
       this.formClassStr =
         `fd-form fd-form--preview ${n.skin} ${n.customClassName}` +
         (n.size ? ` fd-form--${n.size}` : "");
-    },
+    }
   },
   created() {
     this.skin = this.fdFormData.skin;
-     this.formCode=this.fdFormData.code
+    this.formCode = this.fdFormData.code;
     this.formClassStr =
       `fd-form fd-form--preview ${this.skin} ${this.fdFormData.customClassName}` +
       (this.fdFormData.size ? ` fd-form--${this.fdFormData.size}` : "");
