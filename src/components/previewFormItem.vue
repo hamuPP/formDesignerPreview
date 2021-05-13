@@ -529,6 +529,9 @@
               :options="options && options.length? options[0].children : []"
               @change="selectCascaderChange($event, data)"
 
+              @click="inputClickHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
       >
       </el-cascader>
 
@@ -539,6 +542,10 @@
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
+              @click="inputClickHand"
+              @change="inputChangeHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
     ></el-input>
 
     <!--   业务公共字段-操作人     -->
@@ -548,6 +555,10 @@
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
+              @click="inputClickHand"
+              @change="inputChangeHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
     ></el-input>
 
     <!--   业务公共字段-操作人部门     -->
@@ -557,6 +568,10 @@
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
+              @click="inputClickHand"
+              @change="inputChangeHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
     ></el-input>
     <!--   业务公共字段-操作人联系方式     -->
     <el-input v-else-if="data.type === 'operatorMobile'"
@@ -565,6 +580,10 @@
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
+              @click="inputClickHand"
+              @change="inputChangeHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
     ></el-input>
 
     <!--   业务公共字段-操作人当前角色     -->
@@ -575,6 +594,10 @@
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
+            @click="inputClickHand"
+            @change="inputChangeHand"
+            @focus="inputFocusHand"
+            @blur="inputBlurHand"
     ></el-input>
     <!--   业务公共字段-操作时间     -->
     <el-date-picker
@@ -585,6 +608,10 @@
             type="datetime"
             :disabled="data.disabled"
             :computereadonly="data.readonly"
+            @click="inputClickHand"
+            @change="inputChangeHand"
+            @focus="inputFocusHand"
+            @blur="inputBlurHand"
     >
     </el-date-picker>
 
@@ -599,6 +626,10 @@
                        @select="handleSelect"
                        :disabled="data.disabled"
                        :readonly="data.readonly"
+                       @click="inputClickHand"
+                       @change="inputChangeHand"
+                       @focus="inputFocusHand"
+                       @blur="inputBlurHand"
       >
       </el-autocomplete>
 
@@ -609,6 +640,10 @@
               :clearable="data.clearable"
               type="number"
               v-model.number="formModel[data.code]"
+                @click="inputClickHand"
+                @change="inputChangeHand"
+                @focus="inputFocusHand"
+                @blur="inputBlurHand"
       ></el-input>
       <el-input v-else-if="data.validationSetting && data.validationSetting.dataType.value === 'password'"
               :ref="data.ref"
@@ -617,6 +652,10 @@
               :clearable="data.clearable"
               type="password"
               v-model="formModel[data.code]"
+                @click="inputClickHand"
+                @change="inputChangeHand"
+                @focus="inputFocusHand"
+                @blur="inputBlurHand"
       ></el-input>
       <el-input v-else
               :ref="data.ref"
@@ -1918,6 +1957,8 @@
         if (ev && ev.length > 1 && data.isMultiple && ev.length > data.multItemCounts) {
           this.$message.error("超出最大选项数量")
         }
+
+        this.inputChangeHand();
       },
 
       // 打开新人员选择弹框
