@@ -72,6 +72,16 @@ export function getUser (data) {
   })
 }
 
+// 选人组件获取对应得树列表数据
+export function getTranserPerTreeList({url, data}){
+  return axios({
+    method: 'post',
+    url: `${baseUrl}${url}`,
+    myContentType: 'application/json',
+    data: data
+  })
+}
+
 // 下拉树的自定义接口post
 export function getTreePostAPI(data) {
   return axios({

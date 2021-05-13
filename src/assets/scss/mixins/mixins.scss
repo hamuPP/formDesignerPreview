@@ -83,9 +83,9 @@ $--color-purple2: rgb(245, 177, 179) !default;
 	// 重设elementui的默认样式--start--
 	.el-form-item{
 		margin-bottom: 0;// 默认0。然后会通过style.marginBotom来改变
-		.el-input__icon{
-			line-height: normal;
-		}
+	}
+	.el-input__icon{
+		line-height: normal;
 	}
 	.el-date-editor{
 		&.el-input{

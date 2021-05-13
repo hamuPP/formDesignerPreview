@@ -64,11 +64,17 @@
       // 做出表单的绑定值
       getFormModel (that, n, valueFieldKey, useInitData) {
         let obj = {};
-        let fn = function(list){
+        let fn = function (list) {
           list.forEach(it => {
-            if(it.type === 'group'){
+            if (it.type === 'group') {
               fn(it.children);
-            }else{
+            }
+            else if (it.type === 'tabs') {
+              for(let j = 0,jlen = it.children.length; j<jlen; j++) {
+                fn(it.children[j]);
+              }
+            }
+            else{
               if (it.type === 'checkbox') {
                 // 如果是建单人等字段
                 let _val = (useInitData && it.fieldType)? that.formInitData[it.code]: it[valueFieldKey];

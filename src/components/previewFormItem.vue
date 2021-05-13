@@ -2,7 +2,10 @@
 * Created by tangyue on 20/10/23
 */
 <template>
-  <div class="fd-form-item">
+  <div class="fd-form-item"
+       :class="{
+          uploadHeight: data.type === 'uploadNewFile'
+       }">
   <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件,并且table没有label,所以单独提出来  -->
     <template v-if="data.type === 'table'">
       <div
@@ -62,6 +65,7 @@
                             :disabled="col.componentTypeValueAttr.disabled.value"
                             :readonly="col.componentTypeValueAttr.readonly.value"
                             :clearable="col.componentTypeValueAttr.clearable.value"
+                            @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                             type="password"
                     ></el-input>
                     <span style="margin-left: 10px" v-else>{{
@@ -78,6 +82,7 @@
                             :disabled="col.componentTypeValueAttr.disabled.value"
                             :readonly="col.componentTypeValueAttr.readonly.value"
                             :clearable="col.componentTypeValueAttr.clearable.value"
+                            @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                             type="number"
                     ></el-input>
                     <span style="margin-left: 10px" v-else>{{
@@ -107,13 +112,14 @@
                             :disabled="col.componentTypeValueAttr.disabled.value"
                             :readonly="col.componentTypeValueAttr.readonly.value"
                             :clearable="col.componentTypeValueAttr.clearable.value"
+                            @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                     ></el-input>
                     <span style="margin-left: 10px" v-else>{{
                       scope.row[col.prop]
                     }}</span>
                   </div>
                 </div>
-                <div v-else-if="col.componentTypeValue === 'select' ">
+                <div v-else-if="col.componentTypeValue === 'select'">
                   <el-select
                           v-model="scope.row[col.prop]"
                           class="el_select_self"
@@ -121,8 +127,8 @@
                           placeholder="请选择"
                           :filterable="col.componentTypeValueAttr.filterable.value"
                           :disabled="col.componentTypeValueAttr.disabled.value"
-                          :readonly="col.componentTypeValueAttr.readonly.value"
                           :clearable="col.componentTypeValueAttr.clearable.value"
+                          @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                   >
                     <el-option
                             v-for="item in col.options"
@@ -145,6 +151,7 @@
                           :step-strictly="col.componentTypeValueAttr.stepStrictly.value"
                           :precision="col.componentTypeValueAttr.precision.value"
                           :step="col.componentTypeValueAttr.stepValue.value"
+                          @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
 
                   ></el-input-number>
                   <span style="margin-left: 10px" v-else>{{
@@ -161,6 +168,8 @@
                           :format="col.componentTypeValueAttr.selfShowValueFormat.value ? col.componentTypeValueAttr.inputFormatShow.value : col.componentTypeValueAttr.showValueFormat.value"
                           :value-format="col.componentTypeValueAttr.selfValueFormat.value ? col.componentTypeValueAttr.inputFormatValue.value : col.componentTypeValueAttr.valueFormat.value"
                           v-if="currentIndex == scope.$index"
+                          @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
+
                           placeholder="选择日期">
                   </el-date-picker>
                   <span style="margin-left: 10px" v-else>{{
@@ -259,13 +268,47 @@
           ></el-button> -->
         </el-form-item>
       </template>
-     <!-- 下拉树组件 -->
+
+      <!-- 新选择人员树组件 -->
+      <template v-else-if="data.type==='newUser'">
+        <el-form-item
+        >
+          <el-input
+                  :disabled="data.disabled"
+                  v-model="data.defaultName"
+                  :clearable="data.clearable"
+                  v-on:click.native.stop="openNewPerRoleDialog(data.isMultiple)"
+                  @clear='clearExpress'
+          >
+          </el-input>
+          <!-- <el-button
+            size="mini"
+            type="danger"
+            circle
+             :disabled="data.disabled.value"
+            title="清除"
+            icon="el-icon-delete"
+            style="margin-bottom: 22px;margin-left:4px"
+             @click="clearExpress()" -->
+          <!-- ></el-button> -->
+        </el-form-item>
+      </template>
+
+
+      <!-- 下拉树组件 -->
       <template v-else-if="data.type==='tree'">
         <el-form-item
           class="form-item suffix-button"
           prop="paramExpress"
         >
-         <selectTree :data='data' :formModel='formModel'></selectTree>
+         <selectTree
+                 nodeKey="value"
+                 :treeProps="treeProps"
+                 :data='data'
+                 :lazy="false"
+                 :staticTreeData="options"
+                 :formModel='formModel'>
+         </selectTree>
         </el-form-item>
     </template>
     <!--  区分输入组件的类型      -->
@@ -422,7 +465,7 @@
 
       <ul class="file-list">
         <li v-for="(item,index) in fileList" :key="index">
-          <a class="file-detail" :href="getDownURL(item)" download title="下载">{{item.name}}</a>
+          <a class="file-detail" :href="getDownURL(item, data.disabled)" download title="下载">{{item.name}}</a>
           <i class="el-icon-delete file-del-icon" @click="delFile(item)"></i>
         </li>
       </ul>
@@ -437,13 +480,14 @@
               :show-file-list="false"
               :auto-upload="true"
               :http-request="uploadNewFile"
+              :disabled="data.disabled"
               :multiple="data.isMultiple"
       >
         <el-button size="small" type="primary">点击上传</el-button>
         <div class="el-upload__tip" @click.stop="()=>{}">只能上传{{data.upLoadFileType.join("、")}}文件，且不超过{{data.fileUploadSize}}KB</div>
         <ul class="el-upload-list el-upload-list--text" @click.stop="()=>{}">
           <li class="el-upload-list__item is-ready" v-for="(fileItem, fileIndex) in fileList" :key="fileIndex">
-            <a class="el-upload-list__item-name" :href="getDownURL(fileItem)" download title="下载">
+            <a class="el-upload-list__item-name" :href="getDownURL(fileItem, data.disabled)" download title="下载">
               <i class="el-icon-document"></i>
               {{fileItem.name}}
             </a>
@@ -485,6 +529,9 @@
               :options="options && options.length? options[0].children : []"
               @change="selectCascaderChange($event, data)"
 
+              @click="inputClickHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
       >
       </el-cascader>
 
@@ -495,6 +542,10 @@
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
+              @click="inputClickHand"
+              @change="inputChangeHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
     ></el-input>
 
     <!--   业务公共字段-操作人     -->
@@ -504,6 +555,10 @@
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
+              @click="inputClickHand"
+              @change="inputChangeHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
     ></el-input>
 
     <!--   业务公共字段-操作人部门     -->
@@ -513,6 +568,10 @@
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
+              @click="inputClickHand"
+              @change="inputChangeHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
     ></el-input>
     <!--   业务公共字段-操作人联系方式     -->
     <el-input v-else-if="data.type === 'operatorMobile'"
@@ -521,6 +580,10 @@
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
+              @click="inputClickHand"
+              @change="inputChangeHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
     ></el-input>
 
     <!--   业务公共字段-操作人当前角色     -->
@@ -531,6 +594,10 @@
             :disabled="data.disabled"
             :readonly="data.readonly"
             :clearable="data.clearable"
+            @click="inputClickHand"
+            @change="inputChangeHand"
+            @focus="inputFocusHand"
+            @blur="inputBlurHand"
     ></el-input>
     <!--   业务公共字段-操作时间     -->
     <el-date-picker
@@ -541,6 +608,10 @@
             type="datetime"
             :disabled="data.disabled"
             :computereadonly="data.readonly"
+            @click="inputClickHand"
+            @change="inputChangeHand"
+            @focus="inputFocusHand"
+            @blur="inputBlurHand"
     >
     </el-date-picker>
 
@@ -555,6 +626,10 @@
                        @select="handleSelect"
                        :disabled="data.disabled"
                        :readonly="data.readonly"
+                       @click="inputClickHand"
+                       @change="inputChangeHand"
+                       @focus="inputFocusHand"
+                       @blur="inputBlurHand"
       >
       </el-autocomplete>
 
@@ -565,6 +640,10 @@
               :clearable="data.clearable"
               type="number"
               v-model.number="formModel[data.code]"
+                @click="inputClickHand"
+                @change="inputChangeHand"
+                @focus="inputFocusHand"
+                @blur="inputBlurHand"
       ></el-input>
       <el-input v-else-if="data.validationSetting && data.validationSetting.dataType.value === 'password'"
               :ref="data.ref"
@@ -573,6 +652,10 @@
               :clearable="data.clearable"
               type="password"
               v-model="formModel[data.code]"
+                @click="inputClickHand"
+                @change="inputChangeHand"
+                @focus="inputFocusHand"
+                @blur="inputBlurHand"
       ></el-input>
       <el-input v-else
               :ref="data.ref"
@@ -580,6 +663,10 @@
               :readonly="data.readonly"
               :clearable="data.clearable"
               v-model="formModel[data.code]"
+              @click="inputClickHand"
+              @change="inputChangeHand"
+              @focus="inputFocusHand"
+              @blur="inputBlurHand"
       ></el-input>
     </template>
 
@@ -594,6 +681,13 @@
       @rogroup="rogroup"
     ></rogroupEditDialog> -->
     </el-form-item>
+    <!--新版选人组件弹出框-->
+    <newPersonEditDialog
+            ref="newPersonEditDialog"
+            :sourceTreeList="data.treeTabList ? data.treeTabList.selectedList : []"
+            :isMultiple="data.isMultiple ? data.isMultiple.value : false"
+            @personSure="personSure"
+    ></newPersonEditDialog>
     <MessageBox
       :showMessage.sync="MessageConfig.showMessage"
       :MessageConfig="MessageConfig"
@@ -604,8 +698,10 @@
 </template>
 
 <script>
+  const downloadServiceUrl = window.g && window.g.downloadServiceUrl? window.g.downloadServiceUrl: '';
   const FORM_IMG_URL = window.g && window.g.formImgUrl? window.g.formImgUrl : 'http://192.168.11.203:9000';
 
+  import moment from "moment"
   import wangEditor from "wangeditor";
   import {
     commonRequest,
@@ -616,15 +712,16 @@
     getUploadedFileList,
     delFileNew,
   } from '../api/formDesigner_api';
-  import {isObjEmpty} from '../util/common.js';
+  import {isObjEmpty, validateRegType} from '../util/common.js';
   import MessageBox from "./MessageBox.vue";
     import selectTree from "./selectTree"
   import personEditDialog from "./personEditDialog.vue";
+  import newPersonEditDialog from "./newPersonEditDialog";
   import rogroupEditDialog from "./rogroupEditDialog.vue";
   import {baseUrl} from '../api/commonUrl';
   export default {
     name: 'previewFormItem',
-    components:{MessageBox,personEditDialog,rogroupEditDialog,selectTree},
+    components:{MessageBox,personEditDialog,newPersonEditDialog,rogroupEditDialog,selectTree},
     props: {
       // 是否为预览模式，模式是编辑模式啦
       view: {
@@ -697,6 +794,7 @@
     },
     data () {
       return {
+        moment: moment,
         options: [], // 针对下拉框等的下拉数据
         fileName: '', // 附件名字
         fileList: [
@@ -724,13 +822,19 @@
         editorHtml:'',
         editorFlag:true,
         formCode:'',
-        editorTxt: ''
+        editorTxt: '',
+        // 下拉树组件的props属性
+        treeProps: {
+          label: "label",
+          children: "children",
+          isLeaf: "leaf",
+        }
       }
     },
     created () {
+      debugger;
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting, validationSetting, formSetting_children} = this.data;
-      if (type === 'tree'){return;}
 
       if (optionSetting === 'static') {
         this.options = this.data.optionSetting_tabContent.map(it=>{
@@ -750,6 +854,7 @@
       }
       // 字典表
       else if(optionSetting === 'remoteDict'){
+        debugger;
         const optionSetting_tabContent = this.data.optionSetting_tabContent;
         if (optionSetting_tabContent && optionSetting_tabContent.relationSettings &&
           optionSetting_tabContent.relationSettings.values && !isObjEmpty(optionSetting_tabContent.relationSettings.values))
@@ -1067,7 +1172,6 @@
         }
       },
       getNewFileList(){
-        debugger;
         this.fileList = []
         let param = {
           boId: "1376349548590534656",
@@ -1082,6 +1186,7 @@
       },
       //新文件上传删除附件
       deleteFile(row) {
+        debugger;
         delFileNew(row.id).then(response => {
           this.$message({
             showClose: true,
@@ -1089,34 +1194,49 @@
             duration: 1000,
             type: "success"
           });
-          this.getFileList();
+          this.getNewFileList();
         }).catch((error) => {
           this.$message.error("删除文件失败")
         })
       },
-      // 下载地址
-      getDownURL (row) {
-        // 处理url。如果是以http或者https开头的，则直接使用；若否，则依次取baseUrl。和本地的ip
-        let url = this.data.downloadServiceUrl;
-        let _url = '';
-        if (url.startsWith('http:') || url.startsWith('https:')){
-          _url = url
-        }
-        else if (baseUrl) {
-          _url = baseUrl + url;
-        }
-        else {
-          _url = window.location.origin + url
-        }
-        return (
-           _url +
-          row.id +
-          '?access_token=' +
-          sessionStorage.getItem('access_token')
-        );
-      },
+      // // 下载地址
+      // getDownURL (row) {
+      //   debugger;
+      //   // 处理url。如果是以http或者https开头的，则直接使用；若否，则依次取baseUrl。和本地的ip
+      //   let url = this.data.downloadServiceUrl;
+      //   let _url = '';
+      //   if (url.startsWith('http:') || url.startsWith('https:')){
+      //     _url = url
+      //   }
+      //   else if (baseUrl) {
+      //     _url = baseUrl + url;
+      //   }
+      //   else {
+      //     _url = window.location.origin + url
+      //   }
+      //   return (
+      //      _url +
+      //     row.id +
+      //     '?access_token=' +
+      //     sessionStorage.getItem('access_token')
+      //   );
+      // },
       // 删除附件
+      // 新文件上传下载地址
+      getDownURL(row, disabled) {
+        if (disabled) {
+          return "#"
+        } else {
+          return (
+            downloadServiceUrl + "/" +
+            row.id +
+            "?access_token=" +
+            sessionStorage.getItem("access_token")
+          );
+        }
+      },
       delFile (row) {
+        debugger;
         commonRequest({
           method: 'DELETE',
           url: this.data.delFileUrl + row.id
@@ -1128,7 +1248,10 @@
             duration: 1000,
             type: 'success'
           });
-          this.getFileList();
+
+          debugger;
+          this.getNewFileList();
+          // this.getFileList();
         });
       },
       // 获取码表数据列表
@@ -1363,24 +1486,124 @@
     },
     //确认编辑行
     handleUse(index, row) {
+      debugger;
       event.stopPropagation();
-      //  this.MessageConfig.showMessage = true;
-      //   this.MessageConfig.MsgBoxType = "success";
-      //   this.MessageConfig.MsgText = "应用成功";
+      var isValidate = true
+      // 在应用时提示有必填项的校验
+      for (let item of this.data.tableCols) {
+        debugger;
+        if (!row[item.prop] && row[item.prop] !== 0 && item.componentTypeValueAttr.required.selected) {
+          this.$message.error(`请填写列名为："${item.label}"的必填项!`)
+          isValidate = false
+          break;
+        } else {
+          // col.componentTypeValueAttr, scope.row[col.prop], col.prop
+          isValidate = this.validateTabColRules(item, item.componentTypeValueAttr, row[item.prop], item.prop)
+          if (!isValidate) {
+            break;
+          }
+        }
+      }
+      //
+      if (isValidate) {
+        this.MessageConfig.showMessage = true;
+        this.MessageConfig.MsgBoxType = "success";
+        this.MessageConfig.MsgText = "应用成功";
         this.currentIndex = null;
+        this.dealTableColumnData()
+      }
     },
+      // 动态表格文本框组件是开启设置规则进行校验
+      validateTabColRules(col, inputVal, colValue, propName){
+        if (!inputVal || !col) {
+          return true
+        }
+        let isValidate = true
+        let inputValueType = inputVal.dataType ? inputVal.dataType.value : ""
+        let propColName = "" // 当前列的列名
+        // 获取当前列的表头名称
+
+        for (let item of this.data.tableCols) {
+          if (propName === item.prop) {
+            propColName = item.label
+          }
+        }
+        // 判断必填
+        if (inputVal.required.selected) {
+          if (!colValue) {
+            this.$message.error(`列名为："${propColName}"的数据不能为空`)
+            isValidate = false
+            return isValidate
+          }
+        }
+
+        // 判断选择的数据类型
+        if (col.componentTypeValue === "input" && inputVal.dataType.selected) {
+          isValidate = validateRegType(colValue, inputValueType)
+          for (let opItem of inputVal.dataType.options) {
+            if (inputValueType === opItem.value) {
+              !isValidate && this.$message.error(`列名为："${propColName}"、数据格式为"${opItem.label}"的数据验证失败`)
+              break;
+            }
+          }
+          if (!isValidate) {
+            return isValidate
+          }
+        }
+        // 判断自定义正则表达式
+        if (inputVal.regExpPattern.selected && inputVal.regExpPattern.value) {
+          isValidate = validateRegType(colValue, "", inputVal.regExpPattern.value)
+          if (!isValidate) {
+            this.$message.error(`列名为："${propColName}"、数据格式为自定义正则表达式的数据验证失败`)
+            return isValidate
+          }
+        }
+        // 验证长度
+        if(inputVal.lengthControl.selected && (Array.isArray(colValue) || Object.prototype.toString.call(colValue) === "[object String]")) {
+          if (inputVal.lengthControl.min > colValue.length) {
+            isValidate = false
+            this.$message.error(`列名为："${propColName}"的数据长度不能小于最小长度为${inputVal.lengthControl.min}`)
+            return isValidate
+          }
+          if (inputVal.lengthControl.max < colValue.length) {
+            isValidate = false
+            this.$message.error(`列名为："${propColName}"的数据长度不能大于最大长度为${inputVal.lengthControl.max}`)
+            return isValidate
+          }
+        }
+        return isValidate
+      },
     //取消编辑
     handleCancel(index, row) {
       event.stopPropagation();
-      this.data.tableData[index] = JSON.parse(JSON.stringify(this.defaultData));
       for(let key in this.data.tableData[index]){
         for(let dekey in this.defaultData){
           if(key==dekey){
-              this.data.tableData[index][key]=this.defaultData[dekey]
-            }
+            this.data.tableData[index][key]=this.defaultData[dekey]
+          }
         }
       }
       this.currentIndex = null;
+      this.dealTableColumnData()
+      },
+      // 遍历所有得table row数据 判断对应得类型 显示对应得值
+      dealTableColumnData(){
+        this.data.tableData.length > 0 && this.data.tableData.map((item,index) => {
+          if (item) {
+            for(var colItem in item){
+              this.data.tableCols.value.map((tableItem, tableIndex) => {
+                if (tableItem.componentTypeValue === "input") {
+                  (tableItem.prop === colItem) && (item[colItem] = item[colItem].toString())
+                } else if (tableItem.componentTypeValue === "inputNumber") {
+                  (tableItem.prop === colItem) && (item[colItem] = Number(item[colItem]))
+                } else if (tableItem.componentTypeValue === "select") {
+                } else if (tableItem.componentTypeValue === "datePicker") {
+                  (tableItem.prop === colItem) && (item[colItem] = item[colItem] ? moment(item[colItem]).format("YYYY-MM-DD"): "")
+                }
+              })
+            }
+          }
+        })
       },
       querySearchAsync(queryString, cb) {
         debugger;
@@ -1511,11 +1734,8 @@
       },
       // 新附件上传 上传文件
       uploadNewFile(params) {
-        debugger;
         let fileName = params.file.name;
-        debugger
         let pos = fileName.lastIndexOf(".");
-        console.log("获取当前data,upload", this.data)
         let lastName = fileName.substring(pos, fileName.length);
         if (
           this.data.upLoadFileType && this.data.upLoadFileType.indexOf(lastName.toLowerCase()) === -1
@@ -1538,9 +1758,7 @@
           this.$message.error(`上传文件大小不得大于${this.data.fileUploadSize}KB!`);
           return false
         }
-        debugger
         if (this.fileList.length >= this.data.totalUploadCounts) {
-          debugger
           this.$message.error(`上传文件的数量不能超过${this.data.totalUploadCounts}个`);
           return false
         }
@@ -1566,7 +1784,6 @@
           return new Promise((resolve, reject) => {
             uploadFiles(param)
               .then(res => {
-                  debugger;
                 if (res && res.data && res.data.code == "0000") {
                   // 上传成功
                   this.$message({
@@ -1644,11 +1861,12 @@
          * @param insertImgFn 是获取图片 url 后，插入到编辑器的方法
          */
         editor.config.customUploadImg = function (resultFiles, insertImgFn) {
+          console.log('开始上传')
           debugger;
           // 拼接查询参数，并且向后台递交请求
           let param = new FormData();
-          // param.append('boId', `images_${new Date().getTime()}`);
-          // param.append('businessType', 'images');
+          console.log('开始上传 :token:', sessionStorage.getItem('access_token'))
+
           param.append('access_token', sessionStorage.getItem('access_token'));
           resultFiles.forEach(file =>{
             param.append('files', file);
@@ -1739,7 +1957,70 @@
         if (ev && ev.length > 1 && data.isMultiple && ev.length > data.multItemCounts) {
           this.$message.error("超出最大选项数量")
         }
+
+        this.inputChangeHand();
       },
+
+      // 打开新人员选择弹框
+      openNewPerRoleDialog() {
+        debugger;
+        if (this.$refs.newPersonEditDialog && !this.data.disabled){
+          debugger;
+          this.$refs.newPersonEditDialog.show(
+            this.data.defaultValueArr,
+            this.data,
+            !this.data.isMultiple,
+            {
+              sourceTreeList: this.data.treeTabList.selectedList.length > 0 ? this.data.treeTabList.selectedList : [this.data.treeTabList.options[0]],
+              isMultiple: this.data.isMultiple.value
+            }
+          );
+        }
+      },
+      inputClickHand () {
+        // 尝试把自定义函数字符串转为函数并执行
+        if(this.data && this.data.click){
+          try {
+            let fnc = new Function(this.data.click);
+            fnc(this.formModel[this.data.code])
+          } catch (e) {
+            throw e;
+          }
+        }
+      },
+      inputChangeHand () {
+        // 尝试把自定义函数字符串转为函数并执行
+        if(this.data && this.data.change) {
+          try {
+            let fnc = new Function(this.data.change);
+            fnc(this.formModel[this.data.code])
+          } catch (e) {
+            throw e;
+          }
+        }
+      },
+      inputFocusHand () {
+        // 尝试把自定义函数字符串转为函数并执行
+        if(this.data && this.data.focus){
+          try {
+            let fnc = new Function(this.data.focus);
+            fnc(this.formModel[this.data.code])
+          } catch (e) {
+            throw e;
+          }
+        }
+      },
+      inputBlurHand () {
+        // 尝试把自定义函数字符串转为函数并执行
+        if(this.data && this.data.blur){
+          try {
+            let fnc = new Function(this.data.blur);
+            fnc(this.formModel[this.data.code])
+          } catch (e) {
+            throw e;
+          }
+        }
+      }
     }
   }
 </script>

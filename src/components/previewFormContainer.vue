@@ -121,15 +121,7 @@
       }
     },
     methods: {
-      // 这些方法是给外部使用的一些便利方法
-      // 获取form的vue实例,因为外部调用需要操作el-form
-      getFormIns () {
-        return this.$refs.form.$refs.fdForm;
-      },
-      getFormItemsIns () {
-        return this.$refs.form.$refs.fdFormItem;
-      },
-      scrollEvent(e){
+      scrollEvent (e) {
         let outerHeaderHeight = this.outerHeaderHeight || 0;
         let outerheightHeight = this.outerheightHeight || 0;
         this.$nextTick(_=>{
@@ -158,6 +150,29 @@
           }
         })
       },
+
+      // 以下这些方法是给外部使用的一些便利方法，保放在最下面我好找
+      /**
+       * 获取form的vue实例,因为外部调用需要操作el-form
+       * @returns {*}
+       */
+      getFormIns () {
+        return this.$refs.form.$refs.fdForm;
+      },
+      getFormItemsIns () {
+        return this.$refs.form.$refs.fdFormItem;
+      },
+      getFormItemsByCode(code){
+        let all = this.$refs.form.$refs.fdFormItem;
+        let resultList = [];
+        for (let i = 0,len = all.length;i<len;i++){
+          let child = all[i];
+          if (child && child.data && child.data.code === code){
+            resultList.push(child);
+          }
+        }
+        return resultList;
+      }
     },
 
     generateElementuiCode: generateElementuiCode
