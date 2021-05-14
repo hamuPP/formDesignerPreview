@@ -832,7 +832,6 @@
       }
     },
     created () {
-      debugger;
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting, validationSetting, formSetting_children} = this.data;
 
