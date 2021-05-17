@@ -163,3 +163,37 @@ export function delFileNew(data){
     url: fileUploadUrl + '/senon-file-center/files/del/' + data,
   })
 }
+
+//根据配置sql查询不分页列表
+export const getFormTableSqlList = (reqData)=>{
+  return axios({
+    method: 'post',
+    url: `${baseUrl}/workflow/form/data/getFormTableSqlList`,
+    data: reqData
+  })
+};
+//根据配置sql查询分页列表
+export const getFormTableSqlPage = (reqData)=>{
+  return axios({
+    method: 'post',
+    url: `${baseUrl}/workflow/form/data/getFormTableSqlPage`,
+    data: reqData
+  })
+};
+
+//不分页查询子表格数据
+export const getFormTablesList = (reqData)=>{
+  return axios({
+    method: 'post',
+    url: `${baseUrl}/workflow/form/data/getFormTablesList`,
+    data: reqData
+  })
+};
+//分页查询子表格数据
+export const getFormTablesPage = (reqData)=>{
+  return axios({
+    method: 'post',
+    url: `${baseUrl}/workflow/form/data/getFormTablesPage`,
+    data: reqData
+  })
+};
