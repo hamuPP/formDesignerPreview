@@ -207,27 +207,25 @@
                   <el-button
                     type="text"
                     size="small"
-                    :disabled="data.readonly"
                     @click="handleUse(scope.$index, scope.row)"
                   >应用</el-button>
                   <el-button
                     type="text"
                     size="small"
-                    :disabled="data.readonly"
                     @click="handleCancel(scope.$index, scope.row)"
                   >取消</el-button>
                 </span>
                 <span v-else>
                   <el-button
+                  v-if="data.tableCols[data.tableCols.length - 1].showEditBtnForOperation&&!data.readonly"
                     type="text"
                     size="small"
-                    :disabled="data.readonly"
                     @click="handleEdit(scope.$index, scope.row)"
                   >编辑</el-button>
                   <el-button
+                   v-if="data.tableCols[data.tableCols.length - 1].showDelBtnForOperation&&!data.readonly"
                     @click="handleDelete(scope.$index)"
                     type="text"
-                    :disabled="data.readonly"
                     size="small"
                   >删除</el-button>
                 </span>
@@ -240,7 +238,7 @@
                     size="small"
                     :disabled="data.readonly&&item.code!='scan'"
                     @click="dealFuncStr(item, index)"
-                    v-if="item.code == 'scan' && data.tableCols[data.tableCols.length - 1].showScanBtnForOperation || item.code != 'scan'"
+                    v-if="item.code == 'scan' && data.tableCols[data.tableCols.length - 1].showScanBtnForOperation || (item.code != 'scan'&&!data.readonly)"
                   >{{item.name}}</el-button>
                 </span>
               </template>
@@ -249,7 +247,7 @@
           <div v-if="data.isPagination" class="pagination">
             <el-pagination
               :page-sizes="[10, 20, 30, 50, 100]"
-              :page-size="page.size"
+              :page-size="page.limit"
               background
               layout="sizes, total ,slot"
               :total="page.total"
@@ -260,7 +258,7 @@
             <el-pagination
               :current-page.sync="page.current"
               :page-sizes="[10, 20, 30, 50, 100]"
-              :page-size="page.size"
+              :page-size="page.limit"
               background
               layout="prev, pager, next, jumper"
               :total="page.total"
@@ -776,6 +774,10 @@ import {
   getPointCodeSheetData,
   getUploadedFileList,
   delFileNew,
+  getFormTableSqlList,
+  getFormTableSqlPage,
+  getFormTablesPage,
+  getFormTablesList,
 } from "../api/formDesigner_api";
 import { isObjEmpty, validateRegType } from "../util/common.js";
 import MessageBox from "./MessageBox.vue";
@@ -815,6 +817,15 @@ export default {
       type: Number,
       default: 0,
     },
+    version: {
+      type: [Number, String],
+      default: "",
+    },
+    // 表单的id
+    boId: {
+      type: [Number, String],
+      default: null,
+    },
     lineMarginBottom: {
       type: Number,
       default: 0,
@@ -829,6 +840,31 @@ export default {
         parentName = parent.$options.name;
       }
       return parent;
+    },
+    sqlData() {
+      let obj = {
+        formCode: this.$route.query.formCode,
+        version: this.version,
+        map: {},
+        tableCode: this.data.code,
+      };
+      this.data.optionSetting_tabContent.queryParams.forEach((item) => {
+        if (item.formItem == "constant") {
+          obj.map[item.paramName] = item.defaultValue;
+        } else {
+          obj.map[item.paramName] = this.formModel[item.paramName];
+        }
+      });
+      return obj;
+    },
+    tableParams() {
+      let obj = {
+        boId: this.boId,
+        formCode: this.$route.query.formCode,
+        version: this.version,
+        tableCode: this.data.code,
+      };
+      return obj;
     },
   },
   watch: {
@@ -860,14 +896,6 @@ export default {
           this.editor.$textElem.attr("contenteditable", true);
         }
       }
-    },
-    "data.tableCols"(n, o) {
-      // this.tablecolumnCopy = n.concat([]);
-      n.forEach((item) => {
-        if (item.label != "操作") {
-          this.tablecolumnCopy.push(item);
-        }
-      });
     },
   },
   data() {
@@ -909,11 +937,11 @@ export default {
       },
       page: {
         total: 0,
-        size: 10,
-        current: 1,
+        limit: 10,
+        page: 1,
       },
-      treeShow: false,
-      treeData: [],
+      treeShow: false, //是否展示表头列筛选
+      treeData: [], //表头列筛选数据
       defaultDataArray: [],
       tablecolumnCopy: [],
     };
@@ -926,7 +954,6 @@ export default {
       validationSetting,
       formSetting_children,
     } = this.data;
-
     if (optionSetting === "static") {
       this.options = this.data.optionSetting_tabContent.map((it) => {
         if (it.label && it.label.value) {
@@ -1028,42 +1055,67 @@ export default {
       // todo 前置关联还没有加入
       // 如果有前置关联关系设置的，则需要先检查其前置是否有值，有再查询
       // eslint-disable-next-line camelcase
-      const optionSetting_tabContent = JSON.parse(
-        JSON.stringify(this.data.optionSetting_tabContent)
-      );
+      if (this.data.type == "table" && this.data.isCreateDataBaseTable) {
+      } else {
+        const optionSetting_tabContent = JSON.parse(
+          JSON.stringify(this.data.optionSetting_tabContent)
+        );
 
-      // // 没有配置前置关联查询参数，则现在就查询后台接口
-      // 处理queryParams，拼接查询参数
-      let params = {};
-      let data = {};
-      let headers = {};
-      for (
-        let i = 0, len = optionSetting_tabContent.queryParams.length;
-        i < len;
-        i++
-      ) {
-        let it = optionSetting_tabContent.queryParams[i];
-        // 空键名的不要
-        if (!it.paramName) {
-          break;
+        // // 没有配置前置关联查询参数，则现在就查询后台接口
+        // 处理queryParams，拼接查询参数
+        let params = {};
+        let data = {};
+        let headers = {};
+        for (
+          let i = 0, len = optionSetting_tabContent.queryParams.length;
+          i < len;
+          i++
+        ) {
+          let it = optionSetting_tabContent.queryParams[i];
+          // 空键名的不要
+          if (!it.paramName) {
+            break;
+          }
+          if (it.paramType === "params") {
+            params[it.paramName] = it.defaultValue;
+          } else if (it.paramType === "body") {
+            data[it.paramName] = it.defaultValue;
+          } else if (it.paramType === "header") {
+            headers[it.paramName] = it.defaultValue;
+          }
         }
-        if (it.paramType === "params") {
-          params[it.paramName] = it.defaultValue;
-        } else if (it.paramType === "body") {
-          data[it.paramName] = it.defaultValue;
-        } else if (it.paramType === "header") {
-          headers[it.paramName] = it.defaultValue;
-        }
+
+        this.getRemoteUrlDatas({
+          url: optionSetting_tabContent.url,
+          method: optionSetting_tabContent.method,
+          data: data,
+          params: params,
+          headers: headers,
+          successCallback: optionSetting_tabContent.successCallback,
+        });
       }
-
-      this.getRemoteUrlDatas({
-        url: optionSetting_tabContent.url,
-        method: optionSetting_tabContent.method,
-        data: data,
-        params: params,
-        headers: headers,
-        successCallback: optionSetting_tabContent.successCallback,
-      });
+    }
+    //获取表格数据(sql)
+    else if (
+      optionSetting === "sqlConfigure" &&
+      !this.data.isCreateDataBaseTable
+    ) {
+      if (this.data.isPagination) {
+        this.getFormTableSqlPage();
+      } else {
+        this.getFormTableSqlList();
+      }
+    }
+    //获取表格数据(建表)
+    else if (
+      optionSetting === "sqlConfigure" &&
+      this.data.isCreateDataBaseTable
+    ) {
+      if (this.data.isPagination) {
+        this.getFormTablesPage();
+      } else {
+        this.getFormTablesList();
+      }
     }
     // 判断是否有控制表单元素状态的下拉框
     if (formSetting_children) {
@@ -1160,10 +1212,10 @@ export default {
     if (this.data.type == "richText") {
       this.editorTxt = this.formModel[this.data.code];
     }
-    //处理表头编辑
+    //处理表格表头
     if (this.data.type == "table") {
       this.data.tableCols.forEach((item) => {
-        if (item.label != "操作") {
+        if (item.label != "操作" && !item.isHide) {
           this.tablecolumnCopy.push(item);
         }
       });
@@ -2150,19 +2202,39 @@ export default {
      * 页数大小点击
      * @param size
      */
-    sizeChange(size) {},
+    sizeChange(limit) {
+      this.page = {
+        ...this.page,
+        page: 1,
+        limit,
+      };
+      if (this.data.isCreateDataBaseTable) {
+        this.getFormTablesPage();
+      } else {
+        this.getFormTableSqlPage();
+      }
+    },
     /**
      * 页码点击
      * @param current
      */
-    currentChange(current) {},
+    currentChange(page) {
+      this.page = {
+        ...this.page,
+        page,
+      };
+      if (this.data.isCreateDataBaseTable) {
+        this.getFormTablesPage();
+      } else {
+        this.getFormTableSqlPage();
+      }
+    },
     /**
      * 表头右击弹出选项
      * @param column
      * @param event
      */
     headerContextmenu(column, event) {
-      return;
       this.treeShow = true;
       window.addEventListener("click", this.closeMenu);
       event.preventDefault();
@@ -2181,7 +2253,6 @@ export default {
           }
         });
       }
-      console.log(this.tablecolumnCopy);
     },
 
     /**
@@ -2216,7 +2287,72 @@ export default {
       });
       this.tablecolumnCopy = arr;
     },
-
+    //根据配置sql查询不分页列表
+    getFormTableSqlList() {
+      getFormTableSqlList(this.sqlData).then((res) => {
+        console.log(res);
+        if (res && res.data) {
+          this.data.tableData = res.data.data || [];
+        }
+      });
+    },
+    //根据配置sql查询分页列表
+    getFormTableSqlPage() {
+      let obj = {
+        ...this.page,
+        ...this.sqlData,
+      };
+      getFormTableSqlPage(obj).then((res) => {
+        console.log(res);
+        if(res&&res.data&&res.data.data){
+           this.data.tableData = res.data.data.data || [];
+           this.page.total = res.data.data.total
+            ? parseInt(res.data.data.total)
+            : 0;
+        }
+      });
+    },
+    //不分页查询子表格数据
+    getFormTablesList() {
+      getFormTablesList(this.tableParams).then((res) => {
+        if (res && res.data && res.data.data) {
+          let data = res.data.data || {};
+          this.data.tableData = [];
+          data.rows.forEach((item) => {
+            let obj = {};
+            item.columns.forEach((cIt) => {
+              obj[cIt.code] = cIt.value;
+            });
+            this.data.tableData.push(obj);
+          });
+        }
+      });
+    },
+    //分页查询子表格数据
+    getFormTablesPage() {
+      let obj = {
+        ...this.page,
+        ...this.tableParams,
+      };
+      getFormTablesPage(obj).then((res) => {
+        if (res && res.data && res.data.data) {
+          let data = res.data.data.data || [];
+          this.page.total = res.data.data.total
+            ? parseInt(res.data.data.total)
+            : 0;
+          this.data.tableData = [];
+          data.forEach((item) => {
+            let obj = {};
+            item.rows.forEach((it) => {
+              it.columns.forEach((cIt) => {
+                obj[cIt.code] = cIt.value;
+              });
+              this.data.tableData.push(obj);
+            });
+          });
+        }
+      });
+    },
     /**
      * 关闭弹框
      */
@@ -2349,7 +2485,7 @@ export default {
 .tree-box {
   z-index: 9999;
   position: absolute;
-  top: 14px;
+  top: 34px;
   left: 0;
   border: 1px solid #cfe7fe;
   padding-right: 10px;

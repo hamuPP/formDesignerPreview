@@ -8,6 +8,7 @@
             ref="form"
             :view="view"
             :id="id"
+            :version='version'
             :rules="rules"
             :useCustormRule="useCustormRule"
             :formModel="formModel"
@@ -44,6 +45,10 @@
         type: [Number, String],
         default: null
       },
+      version: {
+      type: [Number, String],
+      default: null,
+    },
       rules: {
         type: Object,
         default () {
