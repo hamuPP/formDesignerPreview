@@ -36,6 +36,7 @@
                   :formCode="formCode"
                   :boId="id"
                   :version="version"
+                  :linkFormCode='linkFormCode'
                   :labelWidth="fdFormData.labelWidth"
                   :lineMarginBottom="fdFormData.lineMarginBottom"
                 ></previewFormItem>
@@ -79,6 +80,7 @@
                       :formCode="formCode"
                       :boId="id"
                       :version="version"
+                      :linkFormCode='linkFormCode'
                       :labelWidth="fdFormData.labelWidth"
                       :lineMarginBottom="fdFormData.lineMarginBottom"
                     ></previewFormItem>
@@ -121,6 +123,7 @@
           :formCode="formCode"
           :boId="id"
           :version="version"
+          :linkFormCode='linkFormCode'
           :labelWidth="fdFormData.labelWidth"
           :lineMarginBottom="fdFormData.lineMarginBottom"
         ></previewFormItem>
@@ -172,6 +175,11 @@ export default {
       type: [Number, String],
       default: null,
     },
+    //link表单的code
+    linkFormCode:{
+       type: [Number, String],
+      default: null,
+    },
     rules: {
       type: Object,
       default() {
@@ -213,6 +221,7 @@ export default {
     },
   },
   created() {
+
     this.skin = this.fdFormData.skin;
     this.formCode = this.fdFormData.code;
     this.formClassStr =

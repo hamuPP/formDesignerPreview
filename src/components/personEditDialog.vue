@@ -218,7 +218,6 @@ export default {
     // 选人
     selectPeople(tableNo) {
       let selection = this.$refs.leftTable.selection; //选中的值
-      console.log(selection);
       let newLeftData = [],
         newRightData = [];
       selection.forEach((item) => {

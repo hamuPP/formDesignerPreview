@@ -198,6 +198,7 @@
               </template>
             </el-table-column>
             <el-table-column
+            v-if="!data.tableCols[data.tableCols.length - 1].isHide"
               label="操作"
               :width="data.tableCols[data.tableCols.length - 1].width||200"
               align="center"
@@ -826,6 +827,11 @@ export default {
       type: [Number, String],
       default: null,
     },
+     //link表单的code
+    linkFormCode:{
+       type: [Number, String],
+      default: null,
+    },
     lineMarginBottom: {
       type: Number,
       default: 0,
@@ -847,12 +853,20 @@ export default {
         version: this.version,
         map: {},
         tableCode: this.data.code,
+        linkFormCode:this.linkFormCode
       };
+      
       this.data.optionSetting_tabContent.queryParams.forEach((item) => {
         if (item.formItem == "constant") {
           obj.map[item.paramName] = item.defaultValue;
         } else {
-          obj.map[item.paramName] = this.formModel[item.paramName];
+          //有linkFormCode，是子表单，子表单里的表格要用主表单里的元素
+          if(this.linkFormCode){
+        let mainFormModel=JSON.parse(sessionStorage.getItem('mainFormModel'))
+        obj.map[item.paramName] = mainFormModel[item.paramName];
+        }else{
+         obj.map[item.paramName] = this.formModel[item.paramName];
+      }
         }
       });
       return obj;
@@ -883,7 +897,6 @@ export default {
     // },
     editorTxt: {
       handler(n, o) {
-        console.log(n, "ppp");
         this.editor.txt.html(this.formModel[this.data.code]);
       },
       deep: true,
@@ -1050,6 +1063,14 @@ export default {
         });
       }
     }
+     //获取表格数据(建表)
+    else if(this.data.type == "table" && this.data.isCreateDataBaseTable){
+    if (this.data.isPagination) {
+        this.getFormTablesPage();
+      } else {
+        this.getFormTablesList();
+      }
+    }
     // 远程接口（2版）
     else if (optionSetting === "remoteUrl2") {
       // todo 前置关联还没有加入
@@ -1107,16 +1128,16 @@ export default {
       }
     }
     //获取表格数据(建表)
-    else if (
-      optionSetting === "sqlConfigure" &&
-      this.data.isCreateDataBaseTable
-    ) {
-      if (this.data.isPagination) {
-        this.getFormTablesPage();
-      } else {
-        this.getFormTablesList();
-      }
-    }
+    // else if (
+    //   optionSetting === "sqlConfigure" &&
+    //   this.data.isCreateDataBaseTable
+    // ) {
+    //   if (this.data.isPagination) {
+    //     this.getFormTablesPage();
+    //   } else {
+    //     this.getFormTablesList();
+    //   }
+    // }
     // 判断是否有控制表单元素状态的下拉框
     if (formSetting_children) {
       this.formSetting = formSetting_children;

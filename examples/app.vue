@@ -170,7 +170,6 @@
               this.fdFormData = fmData;
               this.formModel = this.getFormModel(this, list, 'defaultValue');
               this.fdFormItems = this.formateList(list);
-              console.log(this.fdFormItems)
             } else {
               this.MessageConfig = {
                 showMessage: true, // 打开消息提示框
