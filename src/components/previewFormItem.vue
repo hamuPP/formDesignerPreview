@@ -46,12 +46,12 @@
             header-cell-class-name="fd-formTable__headerItem"
             @header-contextmenu="headerContextmenu"
           >
-            <template slot="empty">
-              <div class="tableNodata">
-                <img src="@/assets/images/404_images/nodata.png" alt="#" />
-                <span>暂无数据</span>
-              </div>
-            </template>
+                <template slot="empty">
+        <div class="tableNodata">
+          <img src="../assets/images/404_images/nodata.png" alt="#" />
+          <span>暂无数据</span>
+        </div>
+      </template>
             <el-table-column
               v-if="data.showSerial === 1"
               type="index"
@@ -203,14 +203,18 @@
               </template>
             </el-table-column>
             <el-table-column
-              v-if="!data.tableCols[data.tableCols.length - 1].isHide"
+            v-if="!data.tableCols[data.tableCols.length - 1].isHide"
               label="操作"
               :width="data.tableCols[data.tableCols.length - 1].width||200"
               align="center"
             >
               <template slot-scope="scope">
                 <span v-if="currentIndex == scope.$index">
-                  <el-button type="text" size="small" @click="handleUse(scope.$index, scope.row)">应用</el-button>
+                  <el-button
+                    type="text"
+                    size="small"
+                    @click="handleUse(scope.$index, scope.row)"
+                  >应用</el-button>
                   <el-button
                     type="text"
                     size="small"
@@ -219,13 +223,13 @@
                 </span>
                 <span v-else>
                   <el-button
-                    v-if="data.tableCols[data.tableCols.length - 1].showEditBtnForOperation&&!data.readonly"
+                  v-if="data.tableCols[data.tableCols.length - 1].showEditBtnForOperation&&!data.readonly"
                     type="text"
                     size="small"
                     @click="handleEdit(scope.$index, scope.row)"
                   >编辑</el-button>
                   <el-button
-                    v-if="data.tableCols[data.tableCols.length - 1].showDelBtnForOperation&&!data.readonly"
+                   v-if="data.tableCols[data.tableCols.length - 1].showDelBtnForOperation&&!data.readonly"
                     @click="handleDelete(scope.$index)"
                     type="text"
                     size="small"
@@ -828,9 +832,9 @@ export default {
       type: [Number, String],
       default: null,
     },
-    //link表单的code
-    linkFormCode: {
-      type: [Number, String],
+     //link表单的code
+    linkFormCode:{
+       type: [Number, String],
       default: null,
     },
     lineMarginBottom: {
@@ -854,22 +858,20 @@ export default {
         version: this.version,
         map: {},
         tableCode: this.data.code,
-        linkFormCode: this.linkFormCode,
+        linkFormCode:this.linkFormCode
       };
-
+      
       this.data.optionSetting_tabContent.queryParams.forEach((item) => {
         if (item.formItem == "constant") {
           obj.map[item.paramName] = item.defaultValue;
         } else {
           //有linkFormCode，是子表单，子表单里的表格要用主表单里的元素
-          if (this.linkFormCode) {
-            let mainFormModel = JSON.parse(
-              sessionStorage.getItem("mainFormModel")
-            );
-            obj.map[item.paramName] = mainFormModel[item.paramName];
-          } else {
-            obj.map[item.paramName] = this.formModel[item.paramName];
-          }
+          if(this.linkFormCode){
+        let mainFormModel=JSON.parse(sessionStorage.getItem('mainFormModel'))
+        obj.map[item.paramName] = mainFormModel[item.paramName];
+        }else{
+         obj.map[item.paramName] = this.formModel[item.paramName];
+      }
         }
       });
       return obj;
@@ -1066,9 +1068,9 @@ export default {
         });
       }
     }
-    //获取表格数据(建表)
-    else if (this.data.type == "table" && this.data.isCreateDataBaseTable) {
-      if (this.data.isPagination) {
+     //获取表格数据(建表)
+    else if(this.data.type == "table" && this.data.isCreateDataBaseTable){
+    if (this.data.isPagination) {
         this.getFormTablesPage();
       } else {
         this.getFormTablesList();
@@ -2328,9 +2330,9 @@ export default {
       };
       getFormTableSqlPage(obj).then((res) => {
         console.log(res);
-        if (res && res.data && res.data.data) {
-          this.data.tableData = res.data.data.data || [];
-          this.page.total = res.data.data.total
+        if(res&&res.data&&res.data.data){
+           this.data.tableData = res.data.data.data || [];
+           this.page.total = res.data.data.total
             ? parseInt(res.data.data.total)
             : 0;
         }
@@ -2523,12 +2525,18 @@ export default {
 .tree-box .el-tree-node__label {
   font-size: 12px;
 }
-.fd-form-item .el-table thead {
+.fd-form-item .el-table thead{
   color: #000;
   font-size: 12px;
 }
 .fd-form-item .el-table th {
-  padding: 0.52rem 0;
+    padding: .52rem 0;
+}
+.fd-form-item .tableNodata{
+	margin-top: 20px !important;
+	display: flex !important;
+	align-items: center  !important;
+	flex-direction: column  !important;
 }
 </style>
 
