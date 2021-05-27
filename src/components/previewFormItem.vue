@@ -284,7 +284,8 @@
       <h3 style="margin:6px 0;color:black">{{data.label}}</h3>
       <div style="min-height:200px;border:1px solid #b9c2dd" v-html="data.htmlValue"></div>
     </template>
-    <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
+  <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
+    <!-- //TODO 这个属性有变化，还没有改这里   -->
     <el-form-item
       v-else-if="data.type !== 'uploadFile' || (data.type === 'uploadFile' && !view)"
       :prop="data.code"
@@ -973,14 +974,16 @@ export default {
       formSetting_children,
     } = this.data;
     if (optionSetting === "static") {
-      this.options = this.data.optionSetting_tabContent.map((it) => {
-        if (it.label && it.label.value) {
-          return {
+      let newList = [];
+      this.data.optionSetting_tabContent.forEach(it =>{
+        if(it.label && it.label.value) {
+          newList.push({
             label: it.label.value,
-            value: it.value.value,
-          };
+            value: it.value.value
+          })
         }
       });
+      this.options = newList;
     }
     // 码表(调用接口，查询数据)
     else if (optionSetting === "remote") {
@@ -1111,7 +1114,8 @@ export default {
           }
         }
 
-        this.getRemoteUrlDatas({
+        console.log('948', optionSetting_tabContent.url);
+        optionSetting_tabContent.url && this.getRemoteUrlDatas({
           url: optionSetting_tabContent.url,
           method: optionSetting_tabContent.method,
           data: data,
@@ -1252,9 +1256,9 @@ export default {
     this.treeData.forEach((item) => {
       this.defaultDataArray.push(item.label);
     });
-    if (this.data.type === "uploadNewFile") {
-      this.getNewFileList();
-    }
+    // if (this.data.type === "uploadNewFile") {
+    //   this.getNewFileList();
+    // }
     if (this.data.type === "textarea") {
       this.labelEle = this.$el.getElementsByClassName("el-form-item__label")[0];
       this.contentEle = this.$el.querySelector(
@@ -1267,7 +1271,6 @@ export default {
       // 配置富文本编辑器的参数以及各种回调函数
       this.initRichTextSettings();
     }
-
     if (this.data.type == "cascader") {
       if (!this.data.optionSetting_tabContent.codeType.value) {
         return;
@@ -1401,12 +1404,17 @@ export default {
       }
     },
     getNewFileList() {
+      let queryData = {};
       this.fileList = [];
-      let param = {
-        boId: "1376349548590534656",
-        businessType: "jlitreq",
-      };
-      getUploadedFileList(param).then((res) => {
+      // 用户自定义添加的参数,这是例如在引用页面，用户可能需要再添加一些参数
+      if (this.USER_UPLOAD_SEARCH_LIST_PARAM) {
+        for (let key in this.USER_UPLOAD_SEARCH_LIST_PARAM) {
+          if (key) {
+            queryData[key] = this.USER_UPLOAD_SEARCH_LIST_PARAM[key];
+          }
+        }
+      }
+      getUploadedFileList(queryData).then((res) => {
         if (res && res.data && res.data.code == "0000") {
           this.fileList = res.data.data.data;
           // TODO this.$emit("getUploadedFileList", this.fileList)
@@ -1971,7 +1979,6 @@ export default {
             break;
           }
         }
-
         let req = {
           url: urlAddress || dt.url,
           method: dt.method,
@@ -2074,9 +2081,14 @@ export default {
         param.append("files", params.file);
         param.append("access_token", sessionStorage.getItem("access_token"));
         // param.append('typeId', 1);
-        console.log("上传文件的自定义参数", this.customParams);
-        param.append("boId", "1376349548590534656");
-        param.append("businessType", "jlitreq");
+        // 用户自定义添加的参数,这是例如在引用页面，用户可能需要再添加一些参数
+        if (this.USER_UPLOAD_PARAM) {
+          for (let key in this.USER_UPLOAD_PARAM) {
+            if (key) {
+              param.append(key, this.USER_UPLOAD_PARAM[key]);
+            }
+          }
+        }
         // 向后端发送请求
         return new Promise((resolve, reject) => {
           uploadFiles(param)
