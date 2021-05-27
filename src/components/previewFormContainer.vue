@@ -8,6 +8,8 @@
             ref="form"
             :view="view"
             :id="id"
+            :version='version'
+            :linkFormCode='linkFormCode'
             :rules="rules"
             :useCustormRule="useCustormRule"
             :formModel="formModel"
@@ -44,6 +46,15 @@
         type: [Number, String],
         default: null
       },
+      version: {
+      type: [Number, String],
+      default: null,
+    },
+    //link表单的code
+    linkFormCode:{
+       type: [Number, String],
+      default: null,
+    },
       rules: {
         type: Object,
         default () {
@@ -113,6 +124,10 @@
       let searchParamObj = this.searchParamObj = getUrlQueryParams();
     },
     mounted () {
+      //没有linkFormCode值时，代表是主表单，把主表单formModel值存起来，子表单表格要用
+      if(!this.linkFormCode&&!sessionStorage.getItem('mainFormModel')){
+        sessionStorage.setItem('mainFormModel',JSON.stringify(this.formModel))
+      }
       const that = this;
       if(this.showAnchor){
         document.body.addEventListener('mousewheel', function(){

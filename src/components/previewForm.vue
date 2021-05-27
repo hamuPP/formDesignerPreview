@@ -16,23 +16,12 @@
     :disabled="view"
   >
     <el-row v-for="(it, index) in fdFormItems" :key="index" :gutter="35">
-      <el-col
-        v-for="(item, key) in it"
-        :key="key"
-        :span="item.width"
-        :style="colStyle(item)"
-      >
+      <el-col v-for="(item, key) in it" :key="key" :span="item.width" :style="colStyle(item)">
         <!--    如果是有分组的(分组的自定义样式是套在分组的元素上的)  --start--  -->
         <template v-if="item.type === 'group'">
           <div class="fd-form-group" :class="item.className">
-            <div v-if="item.label" class="fd-form-group__header" :id="item.frontId">
-              {{ item.label }}
-            </div>
-            <el-row
-              v-for="(child, childIdx) in item.children"
-              :key="childIdx"
-              :gutter="35"
-            >
+            <div v-if="item.label" class="fd-form-group__header" :id="item.frontId">{{ item.label }}</div>
+            <el-row v-for="(child, childIdx) in item.children" :key="childIdx" :gutter="35">
               <el-col
                 v-for="(cItem, cKey) in child"
                 :key="cKey"
@@ -44,6 +33,10 @@
                   :view="view"
                   :formModel="formModel"
                   :data="cItem"
+                  :formCode="formCode"
+                  :boId="id"
+                  :version="version"
+                  :linkFormCode='linkFormCode'
                   :labelWidth="fdFormData.labelWidth"
                   :lineMarginBottom="fdFormData.lineMarginBottom"
                 ></previewFormItem>
@@ -56,58 +49,66 @@
         <!--    如果是tabs的 --start--  -->
         <template v-else-if="item.type === 'tabs'">
           <div class="fd-form-group__tobedel fd-form-tabs" :class="item.className">
-           <div class="fd-form-tabs__header">
-             <div v-for="(item, index) in item.header"
-                  :key="index"
-                  class="fd-form-tabs__item" :class="{'active': currentActiveTabIndex === index}"
-                  @click.stop="tabsHeaderClickHand(index)">{{item}}
-             </div>
-           </div>
+            <div class="fd-form-tabs__header">
+              <div
+                v-for="(item, index) in item.header"
+                :key="index"
+                class="fd-form-tabs__item"
+                :class="{'active': currentActiveTabIndex === index}"
+                @click.stop="tabsHeaderClickHand(index)"
+              >{{item}}</div>
+            </div>
             <div class="fd-form-tabs__body">
-              <div v-for="(b, bIndex) in item.children"
-                   :key="bIndex"
-                   class="fd-form-tabs__body-item"
-                   v-show="currentActiveTabIndex === bIndex">
+              <div
+                v-for="(b, bIndex) in item.children"
+                :key="bIndex"
+                class="fd-form-tabs__body-item"
+                v-show="currentActiveTabIndex === bIndex"
+              >
                 <el-row v-for="(_b, _bIndex) in b" :key="_bIndex" :gutter="35">
                   <el-col
-                          v-for="(cItem, cKey) in _b"
-                          :key="cKey"
-                          :span="cItem.width"
-                          :style="colStyle(cItem)"
+                    v-for="(cItem, cKey) in _b"
+                    :key="cKey"
+                    :span="cItem.width"
+                    :style="colStyle(cItem)"
                   >
                     <previewFormItem
-                            ref="fdFormItem"
-                            :view="view"
-                            :formModel="formModel"
-                            :data="cItem"
-                            :labelWidth="fdFormData.labelWidth"
-                            :lineMarginBottom="fdFormData.lineMarginBottom"
+                      ref="fdFormItem"
+                      :view="view"
+                      :formModel="formModel"
+                      :data="cItem"
+                      :formCode="formCode"
+                      :boId="id"
+                      :version="version"
+                      :linkFormCode='linkFormCode'
+                      :labelWidth="fdFormData.labelWidth"
+                      :lineMarginBottom="fdFormData.lineMarginBottom"
                     ></previewFormItem>
                   </el-col>
                 </el-row>
               </div>
             </div>
-<!--            <el-row-->
-<!--                    v-for="(child, childIdx) in item.children"-->
-<!--                    :key="childIdx"-->
-<!--                    :gutter="35"-->
-<!--            >-->
-<!--              <el-col-->
-<!--                      v-for="(cItem, cKey) in child"-->
-<!--                      :key="cKey"-->
-<!--                      :span="cItem.width"-->
-<!--                      :style="colStyle(cItem)"-->
-<!--              >-->
-<!--                <previewFormItem-->
-<!--                        ref="fdFormItem"-->
-<!--                        :view="view"-->
-<!--                        :formModel="formModel"-->
-<!--                        :data="cItem"-->
-<!--                        :labelWidth="fdFormData.labelWidth"-->
-<!--                        :lineMarginBottom="fdFormData.lineMarginBottom"-->
-<!--                ></previewFormItem>-->
-<!--              </el-col>-->
-<!--            </el-row>-->
+            <!--            <el-row-->
+            <!--                    v-for="(child, childIdx) in item.children"-->
+            <!--                    :key="childIdx"-->
+            <!--                    :gutter="35"-->
+            <!--            >-->
+            <!--              <el-col-->
+            <!--                      v-for="(cItem, cKey) in child"-->
+            <!--                      :key="cKey"-->
+            <!--                      :span="cItem.width"-->
+            <!--                      :style="colStyle(cItem)"-->
+            <!--              >-->
+            <!--                <previewFormItem-->
+            <!--                        ref="fdFormItem"-->
+            <!--                        :view="view"-->
+            <!--                        :formModel="formModel"-->
+            <!--                        :data="cItem"-->
+            <!--                        :labelWidth="fdFormData.labelWidth"-->
+            <!--                        :lineMarginBottom="fdFormData.lineMarginBottom"-->
+            <!--                ></previewFormItem>-->
+            <!--              </el-col>-->
+            <!--            </el-row>-->
           </div>
         </template>
         <!--    如果是tabs的 --end--  -->
@@ -119,7 +120,10 @@
           :view="view"
           :formModel="formModel"
           :data="item"
-          :formCode='formCode'
+          :formCode="formCode"
+          :boId="id"
+          :version="version"
+          :linkFormCode='linkFormCode'
           :labelWidth="fdFormData.labelWidth"
           :lineMarginBottom="fdFormData.lineMarginBottom"
         ></previewFormItem>
@@ -141,13 +145,13 @@ const SKIN_OPTIONS = {
   },
 };
 export default {
-  name: 'previewForm',
+  name: "previewForm",
   components: { previewFormItem },
   data() {
     return {
       skin: "", // 预设的表格的样式名称
       formClassStr: "",
-      formCode:'',
+      formCode: "",
       currentActiveTabIndex: 0,
     };
   },
@@ -159,19 +163,27 @@ export default {
     },
     card: {
       type: Boolean,
-      default: false
+      default: false,
     },
     // 表单的id
     id: {
       type: [Number, String],
-      default: null
+      default: null,
     },
-
+     version: {
+      type: [Number, String],
+      default: null,
+    },
+    //link表单的code
+    linkFormCode:{
+       type: [Number, String],
+      default: null,
+    },
     rules: {
       type: Object,
-      default () {
-        return {}
-      }
+      default() {
+        return {};
+      },
     },
     // // 是否采用用户自配的规则，即props中传入的rules。,有以下4种植
     // // only: 仅采用用户的规则，忽视表单编辑器中的配置。
@@ -186,65 +198,64 @@ export default {
     // 若是，则表单这里将会无视表单编辑器中配置的校验数据
     useCustormRule: {
       type: Boolean,
-      default: false
+      default: false,
     },
     formModel: {
       type: Object,
-      default () {
+      default() {
         return {};
-      }
+      },
     },
     fdFormItems: {
       type: Array,
       default() {
         return [];
-      }
+      },
     },
     fdFormData: {
       type: Object,
-      default () {
+      default() {
         return {};
-      }
-    }
+      },
+    },
   },
   watch: {
     fdFormData(n, o) {
-      console.log(n);
-      this.formCode=n.code
+      this.formCode = n.code;
       this.skin = n.skin;
       this.formClassStr =
         `fd-form fd-form--preview ${n.skin} ${n.customClassName}` +
         (n.size ? ` fd-form--${n.size}` : "");
-    }
+    },
   },
   created() {
+
     this.skin = this.fdFormData.skin;
     this.formCode = this.fdFormData.code;
     this.formClassStr =
       `fd-form fd-form--preview ${this.skin} ${this.fdFormData.customClassName}` +
       (this.fdFormData.size ? ` fd-form--${this.fdFormData.size}` : "");
   },
-  mounted(){
-    this.$bus.$on('selectChange',(data)=>{
-      this.selectChange(data)
-    })
-
+  mounted() {
+    this.$bus.$on("selectChange", (data) => {
+      this.selectChange(data);
+    });
   },
   methods: {
-    colStyle (item) {
-      let str = '';
+    colStyle(item) {
+      let str = "";
       if (item.displayInline) {
-        str += 'clear: both;';
+        str += "clear: both;";
       }
       if (item.hidden) {
-        str += 'display: none';
+        str += "display: none";
       }
       return str;
     },
 
     /// //// 组件外会用到的方法：
     // 返回表单组件
-    getForm () {
+    getForm() {
       return this.$refs.fdForm;
     },
     // 返回表单里面的每个输入组件
@@ -261,290 +272,285 @@ export default {
     //根据下拉框值改变表单元素状态
     selectChange(data) {
       if (data.length > 0) {
-        let fn=(params)=>{
-          data.forEach(item=>{
-            params.forEach(itArr=>{
-            itArr.forEach(it=>{
-              if (it.type == "table") {
-                if (item.code == it.code && item.label == it.tName) {
-                  if (item.state == "edit") {
-                    it.disabled = false;
-                    it.hidden = false;
-                    it.readonly = false;
-                  } else if (item.state == "disabled") {
-                    it.disabled = true;
-                    it.hidden = false;
-                    it.readonly = true;
-                  } else if (item.state == "hidden") {
-                    it.disabled = false;
-                    it.hidden = true;
-                    it.readonly = false;
+        let fn = (params) => {
+          data.forEach((item) => {
+            params.forEach((itArr) => {
+              itArr.forEach((it) => {
+                if (it.type == "table") {
+                  if (item.code == it.code && item.label == it.tName) {
+                    if (item.state == "edit") {
+                      it.disabled = false;
+                      it.hidden = false;
+                      it.readonly = false;
+                    } else if (item.state == "disabled") {
+                      it.disabled = true;
+                      it.hidden = false;
+                      it.readonly = true;
+                    } else if (item.state == "hidden") {
+                      it.disabled = false;
+                      it.hidden = true;
+                      it.readonly = false;
+                    }
+                  }
+                } else if (it.type == "group") {
+                  fn(it.children);
+                } else {
+                  if (item.code == it.code && item.label == it.label) {
+                    if (item.state == "edit") {
+                      it.disabled = false;
+                      it.hidden = false;
+                      it.readonly = false;
+                    } else if (item.state == "disabled") {
+                      it.disabled = true;
+                      it.hidden = false;
+                      it.readonly = false;
+                    } else if (item.state == "hidden") {
+                      it.disabled = false;
+                      it.hidden = true;
+                      it.readonly = false;
+                    }
                   }
                 }
-              }else if(it.type=='group'){
-                fn(it.children)
-              }else{
-                 if (item.code == it.code && item.label == it.label) {
-                  if (item.state == "edit") {
-                    it.disabled = false;
-                    it.hidden = false;
-                    it.readonly = false;
-                  } else if (item.state == "disabled") {
-                    it.disabled = true;
-                    it.hidden = false;
-                    it.readonly = false;
-                  } else if (item.state == "hidden") {
-                    it.disabled = false;
-                    it.hidden = true;
-                    it.readonly = false;
-                  }
-                }
-              }
-            })
-          })
-
-          })
-        }
-        fn(this.fdFormItems)
+              });
+            });
+          });
+        };
+        fn(this.fdFormItems);
       } else {
-        let fn=(params)=>{
-          params.forEach(itArr=>{
-           itArr.forEach(it=>{
-             if(it.type=='group'){
-               fn(it.children)
-             }else{
+        let fn = (params) => {
+          params.forEach((itArr) => {
+            itArr.forEach((it) => {
+              if (it.type == "group") {
+                fn(it.children);
+              } else {
                 it.disabled = false;
                 it.hidden = false;
                 it.readonly = false;
-             }
-           })
-          })
-        }
-        fn(this.fdFormItems)
+              }
+            });
+          });
+        };
+        fn(this.fdFormItems);
       }
     },
-    tabsHeaderClickHand(index){
+    tabsHeaderClickHand(index) {
       this.currentActiveTabIndex = index;
-    }
+    },
   },
 };
 </script>
 <style lang='scss'>
-  .cus-dialog{
-	.el-dialog{
+.cus-dialog {
+  .el-dialog {
+  }
+  .el-dialog__header {
+    padding: 0 10px;
+    background: #52bee5;
+    .el-dialog__title {
+      font-size: 12px;
+      line-height: 30px;
+      color: #fff;
+    }
+    .el-dialog__headerbtn {
+      top: 6px;
+      right: 10px;
+    }
+    .el-dialog__close {
+      color: #fff;
+    }
+  }
+  .el-dialog__body {
+    padding: 20px 20px 10px;
+  }
+  // 尾部
+  .dialog-footer {
+    text-align: center;
+    padding: 10px;
+    .el-button {
+      padding: 6px 13px;
+      font-size: 12px;
+    }
+  }
+  // 里面有transfer组件的，修改transfer组件的样式 --start--
+  .el-transfer {
+    font-size: 12px;
+    .el-transfer-panel {
+      .el-transfer-panel__header {
+        height: 30px;
+        line-height: 30px;
+        .el-checkbox {
+          line-height: 30px;
+          .el-checkbox__label {
+            font-size: 13px;
+          }
+        }
+      }
+    }
 
-	}
-	.el-dialog__header{
-		padding: 0 10px;
-		background: #52bee5;
-		.el-dialog__title{
-			font-size: 12px;
-			line-height: 30px;
-			color: #fff;
-		}
-		.el-dialog__headerbtn{
-			top: 6px;
-			right: 10px;
-		}
-		.el-dialog__close{
-			color: #fff;
-		}
-	}
-	.el-dialog__body{
-		padding: 20px 20px 10px;
-	}
-	// 尾部
-	.dialog-footer{
-		text-align: center;
-		padding: 10px;
-		.el-button{
-			padding: 6px 13px;
-			font-size: 12px;
-		}
-	}
-	// 里面有transfer组件的，修改transfer组件的样式 --start--
-	.el-transfer {
-		font-size: 12px;
-		.el-transfer-panel{
-			.el-transfer-panel__header{
-				height: 30px;
-				line-height: 30px;
-				.el-checkbox{
-					line-height: 30px;
-					.el-checkbox__label{
-						font-size: 13px;
-					}
-				}
-			}
-		}
-
-		// 中间的那两个转移按钮的样式
-		.el-transfer__buttons{
-			.el-button{
-				padding: 6px 13px;
-				font-size: 12px;
-			}
-		}
-	}
-	// 里面有transfer组件的，修改transfer组件的样式 --end--
-
+    // 中间的那两个转移按钮的样式
+    .el-transfer__buttons {
+      .el-button {
+        padding: 6px 13px;
+        font-size: 12px;
+      }
+    }
+  }
+  // 里面有transfer组件的，修改transfer组件的样式 --end--
 }
 /*
 * 自定义的table组件的样式
  */
-.table-blue2-toolbar{
-	height: 32px;
-	line-height: 32px;
-	.el-button{
-		line-height: 26px;
-		padding: 0;
-		text-align: center;
-	}
-	.title{
-		font-size: 13px;
-		.iconfont{
-			color: #2ca5fe;
-			margin-right: 3px;
-		}
-	}
-	.header-btn{
-		float: right;
-		height: 26px;
-		width: 52px;
-		margin: 5px 0 0 5px;
-	}
-	.el-button--default{
-		border-color: #7bbafd;
-		color: #7bbafd;
-	}
+.table-blue2-toolbar {
+  height: 32px;
+  line-height: 32px;
+  .el-button {
+    line-height: 26px;
+    padding: 0;
+    text-align: center;
+  }
+  .title {
+    font-size: 13px;
+    .iconfont {
+      color: #2ca5fe;
+      margin-right: 3px;
+    }
+  }
+  .header-btn {
+    float: right;
+    height: 26px;
+    width: 52px;
+    margin: 5px 0 0 5px;
+  }
+  .el-button--default {
+    border-color: #7bbafd;
+    color: #7bbafd;
+  }
 }
 .table-blue2 {
-	width: 100%;
-	font-size: 12px !important;
-	// 重写原本的header样式
-	.el-table__header {
-		th {
-			color: #fff;
-			background: #3bb0f5;
-		}
-	}
-	// 覆盖掉原本的table的样式
-	&.el-table {
-		td {
-			padding: 2px 0;
-		}
-		th {
-			padding: 2px 0;
-		}
-		.el-button--text {
-			padding: 0;
-		}
-	}
-	// 操作列，即只放了图片的列
-	.operate-col {
-		.iconfont {
-			cursor: pointer;
-			margin: 0 5px;
-			&:hover {
-				color: red;
-			}
-		}
-	}
+  width: 100%;
+  font-size: 12px !important;
+  // 重写原本的header样式
+  .el-table__header {
+    th {
+      color: #fff;
+      background: #3bb0f5;
+    }
+  }
+  // 覆盖掉原本的table的样式
+  &.el-table {
+    td {
+      padding: 2px 0;
+    }
+    th {
+      padding: 2px 0;
+    }
+    .el-button--text {
+      padding: 0;
+    }
+  }
+  // 操作列，即只放了图片的列
+  .operate-col {
+    .iconfont {
+      cursor: pointer;
+      margin: 0 5px;
+      &:hover {
+        color: red;
+      }
+    }
+  }
 
-	// 表格中的input组件
-	.el-input__inner{
-		height: 23px;
-		line-height: 23px;
-		padding: 0 20px 0 5px;
-	}
-	.el-input__suffix{
-		right: 0;
-		.el-input__icon{
-			//height: 23px;
-			line-height: 23px;
-		}
-
-	}
+  // 表格中的input组件
+  .el-input__inner {
+    height: 23px;
+    line-height: 23px;
+    padding: 0 20px 0 5px;
+  }
+  .el-input__suffix {
+    right: 0;
+    .el-input__icon {
+      //height: 23px;
+      line-height: 23px;
+    }
+  }
 }
 // 节点的人员定义
-.person-dialog{
-	.el-dialog{
-		width: 800px;
-	}
-	.people-define-group {
-		height: 360px;
-		& > .el-col {
-			height: 100%;
-		}
-		.org-tree-wrap {
-			height: 100%;
-			overflow: auto;
-			background: #fff;
-		}
-		.people-table-wrap {
-			height: 100%;
-			.people-search-input{
-				.el-input__inner{
-					height: 26px;
-					line-height: 26px;
-				}
-				.el-input__prefix{
-					height: 26px;
-					.el-input__icon{
-						line-height: 26px;
-					}
-				}
-				height: 40px;
-			}
-			.el-table {
-				width: 100%;
-				height: calc(100% - 30px - 42px);
-			}
-		}
+.person-dialog {
+  .el-dialog {
+    width: 800px;
+  }
+  .people-define-group {
+    height: 360px;
+    & > .el-col {
+      height: 100%;
+    }
+    .org-tree-wrap {
+      height: 100%;
+      overflow: auto;
+      background: #fff;
+    }
+    .people-table-wrap {
+      height: 100%;
+      .people-search-input {
+        .el-input__inner {
+          height: 26px;
+          line-height: 26px;
+        }
+        .el-input__prefix {
+          height: 26px;
+          .el-input__icon {
+            line-height: 26px;
+          }
+        }
+        height: 40px;
+      }
+      .el-table {
+        width: 100%;
+        height: calc(100% - 30px - 42px);
+      }
+    }
 
-		.people-transfer-btn {
-			padding: 0;
-			//display: block;
-			display: block;
-			margin: 30px auto;
-		}
-
-	}
-	.people-define-group-title{
-		font-size: 13px;
-		color: #333;
-		padding: 5px;
-	}
-	.people-type-radio-group{
-		height: auto;
-		text-align: center;
-		margin: 5px 0;
-	}
-	.Pagination{
-		height: 30px;
-		margin: 0;
-		padding: 0;
-		border-top: 1px solid #dcdcdc;
-		border-bottom: 1px solid #dcdcdc;
-		background: #fff;
-		text-align: center;
-	}
-	.right-table{
-		height: calc(100% - 40px);
-		margin: 40px 0 0;
-	}
-	.move-col{
-		 padding-top: 120px;
-		.people-transfer-btn{
-			display: block;
-			margin: 30px auto;
-			padding: 5px;
-		}
-	}
-	.Pagination{
-		border: 1px solid rgb(235, 238, 245);
-		border-top: none;
-		border-left: none;
-	}
+    .people-transfer-btn {
+      padding: 0;
+      //display: block;
+      display: block;
+      margin: 30px auto;
+    }
+  }
+  .people-define-group-title {
+    font-size: 13px;
+    color: #333;
+    padding: 5px;
+  }
+  .people-type-radio-group {
+    height: auto;
+    text-align: center;
+    margin: 5px 0;
+  }
+  .Pagination {
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid #dcdcdc;
+    border-bottom: 1px solid #dcdcdc;
+    background: #fff;
+    text-align: center;
+  }
+  .right-table {
+    height: calc(100% - 40px);
+    margin: 40px 0 0;
+  }
+  .move-col {
+    padding-top: 120px;
+    .people-transfer-btn {
+      display: block;
+      margin: 30px auto;
+      padding: 5px;
+    }
+  }
+  .Pagination {
+    border: 1px solid rgb(235, 238, 245);
+    border-top: none;
+    border-left: none;
+  }
 }
 </style>
