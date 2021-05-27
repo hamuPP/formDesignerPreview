@@ -138,12 +138,6 @@
 import { getRefs } from "../util/common";
 import previewFormItem from "./previewFormItem.vue";
 
-const SKIN_OPTIONS = {
-  "fd-form--blue": {
-    labelWidth: 150,
-    lineMarginBottom: 6,
-  },
-};
 export default {
   name: "previewForm",
   components: { previewFormItem },
@@ -237,9 +231,20 @@ export default {
       (this.fdFormData.size ? ` fd-form--${this.fdFormData.size}` : "");
   },
   mounted() {
+    console.log('previewFrom mounted')
+    debugger;
     this.$bus.$on("selectChange", (data) => {
       this.selectChange(data);
     });
+    // 执行自定义初始化方法
+    if (this.fdFormData.init){
+      try {
+        let fnc = new Function(this.fdFormData.init);
+        fnc(this.formModel);
+      } catch (e) {
+        throw e;
+      }
+    }
   },
   methods: {
     colStyle(item) {

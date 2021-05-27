@@ -11,7 +11,8 @@
         <em>(按回车进行查询)</em>
       </div>
     </el-card>
-    <FormDesigner ref="FD"
+    <FormDesigner v-if="formVisible"
+                  ref="FD"
                   :view="isView"
                   :id="formId"
                   :formModel="formModel"
@@ -19,6 +20,7 @@
                   :fdFormData="fdFormData"
                   :showAnchor="false"
                   :useCustormRule="false"
+
     ></FormDesigner>
 
     <h2>表单值</h2>
@@ -43,7 +45,8 @@
         businessType: 'zctest', // 集客的流程编码 以前用的CustomerComplaint， 后面改成了 ComplaintOrder
         formModel: {},
         fdFormItems: [],
-        fdFormData: {}
+        fdFormData: {},
+        formVisible: false,
       }
     },
     created () {
@@ -54,8 +57,7 @@
       }
     },
     mounted () {
-      let FD = this.$refs.FD;
-      let FD_form = FD.getFormIns();
+
     },
     beforeDestroy () {
 
@@ -170,6 +172,7 @@
               this.fdFormData = fmData;
               this.formModel = this.getFormModel(this, list, 'defaultValue');
               this.fdFormItems = this.formateList(list);
+              this.formVisible = true;
             } else {
               this.MessageConfig = {
                 showMessage: true, // 打开消息提示框

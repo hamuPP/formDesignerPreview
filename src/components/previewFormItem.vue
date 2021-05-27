@@ -367,6 +367,10 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
+        @click="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-input>
       <!--   单选组     -->
       <el-radio-group
@@ -377,6 +381,9 @@
         :readonly="data.readonly"
         :clearable="data.clearable"
         @change="selectChangeHand"
+        @click="inputClickHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       >
         <el-radio v-for="radio in options" :key="radio.value" :label="radio.value">{{radio.label}}</el-radio>
       </el-radio-group>
@@ -389,6 +396,10 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
+        @click="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       >
         <el-checkbox
           v-for="(check, index) in options"
@@ -405,6 +416,10 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
+        @click="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-rate>
 
       <!--   下拉框     -->
@@ -416,6 +431,9 @@
         :clearable="data.clearable"
         :filterable="data.filterable"
         @change="selectChangeHand"
+        @click="inputClickHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       >
         <el-option
           v-for="item in options"
@@ -436,6 +454,10 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
+        @click="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-date-picker>
 
       <!--  时间选择器      -->
@@ -448,6 +470,10 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
+        @click="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-time-picker>
 
       <!--  时间范围选择器      -->
@@ -463,9 +489,12 @@
         range-separator="至"
         start-placeholder="开始时间"
         end-placeholder="结束时间"
-        @click.native.stop
+        @click="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-time-picker>
-      <!--  按钮      -->
+      <!--  按钮     (按钮只有一个click事件) -->
       <el-button
         v-else-if="data.type === 'button'"
         :ref="data.ref"
@@ -476,6 +505,7 @@
         :size="data.size"
         :disabled="data.disabled"
         :class="{'auto-width': data.fixParentWidth}"
+        @click="inputClickHand"
       >
         <template v-if="data.defaultValue">{{data.defaultValue}}</template>
       </el-button>
@@ -575,6 +605,10 @@
         :readonly="data.readonly"
         :min="data.minValue || 0"
         :max="data.maxValue || 0"
+        @click="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-input-number>
 
       <!--   级联选择器   -->
@@ -993,7 +1027,6 @@ export default {
     }
     // 字典表
     else if (optionSetting === "remoteDict") {
-      debugger;
       const optionSetting_tabContent = this.data.optionSetting_tabContent;
       if (
         optionSetting_tabContent &&
@@ -1365,7 +1398,6 @@ export default {
     },
     // 查询附件列表
     getFileList() {
-      debugger;
       if (this.data.listRequestUrl) {
         // 遍历配置的请求体，加上这些参数
         let queryData = {};
@@ -1423,7 +1455,6 @@ export default {
     },
     //新文件上传删除附件
     deleteFile(row) {
-      debugger;
       delFileNew(row.id)
         .then((response) => {
           this.$message({
@@ -1632,7 +1663,6 @@ export default {
     },
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {
-      debugger;
       const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
 
       // 检查当前表单中的所有表单项的前置关联查询参数
@@ -1656,8 +1686,7 @@ export default {
           }
         }
       }
-      //判断当前下拉框是否有配置更改其他表单元素的状态
-      debugger;
+      // 判断当前下拉框是否有配置更改其他表单元素的状态
       if (this.formSetting.length > 0) {
         let data = [];
         this.formSetting.forEach((item) => {
@@ -1669,6 +1698,9 @@ export default {
           }
         });
       }
+
+      // 执行自定义的change事件
+      this.inputChangeHand(val);
     },
     // 打开选择人员或角色弹框
     openPerRoleDialog() {
@@ -2168,8 +2200,6 @@ export default {
        * @param insertImgFn 是获取图片 url 后，插入到编辑器的方法
        */
       editor.config.customUploadImg = function (resultFiles, insertImgFn) {
-        console.log("开始上传");
-        debugger;
         // 拼接查询参数，并且向后台递交请求
         let param = new FormData();
         console.log("开始上传 :token:", sessionStorage.getItem("access_token"));
@@ -2186,7 +2216,6 @@ export default {
           headers: { "Content-Type": "multipart/form-data" },
         })
           .then((res) => {
-            debugger;
             if (res && res.data && res.data.code == "0000") {
               res.data.data.forEach((it) => {
                 insertImgFn(FORM_IMG_URL + it.url);
