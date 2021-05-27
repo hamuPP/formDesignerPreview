@@ -414,6 +414,8 @@
         :disabled="data.disabled"
         :clearable="data.clearable"
         :filterable="data.filterable"
+        :multiple='data.multiple==true'
+        collapse-tags
         @change="selectChangeHand"
       >
         <el-option
@@ -669,7 +671,8 @@
       <el-date-picker
         v-else-if="data.type === 'operateTime'"
         :ref="data.ref"
-        value-format="yyyy-MM-dd HH:mm:ss"
+        :format="data.format||'yyyy-MM-dd HH:mm:ss'"
+        :value-format="data.format||'yyyy-MM-dd HH:mm:ss'"
         v-model="formModel[data.code]"
         type="datetime"
         :disabled="data.disabled"
