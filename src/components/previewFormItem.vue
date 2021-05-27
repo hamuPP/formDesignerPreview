@@ -232,6 +232,7 @@
       </div>
     </template>
   <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
+    <!-- //TODO 这个属性有变化，还没有改这里   -->
     <el-form-item
            v-else-if="data.type !== 'uploadFile' || (data.type === 'uploadFile' && !view)"
           :prop="data.code"
@@ -832,19 +833,20 @@
       }
     },
     created () {
-      debugger;
       // 检查如果有码表配置的，查询其数据
       let {type, optionSetting, validationSetting, formSetting_children} = this.data;
 
       if (optionSetting === 'static') {
-        this.options = this.data.optionSetting_tabContent.map(it=>{
-          if(it.label && it.label.value){
-            return {
+        let newList = [];
+        this.data.optionSetting_tabContent.forEach(it =>{
+          if(it.label && it.label.value) {
+            newList.push({
               label: it.label.value,
               value: it.value.value
-            }
+            })
           }
         });
+        this.options = newList;
       }
       // 码表(调用接口，查询数据)
       else if (optionSetting === 'remote') {
@@ -943,7 +945,8 @@
             }
           }
 
-          this.getRemoteUrlDatas({
+          console.log('948', optionSetting_tabContent.url);
+          optionSetting_tabContent.url && this.getRemoteUrlDatas({
             url: optionSetting_tabContent.url,
             method: optionSetting_tabContent.method,
             data: data,
@@ -957,7 +960,7 @@
         this.formSetting = formSetting_children
       }
       // 检查是否有配置校验规则(前提是：不使用用户自定义的规则)
-      if (!this.componentRootForm.useCustormRule) {
+      if (!this.componentRootForm.useCustormRule) { //TODO 这个属性有变化，还没有改这里
         if (validationSetting) {
           let rules = [];
           // 必填
@@ -1022,9 +1025,9 @@
       }
     },
     mounted () {
-      if(this.data.type === 'uploadNewFile'){
-        this.getNewFileList();
-      }
+      // if(this.data.type === 'uploadNewFile'){
+      //   this.getNewFileList();
+      // }
       if (this.data.type === 'textarea') {
         this.labelEle = this.$el.getElementsByClassName('el-form-item__label')[0];
         this.contentEle = this.$el.querySelector('.el-form-item__content .el-textarea');
@@ -1172,12 +1175,17 @@
         }
       },
       getNewFileList(){
-        this.fileList = []
-        let param = {
-          boId: "1376349548590534656",
-          businessType: "jlitreq"
+        let queryData = {};
+        this.fileList = [];
+        // 用户自定义添加的参数,这是例如在引用页面，用户可能需要再添加一些参数
+        if (this.USER_UPLOAD_SEARCH_LIST_PARAM) {
+          for (let key in this.USER_UPLOAD_SEARCH_LIST_PARAM) {
+            if (key) {
+              queryData[key] = this.USER_UPLOAD_SEARCH_LIST_PARAM[key];
+            }
+          }
         }
-        getUploadedFileList(param).then(res => {
+        getUploadedFileList(queryData).then(res => {
           if (res && res.data && res.data.code == "0000") {
             this.fileList = res.data.data.data;
             // TODO this.$emit("getUploadedFileList", this.fileList)
@@ -1735,7 +1743,7 @@
       // 新附件上传 上传文件
       uploadNewFile(params) {
         let fileName = params.file.name;
-        let pos = fileName.lastIndexOf(".");
+        let pos = fileName.lastIndexOf('.');
         let lastName = fileName.substring(pos, fileName.length);
         if (
           this.data.upLoadFileType && this.data.upLoadFileType.indexOf(lastName.toLowerCase()) === -1
@@ -1777,9 +1785,15 @@
           param.append("files", params.file);
           param.append("access_token", sessionStorage.getItem("access_token"));
           // param.append('typeId', 1);
-          console.log("上传文件的自定义参数", this.customParams);
-          param.append("boId", "1376349548590534656")
-          param.append("businessType", "jlitreq")
+          // 用户自定义添加的参数,这是例如在引用页面，用户可能需要再添加一些参数
+          if (this.USER_UPLOAD_PARAM) {
+            for (let key in this.USER_UPLOAD_PARAM) {
+              if (key) {
+                param.append(key, this.USER_UPLOAD_PARAM[key]);
+              }
+            }
+          }
+
           // 向后端发送请求
           return new Promise((resolve, reject) => {
             uploadFiles(param)

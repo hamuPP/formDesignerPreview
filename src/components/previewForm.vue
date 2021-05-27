@@ -148,7 +148,7 @@ export default {
       skin: "", // 预设的表格的样式名称
       formClassStr: "",
       formCode:'',
-      currentActiveTabIndex: 0
+      currentActiveTabIndex: 0,
     };
   },
   props: {
@@ -173,6 +173,15 @@ export default {
         return {}
       }
     },
+    // // 是否采用用户自配的规则，即props中传入的rules。,有以下4种植
+    // // only: 仅采用用户的规则，忽视表单编辑器中的配置。
+    // // formPriority 合并表单编辑器中的配置和用户配置，若有冲突，以表单编辑器中的配置为准
+    // // userPriority 合并表单编辑器中的配置和用户配置，若有冲突，以用户自定义的配置为准
+    // // '',默认，不采用用户的规则，以表单编辑器中的配置为准
+    // useCustormRule: {
+    //   type: String,
+    //   default: ''
+    // },
     // 是否采用用户自配的规则，即props中传入的rules。
     // 若是，则表单这里将会无视表单编辑器中配置的校验数据
     useCustormRule: {
