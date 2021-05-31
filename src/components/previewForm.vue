@@ -231,8 +231,6 @@ export default {
       (this.fdFormData.size ? ` fd-form--${this.fdFormData.size}` : "");
   },
   mounted() {
-    console.log('previewFrom mounted')
-    debugger;
     this.$bus.$on("selectChange", (data) => {
       this.selectChange(data);
     });

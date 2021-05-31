@@ -187,7 +187,28 @@
           }
         }
         return resultList;
-      }
+      },
+
+      beforeSubmit(){
+        if (this.fdFormData.beforeSubmit){
+          try {
+            let fnc = new Function(this.fdFormData.beforeSubmit);
+            fnc(this.formModel);
+          } catch (e) {
+            throw e;
+          }
+        }
+      },
+      afterSubmit(){
+        if (this.fdFormData.afterSubmit){
+          try {
+            let fnc = new Function(this.fdFormData.afterSubmit);
+            fnc(this.formModel);
+          } catch (e) {
+            throw e;
+          }
+        }
+      },
     },
 
     generateElementuiCode: generateElementuiCode
