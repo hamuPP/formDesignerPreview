@@ -367,7 +367,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -381,7 +381,7 @@
         :readonly="data.readonly"
         :clearable="data.clearable"
         @change="selectChangeHand"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
       >
@@ -396,7 +396,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -416,7 +416,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -431,7 +431,7 @@
         :clearable="data.clearable"
         :filterable="data.filterable"
         @change="selectChangeHand"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
       >
@@ -454,7 +454,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -470,7 +470,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -489,7 +489,7 @@
         range-separator="至"
         start-placeholder="开始时间"
         end-placeholder="结束时间"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -505,7 +505,7 @@
         :size="data.size"
         :disabled="data.disabled"
         :class="{'auto-width': data.fixParentWidth}"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
       >
         <template v-if="data.defaultValue">{{data.defaultValue}}</template>
       </el-button>
@@ -605,7 +605,7 @@
         :readonly="data.readonly"
         :min="data.minValue || 0"
         :max="data.maxValue || 0"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -627,7 +627,7 @@
         :props="{ multiple: data.isMultiple }"
         :options="options && options.length? options[0].children : []"
         @change="selectCascaderChange($event, data)"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
       ></el-cascader>
@@ -640,7 +640,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -654,7 +654,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -668,7 +668,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -681,7 +681,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -695,7 +695,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -709,7 +709,7 @@
         type="datetime"
         :disabled="data.disabled"
         :computereadonly="data.readonly"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -717,7 +717,6 @@
 
       <!-- 如果没有设置type，则都是input --start-- -->
       <template v-else>
-        <!--      <div style="color:red">{{data}}</div>-->
         <!-- 搜索 -->
         <el-autocomplete
           v-if="data.isAutocompletable"
@@ -727,7 +726,7 @@
           @select="handleSelect"
           :disabled="data.disabled"
           :readonly="data.readonly"
-          @click="inputClickHand"
+          @click.native="inputClickHand"
           @change="inputChangeHand"
           @focus="inputFocusHand"
           @blur="inputBlurHand"
@@ -741,7 +740,7 @@
           :clearable="data.clearable"
           type="number"
           v-model.number="formModel[data.code]"
-          @click="inputClickHand"
+          @click.native="inputClickHand"
           @change="inputChangeHand"
           @focus="inputFocusHand"
           @blur="inputBlurHand"
@@ -754,7 +753,7 @@
           :clearable="data.clearable"
           type="password"
           v-model="formModel[data.code]"
-          @click="inputClickHand"
+          @click.native="inputClickHand"
           @change="inputChangeHand"
           @focus="inputFocusHand"
           @blur="inputBlurHand"
@@ -766,7 +765,7 @@
           :readonly="data.readonly"
           :clearable="data.clearable"
           v-model="formModel[data.code]"
-          @click="inputClickHand"
+          @click.native="inputClickHand"
           @change="inputChangeHand"
           @focus="inputFocusHand"
           @blur="inputBlurHand"
@@ -2484,7 +2483,7 @@ export default {
         );
       }
     },
-    inputClickHand() {
+    inputClickHand () {
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.click) {
         try {
@@ -2518,6 +2517,8 @@ export default {
       }
     },
     inputBlurHand() {
+      debugger;
+
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.blur) {
         try {
