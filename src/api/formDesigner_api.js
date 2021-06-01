@@ -197,3 +197,13 @@ export const getFormTablesPage = (reqData)=>{
     data: reqData
   })
 };
+
+
+// //弹出框下拉树接口
+export function getFrameTreeData(url,data){
+  return axios({
+    url: baseUrl + url,
+    method:'get',
+    params:data,
+  })
+}

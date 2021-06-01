@@ -354,6 +354,22 @@
           ></selectTree>
         </el-form-item>
       </template>
+          <!-- 弹出框下拉树组件 -->
+    <template v-else-if="data.type=='treeBox'">
+        <el-form-item
+          class="form-item suffix-button"
+          prop="paramExpress"
+        >
+         <el-input
+            :clearable='data.clearable'
+            :disabled="data.disabled"
+            v-model="data.defaultValueArr"
+            @clear='clearGogroup'
+            @click.native.stop="openFrameTreeDialog()"
+          >
+          </el-input>
+      </el-form-item>
+    </template>
       <!--  区分输入组件的类型      -->
       <!--   多行文本     -->
       <el-input
@@ -756,6 +772,8 @@
       :isMultiple="data.isMultiple ? data.isMultiple.value : false"
       @personSure="personSure"
     ></newPersonEditDialog>
+     <!-- 弹出框下拉树 -->
+     <frameTree ref="frameTree" :staticTreeData="options" @showFrameValue='showFrameValue'></frameTree>
     <MessageBox
       :showMessage.sync="MessageConfig.showMessage"
       :MessageConfig="MessageConfig"
@@ -791,6 +809,7 @@ import {
 import { isObjEmpty, validateRegType } from "../util/common.js";
 import MessageBox from "./MessageBox.vue";
 import selectTree from "./selectTree";
+  import frameTree from './frameTree'
 import personEditDialog from "./personEditDialog.vue";
 import newPersonEditDialog from "./newPersonEditDialog";
 import rogroupEditDialog from "./rogroupEditDialog.vue";
@@ -803,6 +822,7 @@ export default {
     newPersonEditDialog,
     rogroupEditDialog,
     selectTree,
+    frameTree
   },
   props: {
     // 是否为预览模式，模式是编辑模式啦
@@ -1085,7 +1105,7 @@ export default {
       // 如果有前置关联关系设置的，则需要先检查其前置是否有值，有再查询
       // eslint-disable-next-line camelcase
       if (this.data.type == "table" && this.data.isCreateDataBaseTable) {
-      } else {
+      } else if(this.data.type!='treeBox') {
         const optionSetting_tabContent = JSON.parse(
           JSON.stringify(this.data.optionSetting_tabContent)
         );
@@ -1236,7 +1256,10 @@ export default {
         this.rules = rules;
       }
     }
-
+    if(this.data.type=="treeBox"){
+      this.data.defaultValue=this.formModel[this.data.code];
+      this.data.defaultValueArr=this.formModel[this.data.code];
+    }
     // 处理富文本的值
     if (this.data.type == "richText") {
       this.editorTxt = this.formModel[this.data.code];
@@ -1701,13 +1724,25 @@ export default {
     //     this.formModel[this.data.code]+=item.id+','
     //   })
     // },
-    // //清空下拉树选中的值
-    // clearGogroup(){
-    //   event.stopPropagation();
-    //   this.data.defaultValueArr = ''
-    //   this.data.defaultValue=''
-    //   this.formModel[this.data.code]=''
-    // },
+          //打开下拉树弹框
+    openFrameTreeDialog(){
+      if (this.$refs.frameTree&&!this.data.disabled) {
+          this.$refs.frameTree.init(this.data,this.formModel)
+        }
+      },
+        //将弹出框下拉树的值展示在input中
+    showFrameValue({value,name}){
+     this.data.defaultValueArr = name;
+     this.data.defaultValue = value;
+     this.formModel[this.data.code]=value
+    },
+    //清空下拉树选中的值
+    clearGogroup(){
+      event.stopPropagation();
+      this.data.defaultValueArr = ''
+      this.data.defaultValue=''
+      this.formModel[this.data.code]=''
+    },
     //新增行
     addTableRow(event) {
       event.stopPropagation();
