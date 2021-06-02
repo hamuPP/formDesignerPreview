@@ -199,8 +199,17 @@ export const getFormTablesPage = (reqData)=>{
 };
 
 
-// //弹出框下拉树接口
+//弹出框下拉树接口
 export function getFrameTreeData(url,data){
+  return axios({
+    url: baseUrl + url,
+    method:'get',
+    params:data,
+  })
+}
+
+//弹出框下拉树回显中文接口
+export function getFrameTreeDataById(url,data){
   return axios({
     url: baseUrl + url,
     method:'get',

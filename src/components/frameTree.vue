@@ -22,20 +22,19 @@
             :load="loadNode"
             :lazy="lazy"
             show-checkbox
-            node-key="value"
+            node-key="id"
             :default-checked-keys="defKeys"
             :check-strictly="true"
-            :key="treeIndex"
             @check-change="handleCheckChange"
           >
             <span class="custom-tree-node" slot-scope="{ data }">
               <span v-if="data.leaf">
                 <i class="iconwenjian iconfont"></i>
-                {{ data.label }}
+                {{ data.text }}
               </span>
               <span v-if="!data.leaf">
                 <i class="iconwenjianjia iconfont"></i>
-                {{ data.label }}
+                {{ data.text }}
               </span>
             </span>
           </el-tree>
@@ -54,12 +53,12 @@
             <el-checkbox
               class="showList"
               v-for="(item, index) in checkList"
-              :label="item.label"
+              :label="item.text"
               :key="index"
             >
               <span @dblclick="delPeople(item, 'single')">
                 {{
-                item.label
+                item.text
                 }}
               </span>
             </el-checkbox>
@@ -103,16 +102,15 @@ export default {
       resolveData: [],
       areaTreeData: "", // 地域结构数据
       props: {
-        label: "label",
+        label: "text",
         children: "zones",
         isLeaf: "leaf",
       },
       data: "",
       lazy: false,
       isCheck: true,
-      treeIndex: 1,
       url: "",
-      req: { rootId: "" },
+      req: { parentId: "" },
       areaTreeData: [],
     };
   },
@@ -123,7 +121,6 @@ export default {
      * @param data
      */
     init(data) {
-      // this.treeIndex++;
       this.dialogVisible = true;
       this.data = JSON.parse(JSON.stringify(data));
       this.title = this.data.label;
@@ -135,12 +132,16 @@ export default {
         //码表
         this.lazy = false;
         this.treeData = [...this.staticTreeData];
-        if ( this.data.defaultValue) {
+        this.treeData.forEach((item) => {
+          item.text = item.label;
+          item.id = item.value;
+        });
+        if (this.data.defaultValue) {
           this.defKeys = this.data.defaultValue.split(",");
           this.defKeys.forEach((item, index) => {
             this.checkList.push({
-              label: this.data.defaultValueArr.split(",")[index],
-              value: item,
+              text: this.data.defaultValueArr.split(",")[index],
+              id: item,
             });
           });
           this.$nextTick(() => {
@@ -150,12 +151,12 @@ export default {
       } else if (this.data.optionSetting == "remoteUrl2") {
         //远程接口
         this.lazy = true;
-        if ( this.data.defaultValue) {
+        if (this.data.defaultValue) {
           this.defKeys = this.data.defaultValue.split(",");
           this.defKeys.forEach((item, index) => {
             this.checkList.push({
-              label: this.data.defaultValueArr.split(",")[index],
-              value: item,
+              text: this.data.defaultValueArr.split(",")[index],
+              id: item,
             });
           });
         }
@@ -177,7 +178,7 @@ export default {
         this.node = node;
       }
       this.resolve = resolve;
-      this.req.rootId = node.data ? node.data.id : "";
+      this.req.parentId = node.data ? node.data.id : "";
       this.getTreeList(this.req, () => {
         resolve(this.areaTreeData);
         if (this.defKeys.length > 0) {
@@ -194,18 +195,11 @@ export default {
     getTreeList(req, callback) {
       getFrameTreeData(this.url, req)
         .then((res) => {
-          if (res && res.data&&res.data.data) {
-            this.areaTreeData = res.data.data||[];
+          if (res && res.data && res.data.data) {
+            this.areaTreeData = res.data.data || [];
             this.areaTreeData.forEach((item) => {
-              if (item.hasChlid) {
-                item.disabled = this.data.isBranch ? false : true;
-                item.leaf = false;
-                item.label = item.name;
-                item.value = item.id;
-              } else {
-                item.leaf = true;
-                item.label = item.name;
-                item.value = item.id;
+              if (!item.leaf) {
+                item.disabled = !this.data.isBranch;
               }
             });
           }
@@ -224,7 +218,7 @@ export default {
         //判断是否可多选
         if (checked == false) {
           this.checkList.forEach((item, index) => {
-            if (this.checkList[index].label == val.label) {
+            if (this.checkList[index].text == val.text) {
               this.checkList.splice(index, 1);
             }
           });
@@ -236,7 +230,7 @@ export default {
         let checkedNode = this.$refs.tree.getCheckedNodes(false, true);
         if (checkedNode.length > 1) {
           checkedNode.forEach((item) => {
-            if (item.value != val.value) {
+            if (item.id != val.id) {
               this.$refs.tree.setChecked(item, false);
             }
           });
@@ -262,7 +256,7 @@ export default {
       } else if (type === "multiple") {
         for (var j = 0; j < val.length; j++) {
           for (var i = 0; i < this.checkList.length; i++) {
-            if (this.checkList[i].label == val[j]) {
+            if (this.checkList[i].text == val[j]) {
               this.checkList.splice(i, 1);
             }
           }
@@ -279,7 +273,7 @@ export default {
     treeCheck() {
       this.defKeys = [];
       this.checkList.forEach((item) => {
-        this.defKeys.push(item.value);
+        this.defKeys.push(item.id);
       });
       this.defKeys.concat();
       this.$nextTick(function () {
@@ -294,7 +288,7 @@ export default {
     checkAll(val) {
       if (val == true) {
         this.checkList.forEach((item) => {
-          this.delList.push(item.label);
+          this.delList.push(item.text);
         });
       } else if (val == false) {
         this.delList = [];
@@ -304,8 +298,8 @@ export default {
       let labelAry = [],
         valueAry = [];
       this.checkList.forEach((item) => {
-        labelAry.push(item.label);
-        valueAry.push(item.value);
+        labelAry.push(item.text);
+        valueAry.push(item.id);
       });
       this.$emit("showFrameValue", {
         name: labelAry.join(),
