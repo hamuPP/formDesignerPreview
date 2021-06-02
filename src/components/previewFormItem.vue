@@ -8,6 +8,7 @@
           uploadHeight: data.type === 'uploadNewFile'
        }"
   >
+<!--    <div style="color: red;">{{formModel}}</div>-->
     <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件,并且table没有label,所以单独提出来  -->
     <template v-if="data.type === 'table'">
       <div
@@ -886,6 +887,15 @@ export default {
       }
       return parent;
     },
+    componentFormContainer() {
+      let parent = this.$parent;
+      let parentName = parent.$options.name;
+      while (parentName !== 'previewFormContainer') {
+        parent = parent.$parent;
+        parentName = parent.$options.name;
+      }
+      return parent;
+    },
     sqlData() {
       let obj = {
         formCode: this.$route.query.formCode,
@@ -1568,7 +1578,6 @@ export default {
           if (successCallback) {
             try {
               let fn = new Function("resData", successCallback);
-              debugger;
               this.options = fn(res) || [];
             } catch (e) {
               console.log(e);
@@ -2484,50 +2493,101 @@ export default {
       }
     },
     inputClickHand () {
+      debugger;
+      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+      let args = {formItem: this.data, value: val, F: this.componentFormContainer};
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.click) {
-        try {
-          let fnc = new Function(this.data.click);
-          fnc(this.formModel[this.data.code]);
-        } catch (e) {
-          throw e;
+        let codeString = this.data.click.value;
+        let behavior = this.data.click.behavior;
+        if(codeString){
+          try {
+            let fnc = new Function(codeString);
+            fnc(this.componentFormContainer, val);
+          } catch (e) {
+            console.log(e);
+            args.error = e;
+          }
+        }
+
+        // todo 打开弹窗的还没有做
+        if(behavior === 'openDialog'){
+          this.componentFormContainer.$refs.commonDialog.showDialog(this.data.click, this.data)
         }
       }
+      // 不论是否有自定义函数，这个都会触发emit,以便使用者可以在回调函数里进行其他行为
+      this.componentFormContainer.$emit('formItemClick', args);
     },
     inputChangeHand() {
+      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+      let args = {formItem: this.data, value: val, F:this.componentFormContainer};
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.change) {
-        try {
-          let fnc = new Function(this.data.change);
-          fnc(this.formModel[this.data.code]);
-        } catch (e) {
-          throw e;
+        let codeString = this.data.change.value;
+        let behavior = this.data.change.behavior;
+        if(codeString) {
+          try {
+            let fnc = new Function(this.data.change);
+            fnc(this.componentFormContainer, val);
+          } catch (e) {
+            // throw e;
+            // console.log(e);
+            args.error = e;
+          }
+        }
+        // todo 打开弹窗的还没有做
+        if(behavior === 'openDialog'){
+
         }
       }
+      this.componentFormContainer.$emit('formItemChange', args);
     },
     inputFocusHand() {
+      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+
+      let args = {formItem: this.data, value: val};
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.focus) {
-        try {
-          let fnc = new Function(this.data.focus);
-          fnc(this.formModel[this.data.code]);
-        } catch (e) {
-          throw e;
+        let codeString = this.data.focus.value;
+        let behavior = this.data.focus.behavior;
+        if(codeString) {
+          try {
+            let fnc = new Function(this.data.focus);
+            fnc(this.formModel[this.data.code]);
+          } catch (e) {
+            // throw e;
+            args = {error: e, formItem:this.data, value: val};
+          }
+        }
+        // todo 打开弹窗的还没有做
+        if(behavior === 'openDialog'){
+
         }
       }
+      this.componentFormContainer.$emit('formItemFocus', args);
     },
     inputBlurHand() {
-      debugger;
-
+      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+      let args = {formItem: this.data, value: val, F: this.componentFormContainer};
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.blur) {
-        try {
-          let fnc = new Function(this.data.blur);
-          fnc(this.formModel[this.data.code]);
-        } catch (e) {
-          throw e;
+        let codeString = this.data.blur.value;
+        let behavior = this.data.blur.behavior;
+        if(codeString) {
+          try {
+            let fnc = new Function(this.data.blur);
+            fnc(this.formModel[this.data.code]);
+          } catch (e) {
+            // throw e;
+            args.error = e;
+          }
+        }
+        // todo 打开弹窗的还没有做
+        if(behavior === 'openDialog'){
+
         }
       }
+      this.componentFormContainer.$emit('formItemBlur', args);
     },
   },
 };

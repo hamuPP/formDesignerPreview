@@ -1,6 +1,7 @@
 <template>
   <div class="app" id="app">
     <button @click="testDownload">测试下载</button>
+    <button @click="testOpenDialog">测试代码打开弹窗</button>
     <el-card class="params-config">
       <div slot="header" class="clearfix">
         <span>try</span>
@@ -20,8 +21,13 @@
                   :fdFormData="fdFormData"
                   :showAnchor="false"
                   :useCustormRule="false"
+                  @formItemClick="clickHand"
+                  @dialogBtnClick="dialogBtnClickHand">
+      <template v-slot:[dialogContent]>
+        <myComp1></myComp1>
+      </template>
 
-    ></FormDesigner>
+    </FormDesigner>
 
     <h2>表单值</h2>
     <div class="form-model-box">{{formModel}}</div>
@@ -30,13 +36,16 @@
 <script>
   import {generateElementuiCode} from '../src/generate_code/generateCode.js'
   // 样式控制的组件
-  const STYLE_FORM_COMPONENTS = ['dividingLine'];
+  const STYLE_FORM_COMPONENTS = ['dividingLine', 'button'];
 
   import {getForm} from './api/API';
 
   import {getUrlQueryParams} from '../src/assets/js/utils';
 
+  import myComp1 from './views/myComp1'
+
   export default {
+    components:{myComp1},
     data () {
       return {
         // 以下几个参数由调用方来传给表单设计器预览插件
@@ -47,6 +56,7 @@
         fdFormItems: [],
         fdFormData: {},
         formVisible: false,
+        dialogContent: 'dialogContent'
       }
     },
     created () {
@@ -104,6 +114,7 @@
         };
         fn(n);
 
+        console.log('formModel', obj)
         return obj;
       },
       formateList (dataList) {
@@ -201,6 +212,34 @@
             lineMarginBottom: 10,
           },
         []);
+      },
+
+      clickHand(opt){
+        debugger;
+        // let aa =
+        // .scrollEvent''
+      },
+      dialogBtnClickHand({formItem, btnText, formModel}, done){
+        debugger;
+        // 执行done关闭弹窗
+        done();
+      },
+
+      // 测试通过方法打开弹窗
+      testOpenDialog(){
+        debugger;
+        console.log(myComp1);
+        debugger;
+        let opt = {
+          titleText: '傻逼',
+          confirmBtn: '确定',
+          cancelBtn: '取消',
+          confirmCb: (done)=>{console.log(11); done()},
+          cancleCb: (done)=>{console.log(222); done()},
+          content: myComp1,
+          content2: 'dialogName1'
+        };
+        this.$refs.FD.openDialog(opt)
       }
     }
 

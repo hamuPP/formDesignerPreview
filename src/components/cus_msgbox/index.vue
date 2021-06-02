@@ -37,7 +37,9 @@
                     :class="['el-message-box__status', statusCls]"
                     v-if="icon && !center && message !== ''">
               <div class="circle">
-                <span :class="icon"></span>
+<!--     用class的打包后 样式没了，:after也没了，所以改为使用unicode          -->
+<!--                <span :class="icon"></span>-->
+                <span class="fd-iconfont" v-html="iconUnicode"></span>
               </div>
             </div>
             <div class="el-message-box__message" v-if="message !== ''">
@@ -107,6 +109,7 @@
   import { addClass, removeClass } from 'element-ui/src/utils/dom';
   import { t } from 'element-ui/src/locale';
   import Dialog from 'element-ui/src/utils/aria-dialog';
+  // import CusButton from '../CusButton/index.vue'
 
   let messageBox;
   let typeMap = {
@@ -155,7 +158,8 @@
 
     components: {
       ElInput,
-      ElButton
+      ElButton,
+      // CusButton
     },
 
     computed: {
@@ -195,6 +199,25 @@
             break;
         }
         return classname;
+      },
+      iconUnicode() {
+        const { type, iconClass } = this;
+        let str = '';
+        switch(type){
+          case 'success':
+            str = '&#xe626;';
+            break;
+          case 'inquiry':
+            str = '&#xe659;';
+            break;
+          case 'warning':
+            str = '&#xe635;';
+            break;
+          default:
+            str = '';
+            break;
+        }
+        return str;
       },
 
       confirmButtonClasses() {

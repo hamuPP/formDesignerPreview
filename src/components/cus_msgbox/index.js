@@ -165,6 +165,7 @@ MessageBox.setDefaults = defaults => {
 };
 
 MessageBox.alert = (message, title, options) => {
+  debugger;
   if (typeof title === 'object') {
     options = title;
     title = '';
