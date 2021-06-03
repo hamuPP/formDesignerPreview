@@ -1146,19 +1146,18 @@ export default {
       // eslint-disable-next-line camelcase
       if (this.data.type == "table" && this.data.isCreateDataBaseTable) {
       } else if (this.data.type != "treeBox") {
-                  const optionSetting_tabContent = JSON.parse(
+         const optionSetting_tabContent = JSON.parse(
             JSON.stringify(this.data.optionSetting_tabContent)
           );
         if (
           optionSetting_tabContent &&
           optionSetting_tabContent.relationSettings &&
           optionSetting_tabContent.relationSettings.values &&
-          !isObjEmpty(optionSetting_tabContent.relationSettings.values)
+          !isObjEmpty(optionSetting_tabContent.relationSettings.values)&&
+          !this.formModel[this.data.code]
         ) {
           this.getRelationQueryParams(optionSetting_tabContent);
         } else {
-
-
           // // 没有配置前置关联查询参数，则现在就查询后台接口
           // 处理queryParams，拼接查询参数
           let params = {};
@@ -1174,6 +1173,15 @@ export default {
             if (!it.paramName) {
               break;
             }
+            if(!it.defaultValue&& optionSetting_tabContent &&
+                optionSetting_tabContent.relationSettings &&
+                optionSetting_tabContent.relationSettings.values &&
+                !isObjEmpty(optionSetting_tabContent.relationSettings.values)&&
+                this.formModel[this.data.code]
+              ){
+                this.getRelationQueryParams(optionSetting_tabContent);
+                it.defaultValue =this.formModel[optionSetting_tabContent.relationSettings.values.parentValue[1]]
+            }
             if (it.paramType === "params") {
               params[it.paramName] = it.defaultValue;
             } else if (it.paramType === "body") {
@@ -1182,8 +1190,6 @@ export default {
               headers[it.paramName] = it.defaultValue;
             }
           }
-
-        console.log('948', optionSetting_tabContent.url);
         optionSetting_tabContent.url && this.getRemoteUrlDatas({
           url: optionSetting_tabContent.url,
           method: optionSetting_tabContent.method,
@@ -1636,15 +1642,14 @@ export default {
           // 没有自定义的回调函数，则执行默认逻辑
           else {
             if (res.data && res.data.code == "0000") {
-              console.log(res, "res");
               if (
                 res.data.data.data &&
                 res.data.data.data.constructor === Array
               ) {
                 this.options = res.data.data.data.map((it) => {
                   return {
-                    label: it.name,
-                    value: it.id,
+                    label: it.lable||it.name,
+                    value: it.value||it.id,
                   };
                 });
               } else {
