@@ -4,7 +4,7 @@
   <!--      @close="closeHand"-->
   <cus-dialog
       :visible.sync="dialogVisible"
-      width="60%"
+      :width="dialogWidth"
       :title="dialogTitle"
       type="primary2"
       custom-class="form-common-dialog"
@@ -34,13 +34,17 @@
 </template>
 
 <script>
+import CusDialog from './CusDialog/index'
+
 export default {
   name: 'commonDialog',
-  data(){
+  components: {CusDialog},
+  data () {
     return {
-      mode: null,//2种表单处理模式，具体看点击确定取消按钮的逻辑处理
+      mode: null,// 2种表单处理模式，具体看点击确定取消按钮的逻辑处理
       dialogVisible: false,
-      dialogTitle: false,
+      dialogTitle: '',
+      dialogWidth: '50%',
       footerBtns: [],
       formModel: {},
       formItem: null,
@@ -48,7 +52,7 @@ export default {
   },
   methods: {
     // 配置子表单式的打开弹窗
-    showDialog({openDialogTitle, openDialogContent, openDialogFooterBtns}, formItem){
+    showDialog({openDialogTitle, openD openDialogContent, openDialogFooterBtns}, formItem){
       this.mode = 1;
       this.dialogTitle = openDialogTitle;
       this.formItem = formItem;
@@ -59,10 +63,11 @@ export default {
       this.dialogVisible = true;
     },
     // 使用代码的打开弹窗
-    showCustormDialog({titleText, confirmBtn, cancelBtn, confirmCb, cancleCb, content, content2}){
+    showCustormDialog({titleText, dialogWidth, confirmBtn, cancelBtn, confirmCb, cancleCb, content, content2}){
       debugger;
       this.mode = 2;
       this.dialogTitle = titleText;
+      this.dialogWidth = dialogWidth;
       this.confirmBtn = confirmBtn;
       this.cancelBtn = cancelBtn;
       this.confirmCb = confirmCb;
