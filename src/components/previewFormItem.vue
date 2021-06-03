@@ -47,12 +47,12 @@
             header-cell-class-name="fd-formTable__headerItem"
             @header-contextmenu="headerContextmenu"
           >
-                <template slot="empty">
-        <div class="tableNodata">
-          <img src="../assets/images/404_images/nodata.png" alt="#" />
-          <span>暂无数据</span>
-        </div>
-      </template>
+            <template slot="empty">
+              <div class="tableNodata">
+                <img src="../assets/images/404_images/nodata.png" alt="#" />
+                <span>暂无数据</span>
+              </div>
+            </template>
             <el-table-column
               v-if="data.showSerial === 1"
               type="index"
@@ -204,18 +204,14 @@
               </template>
             </el-table-column>
             <el-table-column
-            v-if="!data.tableCols[data.tableCols.length - 1].isHide"
+              v-if="!data.tableCols[data.tableCols.length - 1].isHide"
               label="操作"
               :width="data.tableCols[data.tableCols.length - 1].width||200"
               align="center"
             >
               <template slot-scope="scope">
                 <span v-if="currentIndex == scope.$index">
-                  <el-button
-                    type="text"
-                    size="small"
-                    @click="handleUse(scope.$index, scope.row)"
-                  >应用</el-button>
+                  <el-button type="text" size="small" @click="handleUse(scope.$index, scope.row)">应用</el-button>
                   <el-button
                     type="text"
                     size="small"
@@ -224,13 +220,13 @@
                 </span>
                 <span v-else>
                   <el-button
-                  v-if="data.tableCols[data.tableCols.length - 1].showEditBtnForOperation&&!data.readonly"
+                    v-if="data.tableCols[data.tableCols.length - 1].showEditBtnForOperation&&!data.readonly"
                     type="text"
                     size="small"
                     @click="handleEdit(scope.$index, scope.row)"
                   >编辑</el-button>
                   <el-button
-                   v-if="data.tableCols[data.tableCols.length - 1].showDelBtnForOperation&&!data.readonly"
+                    v-if="data.tableCols[data.tableCols.length - 1].showDelBtnForOperation&&!data.readonly"
                     @click="handleDelete(scope.$index)"
                     type="text"
                     size="small"
@@ -356,6 +352,18 @@
           ></selectTree>
         </el-form-item>
       </template>
+      <!-- 弹出框下拉树组件 -->
+      <template v-else-if="data.type=='treeBox'">
+        <el-form-item class="form-item suffix-button" prop="paramExpress">
+          <el-input
+            :clearable="data.clearable"
+            :disabled="data.disabled"
+            v-model="data.defaultValueArr"
+            @clear="clearGogroup"
+            @click.native.stop="openFrameTreeDialog()"
+          ></el-input>
+        </el-form-item>
+      </template>
       <!--  区分输入组件的类型      -->
       <!--   多行文本     -->
       <el-input
@@ -431,6 +439,8 @@
         :disabled="data.disabled"
         :clearable="data.clearable"
         :filterable="data.filterable"
+        :multiple="data.multiple==true"
+        collapse-tags
         @change="selectChangeHand"
         @click.native="inputClickHand"
         @focus="inputFocusHand"
@@ -705,7 +715,8 @@
       <el-date-picker
         v-else-if="data.type === 'operateTime'"
         :ref="data.ref"
-        value-format="yyyy-MM-dd HH:mm:ss"
+        :format="data.format||'yyyy-MM-dd HH:mm:ss'"
+        :value-format="data.format||'yyyy-MM-dd HH:mm:ss'"
         v-model="formModel[data.code]"
         type="datetime"
         :disabled="data.disabled"
@@ -788,6 +799,8 @@
       :isMultiple="data.isMultiple ? data.isMultiple.value : false"
       @personSure="personSure"
     ></newPersonEditDialog>
+    <!-- 弹出框下拉树 -->
+    <frameTree ref="frameTree" :staticTreeData="options" @showFrameValue="showFrameValue"></frameTree>
     <MessageBox
       :showMessage.sync="MessageConfig.showMessage"
       :MessageConfig="MessageConfig"
@@ -819,10 +832,12 @@ import {
   getFormTableSqlPage,
   getFormTablesPage,
   getFormTablesList,
+  getFrameTreeDataById,
 } from "../api/formDesigner_api";
 import { isObjEmpty, validateRegType } from "../util/common.js";
 import MessageBox from "./MessageBox.vue";
 import selectTree from "./selectTree";
+import frameTree from "./frameTree";
 import personEditDialog from "./personEditDialog.vue";
 import newPersonEditDialog from "./newPersonEditDialog";
 import rogroupEditDialog from "./rogroupEditDialog.vue";
@@ -835,6 +850,7 @@ export default {
     newPersonEditDialog,
     rogroupEditDialog,
     selectTree,
+    frameTree,
   },
   props: {
     // 是否为预览模式，模式是编辑模式啦
@@ -867,9 +883,9 @@ export default {
       type: [Number, String],
       default: null,
     },
-     //link表单的code
-    linkFormCode:{
-       type: [Number, String],
+    //link表单的code
+    linkFormCode: {
+      type: [Number, String],
       default: null,
     },
     lineMarginBottom: {
@@ -902,20 +918,22 @@ export default {
         version: this.version,
         map: {},
         tableCode: this.data.code,
-        linkFormCode:this.linkFormCode
+        linkFormCode: this.linkFormCode,
       };
-      
+
       this.data.optionSetting_tabContent.queryParams.forEach((item) => {
         if (item.formItem == "constant") {
           obj.map[item.paramName] = item.defaultValue;
         } else {
           //有linkFormCode，是子表单，子表单里的表格要用主表单里的元素
-          if(this.linkFormCode){
-        let mainFormModel=JSON.parse(sessionStorage.getItem('mainFormModel'))
-        obj.map[item.paramName] = mainFormModel[item.paramName];
-        }else{
-         obj.map[item.paramName] = this.formModel[item.paramName];
-      }
+          if (this.linkFormCode) {
+            let mainFormModel = JSON.parse(
+              sessionStorage.getItem("mainFormModel")
+            );
+            obj.map[item.paramName] = mainFormModel[item.paramName];
+          } else {
+            obj.map[item.paramName] = this.formModel[item.paramName];
+          }
         }
       });
       return obj;
@@ -1113,9 +1131,9 @@ export default {
         });
       }
     }
-     //获取表格数据(建表)
-    else if(this.data.type == "table" && this.data.isCreateDataBaseTable){
-    if (this.data.isPagination) {
+    //获取表格数据(建表)
+    else if (this.data.type == "table" && this.data.isCreateDataBaseTable) {
+      if (this.data.isPagination) {
         this.getFormTablesPage();
       } else {
         this.getFormTablesList();
@@ -1127,34 +1145,43 @@ export default {
       // 如果有前置关联关系设置的，则需要先检查其前置是否有值，有再查询
       // eslint-disable-next-line camelcase
       if (this.data.type == "table" && this.data.isCreateDataBaseTable) {
-      } else {
-        const optionSetting_tabContent = JSON.parse(
-          JSON.stringify(this.data.optionSetting_tabContent)
-        );
-
-        // // 没有配置前置关联查询参数，则现在就查询后台接口
-        // 处理queryParams，拼接查询参数
-        let params = {};
-        let data = {};
-        let headers = {};
-        for (
-          let i = 0, len = optionSetting_tabContent.queryParams.length;
-          i < len;
-          i++
+      } else if (this.data.type != "treeBox") {
+                  const optionSetting_tabContent = JSON.parse(
+            JSON.stringify(this.data.optionSetting_tabContent)
+          );
+        if (
+          optionSetting_tabContent &&
+          optionSetting_tabContent.relationSettings &&
+          optionSetting_tabContent.relationSettings.values &&
+          !isObjEmpty(optionSetting_tabContent.relationSettings.values)
         ) {
-          let it = optionSetting_tabContent.queryParams[i];
-          // 空键名的不要
-          if (!it.paramName) {
-            break;
+          this.getRelationQueryParams(optionSetting_tabContent);
+        } else {
+
+
+          // // 没有配置前置关联查询参数，则现在就查询后台接口
+          // 处理queryParams，拼接查询参数
+          let params = {};
+          let data = {};
+          let headers = {};
+          for (
+            let i = 0, len = optionSetting_tabContent.queryParams.length;
+            i < len;
+            i++
+          ) {
+            let it = optionSetting_tabContent.queryParams[i];
+            // 空键名的不要
+            if (!it.paramName) {
+              break;
+            }
+            if (it.paramType === "params") {
+              params[it.paramName] = it.defaultValue;
+            } else if (it.paramType === "body") {
+              data[it.paramName] = it.defaultValue;
+            } else if (it.paramType === "header") {
+              headers[it.paramName] = it.defaultValue;
+            }
           }
-          if (it.paramType === "params") {
-            params[it.paramName] = it.defaultValue;
-          } else if (it.paramType === "body") {
-            data[it.paramName] = it.defaultValue;
-          } else if (it.paramType === "header") {
-            headers[it.paramName] = it.defaultValue;
-          }
-        }
 
         console.log('948', optionSetting_tabContent.url);
         optionSetting_tabContent.url && this.getRemoteUrlDatas({
@@ -1165,6 +1192,7 @@ export default {
           headers: headers,
           successCallback: optionSetting_tabContent.successCallback,
         });
+        }
       }
     }
     //获取表格数据(sql)
@@ -1279,7 +1307,29 @@ export default {
         this.rules = rules;
       }
     }
-
+    if (this.data.type == "treeBox") {
+      this.data.defaultValue = this.formModel[this.data.code];
+      if (
+        this.data.optionSetting_tabContent.echoUrl &&
+        this.formModel[this.data.code]
+      ) {
+        //根据提供的接口和value值查询回显中文值
+        let obj = { id: this.formModel[this.data.code] };
+        this.data.optionSetting_tabContent.queryParams.forEach((item) => {
+          obj[item.paramName] = item.defaultValue;
+        });
+        let url = this.data.optionSetting_tabContent.echoUrl;
+        getFrameTreeDataById(url, obj)
+          .then((res) => {
+            if (res) {
+              this.data.defaultValueArr = res.data.data.text;
+            }
+          })
+          .catch(() => {});
+      } else {
+        this.data.defaultValueArr = this.formModel[this.data.code];
+      }
+    }
     // 处理富文本的值
     if (this.data.type == "richText") {
       this.editorTxt = this.formModel[this.data.code];
@@ -1586,6 +1636,7 @@ export default {
           // 没有自定义的回调函数，则执行默认逻辑
           else {
             if (res.data && res.data.code == "0000") {
+              console.log(res, "res");
               if (
                 res.data.data.data &&
                 res.data.data.data.constructor === Array
@@ -1599,8 +1650,8 @@ export default {
               } else {
                 this.options = res.data.data.map((it) => {
                   return {
-                    label: it.lable,
-                    value: it.value,
+                    label: it.lable||it.name,
+                    value: it.value||it.id,
                   };
                 });
               }
@@ -1629,7 +1680,7 @@ export default {
     },
 
     // 检查当前表单项的前置关联查询参数。若都有值，则需要向后台查询接口
-    checkRelationPreQueryParam() {
+    checkRelationPreQueryParam(val) {
       let flg = true;
       for (let i in this.relationPreQueryParam) {
         if (!i || !this.relationPreQueryParam[i]) {
@@ -1639,7 +1690,39 @@ export default {
       }
       if (flg) {
         const optionSetting_tabContent = this.data.optionSetting_tabContent;
+        if(this.data.optionSetting=='remoteUrl2'){
+          let params = {};
+          let data = {};
+          let headers = {};
+          for (
+            let i = 0, len = optionSetting_tabContent.queryParams.length;
+            i < len;
+            i++
+          ) {
+            let it = optionSetting_tabContent.queryParams[i];
+            // 空键名的不要
+            if (!it.paramName) {
+              break;
+            }
+            if (it.paramType === "params") {
+              params[it.paramName] = it.defaultValue||val;
+            } else if (it.paramType === "body") {
+              data[it.paramName] = it.defaultValue||val;
+            } else if (it.paramType === "header") {
+              headers[it.paramName] = it.defaultValue||val;
+            }
+          }
 
+          this.getRemoteUrlDatas({
+            url: optionSetting_tabContent.url,
+            method: optionSetting_tabContent.method,
+            data: data,
+            params: params,
+            headers: headers,
+            successCallback: optionSetting_tabContent.successCallback,
+             needClearFormValue: true
+          });
+        }else if(this.data.optionSetting=='remoteDict'){
         this.getRemoteUrlDatas({
           url: optionSetting_tabContent.remoteUrl
             ? optionSetting_tabContent.remoteUrl.value
@@ -1651,6 +1734,8 @@ export default {
           data: this.relationPreQueryParam,
           needClearFormValue: true, // 是否需要清空当前表单项的绑定值
         });
+        }
+
       }
     },
 
@@ -1672,7 +1757,7 @@ export default {
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {
       const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
-
+        console.log(FD_FORM_ITEM_LIST,'FD_FORM_ITEM_LIST');
       // 检查当前表单中的所有表单项的前置关联查询参数
       for (let i = 0, len = FD_FORM_ITEM_LIST.length; i < len; i++) {
         let formItem = FD_FORM_ITEM_LIST[i];
@@ -1682,10 +1767,12 @@ export default {
             formItem.relationPreQueryParamKeys[j] &&
             formItem.relationPreQueryParamKeys[j] === this.data.code
           ) {
+            console.log(formItem,'formItem');
             formItem.relationPreQueryParam[j] = val;
             // 假如该下拉框有选中值，再检查是否关联参数都齐了
             if (val) {
-              formItem.checkRelationPreQueryParam();
+              console.log(val,'val');
+              formItem.checkRelationPreQueryParam(val);
             }
             // 假如该下拉框没有选中值，（比如：点了清空按钮，或者选了没有值的选项），则清掉被关联的值和下拉数据
             else {
@@ -1746,13 +1833,25 @@ export default {
     //     this.formModel[this.data.code]+=item.id+','
     //   })
     // },
-    // //清空下拉树选中的值
-    // clearGogroup(){
-    //   event.stopPropagation();
-    //   this.data.defaultValueArr = ''
-    //   this.data.defaultValue=''
-    //   this.formModel[this.data.code]=''
-    // },
+    //打开下拉树弹框
+    openFrameTreeDialog() {
+      if (this.$refs.frameTree && !this.data.disabled) {
+        this.$refs.frameTree.init(this.data, this.formModel);
+      }
+    },
+    //将弹出框下拉树的值展示在input中
+    showFrameValue({ value, name }) {
+      this.data.defaultValueArr = name;
+      this.data.defaultValue = value;
+      this.formModel[this.data.code] = value;
+    },
+    //清空下拉树选中的值
+    clearGogroup() {
+      event.stopPropagation();
+      this.data.defaultValueArr = "";
+      this.data.defaultValue = "";
+      this.formModel[this.data.code] = "";
+    },
     //新增行
     addTableRow(event) {
       event.stopPropagation();
@@ -2379,9 +2478,9 @@ export default {
       };
       getFormTableSqlPage(obj).then((res) => {
         console.log(res);
-        if(res&&res.data&&res.data.data){
-           this.data.tableData = res.data.data.data || [];
-           this.page.total = res.data.data.total
+        if (res && res.data && res.data.data) {
+          this.data.tableData = res.data.data.data || [];
+          this.page.total = res.data.data.total
             ? parseInt(res.data.data.total)
             : 0;
         }
@@ -2627,18 +2726,18 @@ export default {
 .tree-box .el-tree-node__label {
   font-size: 12px;
 }
-.fd-form-item .el-table thead{
+.fd-form-item .el-table thead {
   color: #000;
   font-size: 12px;
 }
 .fd-form-item .el-table th {
-    padding: .52rem 0;
+  padding: 0.52rem 0;
 }
-.fd-form-item .tableNodata{
-	margin-top: 20px !important;
-	display: flex !important;
-	align-items: center  !important;
-	flex-direction: column  !important;
+.fd-form-item .tableNodata {
+  margin-top: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: column !important;
 }
 </style>
 
