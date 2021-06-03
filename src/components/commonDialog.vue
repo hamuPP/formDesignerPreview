@@ -1,13 +1,13 @@
 <template>
+  <!--      @confirm="dialogConfirmHand"-->
+  <!--      @cancel="dialogCancelHand"-->
+  <!--      @close="closeHand"-->
   <cus-dialog
       :visible.sync="dialogVisible"
       width="60%"
       :title="dialogTitle"
       type="primary2"
       custom-class="form-common-dialog"
-      @confirm="dialogConfirmHand"
-      @cancel="dialogCancelHand"
-      @close="closeHand"
       :append-to-body="true"
   >
     <div class="form-common-dialog-body">
@@ -67,8 +67,8 @@ export default {
       this.cancelBtn = cancelBtn;
       this.confirmCb = confirmCb;
       this.cancleCb = cancleCb;
-      this.content = content;
-      this.content2 = content2;
+      // this.content = content;
+      // this.content2 = content2;
       this.dialogVisible = true;
     },
 

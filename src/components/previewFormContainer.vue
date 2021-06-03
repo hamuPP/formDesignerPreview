@@ -36,7 +36,6 @@
   // import CusButton from './CusButton/index.vue'
   import commonDialog from './commonDialog'
   import {generateElementuiCode} from '../generate_code/generateCode'
-  // import CusMsgbox from "./cus_msgbox";
 
   export default {
     name: 'previewFormContainer',
@@ -228,8 +227,8 @@
       },
       // 打开弹窗
       openDialog(opt){
-        debugger;
-        this.content2 = opt.content2;
+        // debugger;
+        // this.content2 = opt.content2;
         this.$refs.commonDialog.showCustormDialog(opt)
       },
       dialogBtnClickHandle(opt, closeDialog){

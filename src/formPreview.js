@@ -4,7 +4,7 @@
 import './plugins/element.js'
 
 // import toolboxButtons from './components/ToolboxButtons'
-import CusMsgbox from './components/cus_msgbox/index.js'
+// import CusMsgbox from './components/cus_msgbox/index.js'
 // import CusButton from './components/CusButton/index.vue'
 
 // 之所以不直接引用previeForm页面，是为了预留以后有多余的配置可以配置表单以外的内容，
@@ -21,5 +21,4 @@ import FormDesigner from './components/previewFormContainer.vue'
 //     _v.prototype.Confirm = CusMsgbox.confirm;
 //   }
 // };
-FormDesigner.$cusAlert_12 = CusMsgbox.alert;
 export default FormDesigner;

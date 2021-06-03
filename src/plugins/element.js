@@ -6,17 +6,16 @@ import Vue from 'vue';
 // 完整引入的写法
 import ElementUI from 'element-ui';
 // 引入其他公共组件
-import CusMsgbox from '../components/cus_msgbox/index.js'
 import CusButton from '../components/CusButton/index.vue'
 import CusDialog from '../components/CusDialog/index'
 
 Vue.use(ElementUI);
-console.log('888_1', CusMsgbox);
-console.log('888_2', CusMsgbox.alert);
-console.log('888_3', Vue);
 
-Vue.prototype.$cusAlert = CusMsgbox.alert;
-Vue.prototype.$cusConfirm = CusMsgbox.confirm;
+// 已知在打包后，无法使用this.$cusAlert。所以这里就不要了
+// import CusMsgbox from '../components/cus_msgbox/index.js'
+// Vue.prototype.$cusAlert = CusMsgbox.alert;
+// Vue.prototype.$cusConfirm = CusMsgbox.confirm;
+
 Vue.component('CusButton', CusButton);
 Vue.component('cusDialog', CusDialog);
 

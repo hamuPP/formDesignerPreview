@@ -227,17 +227,14 @@
 
       // 测试通过方法打开弹窗
       testOpenDialog(){
-        debugger;
-        console.log(myComp1);
-        debugger;
         let opt = {
           titleText: '傻逼',
           confirmBtn: '确定',
           cancelBtn: '取消',
           confirmCb: (done)=>{console.log(11); done()},
           cancleCb: (done)=>{console.log(222); done()},
-          content: myComp1,
-          content2: 'dialogName1'
+          // content: myComp1,
+          // content2: 'dialogName1'
         };
         this.$refs.FD.openDialog(opt)
       }
