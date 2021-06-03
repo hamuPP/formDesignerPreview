@@ -1,0 +1,10 @@
+@mixin dialog-header-variant($background-color){
+	background-color: $background-color;
+}
+@mixin dialog-title-variant($color){
+	color: $color;
+}
+@mixin dialog-footer-variant($background-color, $border-top-color){
+	background-color: $background-color;
+	border-top: 1px solid $border-top-color;
+}

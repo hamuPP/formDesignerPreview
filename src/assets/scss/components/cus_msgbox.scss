@@ -50,21 +50,21 @@
 	}
 	.is-success{
 		background: $CUS_MSGBOX_SUCCESS_COLOR;
-		.iconfont{
+		.fd-iconfont{
 			font-size: $CUS_MSGBOX_ICON_FONT_SIZE;
 			color: $CUS_MSGBOX_SUCCESS_FONT_COLOR;
 		}
 	}
 	.is-inquiry{
 		background: $CUS_MSGBOX_inquiry_COLOR;
-		.iconfont{
+		.fd-iconfont{
 			font-size: $CUS_MSGBOX_ICON_FONT_SIZE;
 			color: $CUS_MSGBOX_inquiry_FONT_COLOR;
 		}
 	}
 	.is-warning{
 		background: $CUS_MSGBOX_warning_COLOR;
-		.iconfont{
+		.fd-iconfont{
 			font-size: $CUS_MSGBOX_ICON_FONT_SIZE;
 			color: $CUS_MSGBOX_warning_FONT_COLOR;
 		}

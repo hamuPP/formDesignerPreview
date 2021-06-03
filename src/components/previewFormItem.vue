@@ -8,6 +8,7 @@
           uploadHeight: data.type === 'uploadNewFile'
        }"
   >
+<!--    <div style="color: red;">{{formModel}}</div>-->
     <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件,并且table没有label,所以单独提出来  -->
     <template v-if="data.type === 'table'">
       <div
@@ -375,6 +376,10 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
+        @click.native="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-input>
       <!--   单选组     -->
       <el-radio-group
@@ -385,6 +390,9 @@
         :readonly="data.readonly"
         :clearable="data.clearable"
         @change="selectChangeHand"
+        @click.native="inputClickHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       >
         <el-radio v-for="radio in options" :key="radio.value" :label="radio.value">{{radio.label}}</el-radio>
       </el-radio-group>
@@ -397,6 +405,10 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
+        @click.native="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       >
         <el-checkbox
           v-for="(check, index) in options"
@@ -413,6 +425,10 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
+        @click.native="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-rate>
 
       <!--   下拉框     -->
@@ -426,6 +442,9 @@
         :multiple="data.multiple==true"
         collapse-tags
         @change="selectChangeHand"
+        @click.native="inputClickHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       >
         <el-option
           v-for="item in options"
@@ -446,6 +465,10 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
+        @click.native="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-date-picker>
 
       <!--  时间选择器      -->
@@ -458,6 +481,10 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
+        @click.native="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-time-picker>
 
       <!--  时间范围选择器      -->
@@ -473,9 +500,12 @@
         range-separator="至"
         start-placeholder="开始时间"
         end-placeholder="结束时间"
-        @click.native.stop
+        @click.native="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-time-picker>
-      <!--  按钮      -->
+      <!--  按钮     (按钮只有一个click事件) -->
       <el-button
         v-else-if="data.type === 'button'"
         :ref="data.ref"
@@ -486,6 +516,7 @@
         :size="data.size"
         :disabled="data.disabled"
         :class="{'auto-width': data.fixParentWidth}"
+        @click.native="inputClickHand"
       >
         <template v-if="data.defaultValue">{{data.defaultValue}}</template>
       </el-button>
@@ -585,6 +616,10 @@
         :readonly="data.readonly"
         :min="data.minValue || 0"
         :max="data.maxValue || 0"
+        @click.native="inputClickHand"
+        @change="inputChangeHand"
+        @focus="inputFocusHand"
+        @blur="inputBlurHand"
       ></el-input-number>
 
       <!--   级联选择器   -->
@@ -603,7 +638,7 @@
         :props="{ multiple: data.isMultiple }"
         :options="options && options.length? options[0].children : []"
         @change="selectCascaderChange($event, data)"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
       ></el-cascader>
@@ -616,7 +651,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -630,7 +665,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -644,7 +679,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -657,7 +692,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -671,7 +706,7 @@
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -686,7 +721,7 @@
         type="datetime"
         :disabled="data.disabled"
         :computereadonly="data.readonly"
-        @click="inputClickHand"
+        @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
@@ -694,7 +729,6 @@
 
       <!-- 如果没有设置type，则都是input --start-- -->
       <template v-else>
-        <!--      <div style="color:red">{{data}}</div>-->
         <!-- 搜索 -->
         <el-autocomplete
           v-if="data.isAutocompletable"
@@ -704,7 +738,7 @@
           @select="handleSelect"
           :disabled="data.disabled"
           :readonly="data.readonly"
-          @click="inputClickHand"
+          @click.native="inputClickHand"
           @change="inputChangeHand"
           @focus="inputFocusHand"
           @blur="inputBlurHand"
@@ -718,7 +752,7 @@
           :clearable="data.clearable"
           type="number"
           v-model.number="formModel[data.code]"
-          @click="inputClickHand"
+          @click.native="inputClickHand"
           @change="inputChangeHand"
           @focus="inputFocusHand"
           @blur="inputBlurHand"
@@ -731,7 +765,7 @@
           :clearable="data.clearable"
           type="password"
           v-model="formModel[data.code]"
-          @click="inputClickHand"
+          @click.native="inputClickHand"
           @change="inputChangeHand"
           @focus="inputFocusHand"
           @blur="inputBlurHand"
@@ -743,7 +777,7 @@
           :readonly="data.readonly"
           :clearable="data.clearable"
           v-model="formModel[data.code]"
-          @click="inputClickHand"
+          @click.native="inputClickHand"
           @change="inputChangeHand"
           @focus="inputFocusHand"
           @blur="inputBlurHand"
@@ -864,6 +898,15 @@ export default {
       let parent = this.$parent;
       let parentName = parent.$options.name;
       while (parentName !== "previewForm") {
+        parent = parent.$parent;
+        parentName = parent.$options.name;
+      }
+      return parent;
+    },
+    componentFormContainer() {
+      let parent = this.$parent;
+      let parentName = parent.$options.name;
+      while (parentName !== 'previewFormContainer') {
         parent = parent.$parent;
         parentName = parent.$options.name;
       }
@@ -1011,7 +1054,6 @@ export default {
     }
     // 字典表
     else if (optionSetting === "remoteDict") {
-      debugger;
       const optionSetting_tabContent = this.data.optionSetting_tabContent;
       if (
         optionSetting_tabContent &&
@@ -1415,7 +1457,6 @@ export default {
     },
     // 查询附件列表
     getFileList() {
-      debugger;
       if (this.data.listRequestUrl) {
         // 遍历配置的请求体，加上这些参数
         let queryData = {};
@@ -1473,7 +1514,6 @@ export default {
     },
     //新文件上传删除附件
     deleteFile(row) {
-      debugger;
       delFileNew(row.id)
         .then((response) => {
           this.$message({
@@ -1588,7 +1628,6 @@ export default {
           if (successCallback) {
             try {
               let fn = new Function("resData", successCallback);
-              debugger;
               this.options = fn(res) || [];
             } catch (e) {
               console.log(e);
@@ -1717,7 +1756,6 @@ export default {
     },
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {
-      debugger;
       const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
         console.log(FD_FORM_ITEM_LIST,'FD_FORM_ITEM_LIST');
       // 检查当前表单中的所有表单项的前置关联查询参数
@@ -1743,8 +1781,7 @@ export default {
           }
         }
       }
-      //判断当前下拉框是否有配置更改其他表单元素的状态
-      debugger;
+      // 判断当前下拉框是否有配置更改其他表单元素的状态
       if (this.formSetting.length > 0) {
         let data = [];
         this.formSetting.forEach((item) => {
@@ -1756,6 +1793,9 @@ export default {
           }
         });
       }
+
+      // 执行自定义的change事件
+      this.inputChangeHand(val);
     },
     // 打开选择人员或角色弹框
     openPerRoleDialog() {
@@ -2267,8 +2307,6 @@ export default {
        * @param insertImgFn 是获取图片 url 后，插入到编辑器的方法
        */
       editor.config.customUploadImg = function (resultFiles, insertImgFn) {
-        console.log("开始上传");
-        debugger;
         // 拼接查询参数，并且向后台递交请求
         let param = new FormData();
         console.log("开始上传 :token:", sessionStorage.getItem("access_token"));
@@ -2285,7 +2323,6 @@ export default {
           headers: { "Content-Type": "multipart/form-data" },
         })
           .then((res) => {
-            debugger;
             if (res && res.data && res.data.code == "0000") {
               res.data.data.forEach((it) => {
                 insertImgFn(FORM_IMG_URL + it.url);
@@ -2554,49 +2591,102 @@ export default {
         );
       }
     },
-    inputClickHand() {
+    inputClickHand () {
+      debugger;
+      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+      let args = {formItem: this.data, value: val, F: this.componentFormContainer};
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.click) {
-        try {
-          let fnc = new Function(this.data.click);
-          fnc(this.formModel[this.data.code]);
-        } catch (e) {
-          throw e;
+        let codeString = this.data.click.value;
+        let behavior = this.data.click.behavior;
+        if(codeString){
+          try {
+            let fnc = new Function(codeString);
+            fnc(this.componentFormContainer, val);
+          } catch (e) {
+            console.log(e);
+            args.error = e;
+          }
+        }
+
+        // todo 打开弹窗的还没有做
+        if(behavior === 'openDialog'){
+          this.componentFormContainer.$refs.commonDialog.showDialog(this.data.click, this.data)
         }
       }
+      // 不论是否有自定义函数，这个都会触发emit,以便使用者可以在回调函数里进行其他行为
+      this.componentFormContainer.$emit('formItemClick', args);
     },
     inputChangeHand() {
+      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+      let args = {formItem: this.data, value: val, F:this.componentFormContainer};
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.change) {
-        try {
-          let fnc = new Function(this.data.change);
-          fnc(this.formModel[this.data.code]);
-        } catch (e) {
-          throw e;
+        let codeString = this.data.change.value;
+        let behavior = this.data.change.behavior;
+        if(codeString) {
+          try {
+            let fnc = new Function(this.data.change);
+            fnc(this.componentFormContainer, val);
+          } catch (e) {
+            // throw e;
+            // console.log(e);
+            args.error = e;
+          }
+        }
+        // todo 打开弹窗的还没有做
+        if(behavior === 'openDialog'){
+
         }
       }
+      this.componentFormContainer.$emit('formItemChange', args);
     },
     inputFocusHand() {
+      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+
+      let args = {formItem: this.data, value: val};
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.focus) {
-        try {
-          let fnc = new Function(this.data.focus);
-          fnc(this.formModel[this.data.code]);
-        } catch (e) {
-          throw e;
+        let codeString = this.data.focus.value;
+        let behavior = this.data.focus.behavior;
+        if(codeString) {
+          try {
+            let fnc = new Function(this.data.focus);
+            fnc(this.formModel[this.data.code]);
+          } catch (e) {
+            // throw e;
+            args = {error: e, formItem:this.data, value: val};
+          }
+        }
+        // todo 打开弹窗的还没有做
+        if(behavior === 'openDialog'){
+
         }
       }
+      this.componentFormContainer.$emit('formItemFocus', args);
     },
     inputBlurHand() {
+      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+      let args = {formItem: this.data, value: val, F: this.componentFormContainer};
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.blur) {
-        try {
-          let fnc = new Function(this.data.blur);
-          fnc(this.formModel[this.data.code]);
-        } catch (e) {
-          throw e;
+        let codeString = this.data.blur.value;
+        let behavior = this.data.blur.behavior;
+        if(codeString) {
+          try {
+            let fnc = new Function(this.data.blur);
+            fnc(this.formModel[this.data.code]);
+          } catch (e) {
+            // throw e;
+            args.error = e;
+          }
+        }
+        // todo 打开弹窗的还没有做
+        if(behavior === 'openDialog'){
+
         }
       }
+      this.componentFormContainer.$emit('formItemBlur', args);
     },
   },
 };

@@ -19,6 +19,11 @@
     </previewForm>
 
     <anchor v-if="showAnchor" ref="anchor"></anchor>
+
+    <commonDialog ref="commonDialog"
+                  @dialogBtnClick="dialogBtnClickHandle">
+        <slot name="dialogContent"></slot>
+    </commonDialog>
   </div>
 
 </template>
@@ -27,13 +32,18 @@
   import {getUrlQueryParams, showQueryErrorMessage} from '../assets/js/utils'
   import previewForm from './previewForm.vue'
   import anchor from './anchor/index.vue'
+  import CusMsgbox from './cus_msgbox/index.js'
+  // import CusButton from './CusButton/index.vue'
+  import commonDialog from './commonDialog'
   import {generateElementuiCode} from '../generate_code/generateCode'
 
   export default {
     name: 'previewFormContainer',
     components: {
       previewForm,
-      anchor
+      anchor,
+      // CusButton,
+      commonDialog
     },
     props: {
       // 是否为预览模式，模式是编辑模式啦
@@ -124,11 +134,11 @@
       let searchParamObj = this.searchParamObj = getUrlQueryParams();
     },
     mounted () {
+      const that = this;
       //没有linkFormCode值时，代表是主表单，把主表单formModel值存起来，子表单表格要用
       if(!this.linkFormCode&&!sessionStorage.getItem('mainFormModel')){
         sessionStorage.setItem('mainFormModel',JSON.stringify(this.formModel))
       }
-      const that = this;
       if(this.showAnchor){
         document.body.addEventListener('mousewheel', function(){
           that.scrollEvent();
@@ -187,6 +197,44 @@
           }
         }
         return resultList;
+      },
+
+      beforeSubmit(){
+        if (this.fdFormData.beforeSubmit){
+          try {
+            let fnc = new Function(this.fdFormData.beforeSubmit);
+            fnc(this.formModel);
+          } catch (e) {
+            throw e;
+          }
+        }
+      },
+      afterSubmit(){
+        if (this.fdFormData.afterSubmit){
+          try {
+            let fnc = new Function(this.fdFormData.afterSubmit);
+            fnc(this.formModel);
+          } catch (e) {
+            throw e;
+          }
+        }
+      },
+      Alert(){
+        CusMsgbox.alert(...arguments)
+      },
+      Confirm(){
+        CusMsgbox.confirm(...arguments)
+      },
+      // 打开弹窗
+      openDialog(opt){
+        // debugger;
+        // this.content2 = opt.content2;
+        this.$refs.commonDialog.showCustormDialog(opt)
+      },
+      dialogBtnClickHandle(opt, closeDialog){
+        debugger;
+
+        this.$emit('dialogBtnClick', opt, closeDialog)
       }
     },
 
