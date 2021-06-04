@@ -33,14 +33,13 @@
         </div>
         <div class="el-message-box__content">
           <div class="el-message-box__container">
+
+<!--        下面的DIV以前是这样写的    :class="['el-message-box__status', statusCls]"-->
+
             <div
-                    :class="['el-message-box__status', statusCls]"
+                    class="el-message-box__status"
                     v-if="icon && !center && message !== ''">
-              <div class="circle">
-<!--     用class的打包后 样式没了，:after也没了，所以改为使用unicode          -->
-<!--                <span :class="icon"></span>-->
-                <span class="fd-iconfont" v-html="iconUnicode"></span>
-              </div>
+              <img :src="imgSrc" alt="" class="content-img">
             </div>
             <div class="el-message-box__message" v-if="message !== ''">
               <slot>
@@ -186,13 +185,13 @@
         let classname = '';
         switch(type){
           case 'success':
-            classname = 'iconfont iconlujing';
+            classname = 'iconfont icon-success';
             break;
           case 'inquiry':
-            classname = 'iconfont iconicon_wenhao-mian';
+            classname = 'iconfont icon-question';
             break;
           case 'warning':
-            classname = 'iconfont icontishi';
+            classname = 'iconfont icon-warning2';
             break;
           default:
             classname = '';
@@ -200,18 +199,21 @@
         }
         return classname;
       },
-      iconUnicode() {
-        const { type, iconClass } = this;
+      imgSrc() {
+        const { type } = this;
         let str = '';
         switch(type){
           case 'success':
-            str = '&#xe626;';
+            str = require('../../assets/images/ic-ywc.png')
             break;
           case 'inquiry':
-            str = '&#xe659;';
+            str = require('../../assets/images/ic_tip.png')
             break;
           case 'warning':
-            str = '&#xe635;';
+            str = require('../../assets/images/ic_gj.png')
+            break;
+          case 'error':
+            str = require('../../assets/images/ic_error.png')
             break;
           default:
             str = '';

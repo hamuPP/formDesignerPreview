@@ -42,6 +42,10 @@ module.exports = {
             //         { loader: "less-loader" }
             //     ]
             // },
+            {
+                test: /\.scss$/,
+                loaders: ['style-loader', 'css-loader', 'sass-loader']
+            },
           {
             test: /\.css$/,
             loaders: ['style-loader', 'css-loader']
@@ -59,7 +63,7 @@ module.exports = {
                 // ]
             },
           {
-              test: /\.(png|jpg|gif|ttf|svg|woff|eot)$/,
+              test: /\.(png|jpg|gif|ttf|svg|woff|woff2|eot)$/,
               loader: 'url-loader',
           },
         ]

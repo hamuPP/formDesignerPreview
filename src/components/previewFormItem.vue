@@ -868,15 +868,15 @@ export default {
       type: Object,
       default() {
         return {};
-      },
+      }
     },
     labelWidth: {
-      type: Number,
-      default: 0,
+      type: [Number, String],
+      default: 0
     },
     version: {
       type: [Number, String],
-      default: "",
+      default: ""
     },
     // 表单的id
     boId: {
