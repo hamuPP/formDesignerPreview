@@ -52,9 +52,10 @@ export default {
   },
   methods: {
     // 配置子表单式的打开弹窗
-    showDialog({openDialogTitle, openD openDialogContent, openDialogFooterBtns}, formItem){
+    showDialog({openDialogTitle, dialogWidth, openDialogContent, openDialogFooterBtns}, formItem){
       this.mode = 1;
       this.dialogTitle = openDialogTitle;
+      this.dialogWidth = dialogWidth;
       this.formItem = formItem;
       // 空按钮不显示
       this.footerBtns = openDialogFooterBtns.filter(it =>{
@@ -87,7 +88,7 @@ export default {
       this.confirmCb(_=>{ this.dialogVisible = false;})
     },
     cancelBtnClickHand(){
-      this.confirmCb(_=>{ this.dialogVisible = false;})
+      this.cancleCb(_=>{ this.dialogVisible = false;})
     }
   }
 }
