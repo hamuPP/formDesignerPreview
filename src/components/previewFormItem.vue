@@ -1511,6 +1511,12 @@ export default {
           }
         }
       }
+      if(!this.linkFormCode) {
+        queryData.typeId='main'
+      }else{
+        queryData.typeId=sessionStorage.getItem('nodeCode')
+        queryData.attribute4=sessionStorage.getItem('nextNodeCode')
+      };
       getUploadedFileList(queryData).then((res) => {
         if (res && res.data && res.data.code == "0000") {
           this.fileList = res.data.data.data;
@@ -2224,7 +2230,11 @@ export default {
         let param = new FormData();
         param.append("files", params.file);
         param.append("access_token", sessionStorage.getItem("access_token"));
-        // param.append('typeId', 1);
+        if(!this.linkFormCode) {
+          param.append('typeId', 'main')
+        }else{
+           param.append('typeId', sessionStorage.getItem('nodeCode'))
+        };
         // 用户自定义添加的参数,这是例如在引用页面，用户可能需要再添加一些参数
         if (this.USER_UPLOAD_PARAM) {
           for (let key in this.USER_UPLOAD_PARAM) {
