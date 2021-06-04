@@ -7,17 +7,17 @@ import Vue from 'vue';
 import ElementUI from 'element-ui';
 // 引入其他公共组件
 import CusButton from '../components/CusButton/index.vue'
-import CusDialog from '../components/CusDialog/index'
+// import CusDialog from '../components/CusDialog/index'
 
 Vue.use(ElementUI);
 
-// 已知在打包后，无法使用this.$cusAlert。所以这里就不要了
+// 已知在打包后，无法使用this.$cusAlert。所以这里就不要了（因为打包方案，我没用install）
 // import CusMsgbox from '../components/cus_msgbox/index.js'
 // Vue.prototype.$cusAlert = CusMsgbox.alert;
 // Vue.prototype.$cusConfirm = CusMsgbox.confirm;
 
 Vue.component('CusButton', CusButton);
-Vue.component('cusDialog', CusDialog);
+// Vue.component('cusDialog', CusDialog);
 
 // 按需引`入
 // import {
