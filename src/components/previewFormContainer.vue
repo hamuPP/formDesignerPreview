@@ -15,6 +15,7 @@
             :formModel="formModel"
             :fdFormItems="fdFormItems"
             :fdFormData="fdFormData"
+            :isHistory='isHistory'
     >
     </previewForm>
 
@@ -64,6 +65,11 @@
     linkFormCode:{
        type: [Number, String],
       default: null,
+    },
+    //用于流转信息隐藏附件上传
+    isHistory:{
+      type:String,
+      default:''
     },
       rules: {
         type: Object,

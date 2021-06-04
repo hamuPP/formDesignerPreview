@@ -537,7 +537,7 @@
       </div>
 
       <!--   上传附件   -->
-      <div v-else-if="data.type === 'uploadFile'" class="fd-formItem__upload-file">
+      <div v-else-if="data.type === 'uploadFile'&&isHistory!='isHistory'" class="fd-formItem__upload-file">
         <el-button type="primary" size="mini" @click="upFile" class="file-btn">上传</el-button>
         <a href="javascript:;" class="file-btn open-file-btn">
           浏览
@@ -562,7 +562,7 @@
 
       <!-- 新附件上传 -->
       <el-upload
-        v-else-if="data.type === 'uploadNewFile'"
+        v-else-if="data.type === 'uploadNewFile'&&isHistory!='isHistory'"
         class="upload-demo"
         action="string"
         ref="newFile"
@@ -877,6 +877,11 @@ export default {
     version: {
       type: [Number, String],
       default: ""
+    },
+    //用于流转信息隐藏附件上传
+    isHistory:{
+      type:String,
+      default:''
     },
     // 表单的id
     boId: {
