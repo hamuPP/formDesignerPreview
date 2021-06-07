@@ -223,7 +223,7 @@
         CusMsgbox.alert(...arguments)
       },
       Confirm(){
-        CusMsgbox.confirm(...arguments)
+        return CusMsgbox.confirm(...arguments)
       },
       // 打开弹窗
       openDialog(opt){
@@ -232,8 +232,6 @@
         this.$refs.commonDialog.showCustormDialog(opt)
       },
       dialogBtnClickHandle(opt, closeDialog){
-        debugger;
-
         this.$emit('dialogBtnClick', opt, closeDialog)
       }
     },
