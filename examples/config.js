@@ -3,8 +3,9 @@
 // var base = 'http://192.168.11.189:9999'
 // var base = 'http://171.221.227.31:9999'
 // var base = 'http://192.168.13.197:9999'
-var base = 'http://192.168.11.189:9999'
+// var base = 'http://192.168.11.189:9999'
 // var base = 'http://192.168.16.191:9090'
+var base = 'http://192.168.2.252:9090'
 
 window.g = {
   // Auth: 'Basic cGlnOnBpZw==', // 'Basic cGlnOnBpZw==',// 以前用的Basic ZW9tczpwaWc=
