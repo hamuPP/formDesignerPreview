@@ -284,7 +284,7 @@
   <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
     <!-- //TODO 这个属性有变化，还没有改这里   -->
     <el-form-item
-      v-else-if="data.type !== 'uploadFile' || (data.type === 'uploadFile' && !view)"
+      v-else-if="data.type !== 'uploadNewFile' || (data.type === 'uploadNewFile' && !view)"
       :prop="data.code"
       :label="data.label"
       :class="data.className"
@@ -559,10 +559,10 @@
           </li>
         </ul>
       </div>
-
+      <template   v-else-if="data.type === 'uploadNewFile'">
       <!-- 新附件上传 -->
       <el-upload
-        v-else-if="data.type === 'uploadNewFile'&&isHistory!='isHistory'"
+        v-if="isHistory!='isHistory'"
         class="upload-demo"
         action="string"
         ref="newFile"
@@ -601,6 +601,8 @@
           </li>
         </ul>
       </el-upload>
+      </template>
+
 
       <!-- 计数器 -->
       <el-input-number
