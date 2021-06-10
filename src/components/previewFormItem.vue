@@ -291,11 +291,11 @@
       :style="{
             'marginBottom': data.type === 'dividingLine'? 0 : lineMarginBottom + 'px'
           }"
-      :rules="componentRootForm.useCustormRule? null: rules"
+      :rules="itemRules"
     >
       <!-- 选择人员树组件 -->
       <template v-if="data.type==='user'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress">
+        <el-form-item class="form-item suffix-button" prop="paramExpress" :rules="itemRules">
           <el-input
             clearable
             :disabled="data.disabled"
@@ -341,7 +341,7 @@
 
       <!-- 下拉树组件 -->
       <template v-else-if="data.type==='tree'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress">
+        <el-form-item class="form-item suffix-button" prop="paramExpress" :rules="itemRules">
           <selectTree
             nodeKey="value"
             :treeProps="treeProps"
@@ -354,7 +354,7 @@
       </template>
       <!-- 弹出框下拉树组件 -->
       <template v-else-if="data.type=='treeBox'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress">
+        <el-form-item class="form-item suffix-button" prop="paramExpress" :rules="itemRules">
           <el-input
             :clearable="data.clearable"
             :disabled="data.disabled"
@@ -960,6 +960,16 @@ export default {
       };
       return obj;
     },
+    itemRules: {
+      get(){
+        let rule = this.componentRootForm.useCustormRule? null: this.rules
+
+        return rule;
+      },
+      set(val){
+        console.log('set', val)
+      }
+    }
   },
   watch: {
     // relationPreQueryParam(n, o){

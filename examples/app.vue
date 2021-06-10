@@ -2,6 +2,10 @@
   <div class="app" id="app">
     <button @click="testDownload">测试下载</button>
     <button @click="testOpenDialog">测试代码打开弹窗</button>
+    <button @click="getFormInsHand">getFormIns</button>
+    <button @click="getFormByCodeHand">getFormByCode</button>
+    <button @click="getFormItemsByCodeHand">getFormItemsByCode</button>
+    <button @click="setRule">setRule</button>
     <el-card class="params-config">
       <div slot="header" class="clearfix">
         <span>try</span>
@@ -12,25 +16,95 @@
         <em>(按回车进行查询)</em>
       </div>
     </el-card>
-    <FormDesigner v-if="formVisible"
-                  ref="FD"
-                  :view="isView"
-                  :id="formId"
-                  :formModel="formModel"
-                  :fdFormItems="fdFormItems"
-                  :fdFormData="fdFormData"
-                  :showAnchor="false"
-                  :useCustormRule="false"
-                  @formItemClick="clickHand"
-                  @dialogBtnClick="dialogBtnClickHand">
-      <template v-slot:[dialogContent]>
-        <myComp1></myComp1>
-      </template>
+    <div style="border: 1px solid red;">
+      <FormDesigner v-if="formVisible"
+                    ref="FD"
+                    :view="isView"
+                    :id="formId"
+                    :formModel="formModel"
+                    :fdFormItems="fdFormItems"
+                    :fdFormData="fdFormData"
+                    :showAnchor="false"
+                    useCustormRule
+                    @formItemClick="clickHand"
+                    @dialogBtnClick="dialogBtnClickHand">
+        <template v-slot:[dialogContent]>
+          <myComp1></myComp1>
+        </template>
 
-    </FormDesigner>
+      </FormDesigner>
+    </div>
 
+    <div style="border: 1px solid red;">
+      <FormDesigner v-if="formVisible"
+                    ref="FD2"
+                    :view="isView"
+                    :id="formId"
+                    :formModel="formModel"
+                    :fdFormItems="fdFormItems"
+                    :fdFormData="fdFormData"
+                    :showAnchor="false"
+                    :useCustormRule="false"
+                    @formItemClick="clickHand"
+                    @dialogBtnClick="dialogBtnClickHand">
+        <template v-slot:[dialogContent]>
+          <myComp1></myComp1>
+        </template>
+
+      </FormDesigner>
+    </div>
     <h2>表单值</h2>
     <div class="form-model-box">{{formModel}}</div>
+
+    <hr>
+<!--    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">-->
+<!--      <el-form-item label="活动名称" prop="name" :rules="_rule1">-->
+<!--        <el-input v-model="ruleForm.name"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="活动区域" prop="region">-->
+<!--        <el-select v-model="ruleForm.region" placeholder="请选择活动区域">-->
+<!--          <el-option label="区域一" value="shanghai"></el-option>-->
+<!--          <el-option label="区域二" value="beijing"></el-option>-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="活动时间" required>-->
+<!--        <el-col :span="11">-->
+<!--          <el-form-item prop="date1">-->
+<!--            <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.date1" style="width: 100%;"></el-date-picker>-->
+<!--          </el-form-item>-->
+<!--        </el-col>-->
+<!--        <el-col class="line" :span="2">-</el-col>-->
+<!--        <el-col :span="11">-->
+<!--          <el-form-item prop="date2">-->
+<!--            <el-time-picker placeholder="选择时间" v-model="ruleForm.date2" style="width: 100%;"></el-time-picker>-->
+<!--          </el-form-item>-->
+<!--        </el-col>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="即时配送" prop="delivery">-->
+<!--        <el-switch v-model="ruleForm.delivery"></el-switch>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="活动性质" prop="type">-->
+<!--        <el-checkbox-group v-model="ruleForm.type">-->
+<!--          <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>-->
+<!--          <el-checkbox label="地推活动" name="type"></el-checkbox>-->
+<!--          <el-checkbox label="线下主题活动" name="type"></el-checkbox>-->
+<!--          <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>-->
+<!--        </el-checkbox-group>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="特殊资源" prop="resource">-->
+<!--        <el-radio-group v-model="ruleForm.resource">-->
+<!--          <el-radio label="线上品牌商赞助"></el-radio>-->
+<!--          <el-radio label="线下场地免费"></el-radio>-->
+<!--        </el-radio-group>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="活动形式" prop="desc">-->
+<!--        <el-input type="textarea" v-model="ruleForm.desc"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item>-->
+<!--        <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>-->
+<!--        <el-button @click="resetForm('ruleForm')">重置</el-button>-->
+<!--      </el-form-item>-->
+<!--    </el-form>-->
   </div>
 </template>
 <script>
@@ -56,7 +130,47 @@
         fdFormItems: [],
         fdFormData: {},
         formVisible: false,
-        dialogContent: 'dialogContent'
+        dialogContent: 'dialogContent',
+        ruleForm: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        },
+        _rule1: [],
+        myRules:{
+          d1: [
+            { "min": 3, "max": 5, "message": "长度在 3 到 5 个字符", "trigger": "blur" }
+          ]
+        },
+        rules: {
+          name: [
+            { required: true, message: '请输入活动名称', trigger: 'blur' },
+            // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+          ],
+          region: [
+            { required: true, message: '请选择活动区域', trigger: 'change' }
+          ],
+          date1: [
+            { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+          ],
+          date2: [
+            { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+          ],
+          type: [
+            { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
+          ],
+          resource: [
+            { required: true, message: '请选择活动资源', trigger: 'change' }
+          ],
+          desc: [
+            { required: true, message: '请填写活动形式', trigger: 'blur' }
+          ]
+        }
       }
     },
     created () {
@@ -64,6 +178,14 @@
       // 根据表单id查询接口数据
       if (this.formId) {
         this.getFormData();
+      }
+
+      // 从本地存储中找到数据
+      if (sessionStorage.getItem('preview_lists') && sessionStorage.getItem('preview_form')) {
+        this.formModel = this.getFormModel(this, JSON.parse(sessionStorage.getItem('preview_lists')), 'defaultValue');
+        this.fdFormItems = this.formateList(JSON.parse(sessionStorage.getItem('preview_lists')));
+        this.fdFormData = JSON.parse(sessionStorage.getItem('preview_form'));
+        this.formVisible = true;
       }
     },
     mounted () {
@@ -129,10 +251,21 @@
             // 假如有一项为24,或者它有'独占一行'的属性，则它自为一行，
             let index;
             let lastNum = count / BASE_COUNT;// 之前的表单项的总和
-            if ((span == 24 || displayInline) && (lastNum !== Math.floor(lastNum) || lastNum === 0)) {
+            if (span == 24 && lastNum !== Math.floor(lastNum) ) {
               index = Math.ceil(lastNum);
               count = (index + 1) * 24;
-            } else {
+            }
+            else if(displayInline){
+              // 假如除不尽，则把现在的count补满为24的整数
+              if(count / 24 !== Math.floor(count / 24)){
+                count = Math.ceil(count / 24) * 24 + 24;
+              }else{
+                count += 24;
+              }
+              let num = count / BASE_COUNT;
+              index = Math.floor(num) === num ? num - 1 : Math.floor(num);// 整数-1，小数向下取整
+            }
+            else {
               count += span;
               let num = count / BASE_COUNT;
               index = Math.floor(num) === num ? num - 1 : Math.floor(num);// 整数-1，小数向下取整
@@ -237,6 +370,33 @@
           // content2: 'dialogName1'
         };
         this.$refs.FD.openDialog(opt)
+      },
+
+      getFormInsHand(){
+        let ccc = this.$refs.FD.getFormIns();
+        debugger;
+      },
+
+      getFormByCodeHand(){
+        let ccc = this.$refs.FD.getFormByCode('test666');
+        debugger;
+      },
+
+      getFormItemsByCodeHand(){
+        debugger;
+        let ccc = this.$refs.FD.getFormItemsByCode('wenben');
+        console.log(ccc)
+      },
+      setRule(){
+        // this.rules.name.push(
+        //   // { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+        //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+        // );
+
+        var FD = this.$refs.FD;
+        console.log(FD);
+        var rule = { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' };
+        FD.setFormRule('myF', 'd1', rule)
       }
     }
 

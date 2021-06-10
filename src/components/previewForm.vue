@@ -14,7 +14,7 @@
     ref="fdForm"
     :rules="rules"
     :disabled="view"
-  >
+    :data-code="formCode">
     <el-row v-for="(it, index) in fdFormItems" :key="index" :gutter="35">
       <el-col v-for="(item, key) in it" :key="key" :span="item.width" :style="colStyle(item)">
         <!--    如果是有分组的(分组的自定义样式是套在分组的元素上的)  --start--  -->
@@ -238,7 +238,6 @@ export default {
     },
   },
   created() {
-
     this.skin = this.fdFormData.skin;
     this.formCode = this.fdFormData.code;
     this.formClassStr =
@@ -246,6 +245,11 @@ export default {
       (this.fdFormData.size ? ` fd-form--${this.fdFormData.size}` : "");
   },
   mounted() {
+    if(!window.$fdForm){
+      window.$fdForm = {};
+    }
+    window.$fdForm[this.formCode] = this;
+
     this.$bus.$on("selectChange", (data) => {
       this.selectChange(data);
     });
