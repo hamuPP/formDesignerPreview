@@ -872,6 +872,10 @@ export default {
       type: Object,
       default: () => {},
     },
+    formModelCnFlag:{
+      type:Boolean,
+      default:false
+    },
     data: {
       type: Object,
       default() {
@@ -1635,7 +1639,6 @@ export default {
         })
         .catch((e) => {});
     },
-
     // 针对配置了数据来源是远程接口的表单项，查询远程接口的数据
     getRemoteUrlDatas({
       url,
@@ -1791,12 +1794,13 @@ export default {
     },
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {
+      if(this.formModelCnFlag){
       this.options.forEach((item) => {
         if (item.value == val) {
           this.formModelCn[this.data.code] = item.label;
         }
       });
-
+      }
       const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
       // 检查当前表单中的所有表单项的前置关联查询参数
       for (let i = 0, len = FD_FORM_ITEM_LIST.length; i < len; i++) {

@@ -33,6 +33,7 @@
                   :view="view"
                   :formModel="formModel"
                   :formModelCn='formModelCn'
+                  :formModelCnFlag='formModelCnFlag'
                   :data="cItem"
                   :formCode="formCode"
                   :boId="id"
@@ -79,6 +80,7 @@
                       :view="view"
                       :formModel="formModel"
                       :formModelCn='formModelCn'
+                      :formModelCnFlag='formModelCnFlag'
                       :data="cItem"
                       :formCode="formCode"
                       :boId="id"
@@ -124,6 +126,7 @@
           :view="view"
           :formModel="formModel"
           :formModelCn='formModelCn'
+          :formModelCnFlag='formModelCnFlag'
           :data="item"
           :formCode="formCode"
           :boId="id"
@@ -221,6 +224,10 @@ export default {
         type:Object,
         default:()=>{}
       },
+    formModelCnFlag:{
+      type:Boolean,
+      default:false
+    },
     fdFormData: {
       type: Object,
       default() {

@@ -14,9 +14,11 @@
             :useCustormRule="useCustormRule"
             :formModel="formModel"
             :formModelCn='formModelCn'
+            :formModelCnFlag='formModelCnFlag'
             :fdFormItems="fdFormItems"
             :fdFormData="fdFormData"
             :isHistory='isHistory'
+
     >
     </previewForm>
 
@@ -87,6 +89,10 @@
       formModelCn:{
         type:Object,
         default:()=>{}
+      },
+      formModelCnFlag:{
+        type:Boolean,
+        default:false
       },
       fdFormItems: {
         type: Array,
