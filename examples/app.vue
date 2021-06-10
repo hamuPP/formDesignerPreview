@@ -348,9 +348,7 @@
       },
 
       clickHand(opt){
-        debugger;
-        // let aa =
-        // .scrollEvent''
+
       },
       dialogBtnClickHand({formItem, btnText, formModel}, done){
         debugger;
