@@ -12,7 +12,7 @@
             :linkFormCode='linkFormCode'
             :rules="formRules"
             :useCustormRule="useCustormRule"
-            :formModel="formModel"
+            :formModel="previewFormModel"
             :formModelCn='formModelCn'
             :formModelCnFlag='formModelCnFlag'
             :fdFormItems="fdFormItems"
@@ -138,6 +138,15 @@
           debugger;
           console.log('set rule', val)
           this.rules = val;
+        }
+      },
+      previewFormModel:{
+        get(){
+          return this.formModel;
+        },
+        set(val){
+          console.log('set formModel', val)
+          this.formModel = val;
         }
       }
     },
@@ -285,6 +294,16 @@
           this.formRules[formItemCode].push(addRule);
           this.formRules = JSON.parse(JSON.stringify(this.formRules))
           // this.formRules = {aa: 11}
+        }
+      },
+      setFormModel(formCode, formItemCode, newVal) {
+        let currentFormCode = this.fdFormData.code;
+        if(formCode === currentFormCode) {
+          this.formModel[formItemCode] = newVal;
+          this.formModel = JSON.parse(JSON.stringify(this.formModel))
+        }
+        else {
+
         }
       },
       beforeSubmit(){

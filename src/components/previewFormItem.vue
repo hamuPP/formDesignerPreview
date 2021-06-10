@@ -702,19 +702,42 @@
         @blur="inputBlurHand"
       ></el-input>
 
-      <!--   业务公共字段-操作人当前角色     -->
-      <el-input
-        v-else-if="data.type === 'operatorRole'"
-        :ref="data.ref"
-        v-model="formModel[data.code]"
-        :disabled="data.disabled"
-        :readonly="data.readonly"
-        :clearable="data.clearable"
-        @click.native="inputClickHand"
-        @change="inputChangeHand"
-        @focus="inputFocusHand"
-        @blur="inputBlurHand"
-      ></el-input>
+      <!--   业务公共字段-操作人当前角色  （有input和select两种）   -->
+      <template v-else-if="data.type === 'operatorRole'">
+        <el-select
+            v-if="data.showType === 'select'"
+            :ref="data.ref"
+            v-model="formModel[data.code]"
+            :disabled="data.disabled"
+            :readonly="data.readonly"
+            :clearable="data.clearable"
+            @change="selectChangeHand"
+            @click.native="inputClickHand"
+            @focus="inputFocusHand"
+            @blur="inputBlurHand"
+        >
+          <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+          ></el-option>
+        </el-select>
+
+        <el-input
+            v-else
+            :ref="data.ref"
+            v-model="formModel[data.code]"
+            :disabled="data.disabled"
+            :readonly="data.readonly"
+            :clearable="data.clearable"
+            @click.native="inputClickHand"
+            @change="inputChangeHand"
+            @focus="inputFocusHand"
+            @blur="inputBlurHand"
+        ></el-input>
+      </template>
+
       <!--   业务公共字段-操作时间     -->
       <el-date-picker
         v-else-if="data.type === 'operateTime'"
@@ -2637,17 +2660,9 @@ export default {
         );
       }
     },
-    inputClickHand() {
-      debugger;
-      let val =
-        this.data.type === "button"
-          ? this.data.defaultValue
-          : this.formModel[this.data.code];
-      let args = {
-        formItem: this.data,
-        value: val,
-        F: this.componentFormContainer,
-      };
+    inputClickHand () {
+      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+      let args = {formItem: this.data, value: val, F: this.componentFormContainer};
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.click) {
         let codeString = this.data.click.value;
@@ -2674,22 +2689,16 @@ export default {
       this.componentFormContainer.$emit("formItemClick", args);
     },
     inputChangeHand() {
-      let val =
-        this.data.type === "button"
-          ? this.data.defaultValue
-          : this.formModel[this.data.code];
-      let args = {
-        formItem: this.data,
-        value: val,
-        F: this.componentFormContainer,
-      };
+      debugger;
+      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+      let args = {formItem: this.data, value: val, F:this.componentFormContainer};
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.change) {
         let codeString = this.data.change.value;
         let behavior = this.data.change.behavior;
         if (codeString) {
           try {
-            let fnc = new Function(this.data.change);
+            let fnc = new Function(codeString);
             fnc(this.componentFormContainer, val);
           } catch (e) {
             // throw e;
@@ -2716,7 +2725,7 @@ export default {
         let behavior = this.data.focus.behavior;
         if (codeString) {
           try {
-            let fnc = new Function(this.data.focus);
+            let fnc = new Function(codeString);
             fnc(this.formModel[this.data.code]);
           } catch (e) {
             // throw e;
@@ -2745,7 +2754,7 @@ export default {
         let behavior = this.data.blur.behavior;
         if (codeString) {
           try {
-            let fnc = new Function(this.data.blur);
+            let fnc = new Function(codeString);
             fnc(this.formModel[this.data.code]);
           } catch (e) {
             // throw e;
