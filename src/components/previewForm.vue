@@ -32,6 +32,8 @@
                   ref="fdFormItem"
                   :view="view"
                   :formModel="formModel"
+                  :formModelCn='formModelCn'
+                  :formModelCnFlag='formModelCnFlag'
                   :data="cItem"
                   :formCode="formCode"
                   :boId="id"
@@ -39,6 +41,7 @@
                   :linkFormCode='linkFormCode'
                   :labelWidth="fdFormData.labelWidth"
                   :lineMarginBottom="fdFormData.lineMarginBottom"
+                   :isHistory='isHistory'
                 ></previewFormItem>
               </el-col>
             </el-row>
@@ -76,6 +79,8 @@
                       ref="fdFormItem"
                       :view="view"
                       :formModel="formModel"
+                      :formModelCn='formModelCn'
+                      :formModelCnFlag='formModelCnFlag'
                       :data="cItem"
                       :formCode="formCode"
                       :boId="id"
@@ -83,6 +88,7 @@
                       :linkFormCode='linkFormCode'
                       :labelWidth="fdFormData.labelWidth"
                       :lineMarginBottom="fdFormData.lineMarginBottom"
+                       :isHistory='isHistory'
                     ></previewFormItem>
                   </el-col>
                 </el-row>
@@ -119,12 +125,15 @@
           ref="fdFormItem"
           :view="view"
           :formModel="formModel"
+          :formModelCn='formModelCn'
+          :formModelCnFlag='formModelCnFlag'
           :data="item"
           :formCode="formCode"
           :boId="id"
           :version="version"
           :linkFormCode='linkFormCode'
           :labelWidth="fdFormData.labelWidth"
+           :isHistory='isHistory'
           :lineMarginBottom="fdFormData.lineMarginBottom"
         ></previewFormItem>
         <!--   非分组的表单项  --end--   -->
@@ -168,6 +177,11 @@ export default {
       type: [Number, String],
       default: null,
     },
+        //用于流转信息隐藏附件上传
+    isHistory:{
+      type:String,
+      default:''
+    },
     //link表单的code
     linkFormCode:{
        type: [Number, String],
@@ -205,6 +219,14 @@ export default {
       default() {
         return [];
       },
+    },
+     formModelCn:{
+        type:Object,
+        default:()=>{}
+      },
+    formModelCnFlag:{
+      type:Boolean,
+      default:false
     },
     fdFormData: {
       type: Object,

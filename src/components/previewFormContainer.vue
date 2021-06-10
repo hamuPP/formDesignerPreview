@@ -13,8 +13,12 @@
             :rules="formRules"
             :useCustormRule="useCustormRule"
             :formModel="previewFormModel"
+            :formModelCn='formModelCn'
+            :formModelCnFlag='formModelCnFlag'
             :fdFormItems="fdFormItems"
             :fdFormData="fdFormData"
+            :isHistory='isHistory'
+
     >
     </previewForm>
 
@@ -65,6 +69,11 @@
        type: [Number, String],
       default: null,
     },
+    //用于流转信息隐藏附件上传
+    isHistory:{
+      type:String,
+      default:''
+    },
       rules: {
         type: Object,
         default () {
@@ -76,6 +85,14 @@
         default () {
           return {}
         }
+      },
+      formModelCn:{
+        type:Object,
+        default:()=>{}
+      },
+      formModelCnFlag:{
+        type:Boolean,
+        default:false
       },
       fdFormItems: {
         type: Array,
