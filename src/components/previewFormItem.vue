@@ -1790,7 +1790,6 @@ export default {
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {
       const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
-        console.log(FD_FORM_ITEM_LIST,'FD_FORM_ITEM_LIST');
       // 检查当前表单中的所有表单项的前置关联查询参数
       for (let i = 0, len = FD_FORM_ITEM_LIST.length; i < len; i++) {
         let formItem = FD_FORM_ITEM_LIST[i];
