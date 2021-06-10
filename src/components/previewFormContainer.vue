@@ -10,7 +10,7 @@
             :id="id"
             :version='version'
             :linkFormCode='linkFormCode'
-            :rules="rules"
+            :rules="formRules"
             :useCustormRule="useCustormRule"
             :formModel="formModel"
             :fdFormItems="fdFormItems"
@@ -111,6 +111,19 @@
         default: 0
       },
     },
+    computed: {
+      formRules: {
+        get () {
+          debugger;
+          return this.rules
+        },
+        set(val){
+          debugger;
+          console.log('set rule', val)
+          this.rules = val;
+        }
+      }
+    },
     data () {
       return {
         searchParamObj: {}// 浏览器查询参数
@@ -187,18 +200,76 @@
       getFormItemsIns () {
         return this.$refs.form.$refs.fdFormItem;
       },
-      getFormItemsByCode(code){
-        let all = this.$refs.form.$refs.fdFormItem;
+
+      /**
+       * 根据code找到表单字段
+       * @param code 字段的code
+       * @param formCode 表单的code，若无，则默认是当前页面上所有表单的
+       * @returns {*[]}
+       */
+      getFormItemsByCode(code, formCode){
+        let allForm = window.$fdForm;
         let resultList = [];
-        for (let i = 0,len = all.length;i<len;i++){
-          let child = all[i];
-          if (child && child.data && child.data.code === code){
-            resultList.push(child);
+
+        debugger;
+        for(let key in allForm){
+          let form = allForm[key];
+          if((formCode && form.formCode === formCode) || !formCode){
+            let allItems = form.$refs.fdFormItem;
+            for (let i = 0,len = allItems.length;i < len;i++){
+              let child = allItems[i];
+              if (child && child.data && child.data.code === code){
+                resultList.push(child);
+              }
+            }
           }
         }
         return resultList;
       },
 
+      getFormByCode(code){
+        let result = null;
+        let all = window.$fdForm;
+        if(all && all.constructor === Object && all[code]){
+          result = all[code].$refs.fdForm;
+        }
+        return result;
+      },
+      getAllForms(){
+        let result = [];
+        let all = window.$fdForm;
+        if(all && all.constructor === Object){
+          for(let key in all){
+            result.push(all[key].$refs.fdForm)
+          }
+        }
+        return result;
+      },
+      /**
+       * 添加rules
+       * @param formCode 表单code
+       * @param formItemCode 字段code
+       * @param addRule {Object} 将要新加入的规则
+       */
+      setFormRule(formCode, formItemCode, addRule){
+        console.log(111);
+        debugger;
+        let currentFormCode = this.fdFormData.code;
+        console.log(222);
+
+        if(formCode === currentFormCode){
+          if(!this.formRules[formItemCode]){
+            console.log(333);
+            this.formRules[formItemCode] = [];
+          }
+          console.log(444, this.formRules);
+
+          debugger;
+          this.formRules[formItemCode].push(addRule);
+          this.formRules = JSON.parse(JSON.stringify(this.formRules))
+          // this.formRules = {aa: 11}
+        }
+      },
       beforeSubmit(){
         if (this.fdFormData.beforeSubmit){
           try {
