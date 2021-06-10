@@ -32,6 +32,7 @@
                   ref="fdFormItem"
                   :view="view"
                   :formModel="formModel"
+                  :formModelCn='formModelCn'
                   :data="cItem"
                   :formCode="formCode"
                   :boId="id"
@@ -77,6 +78,7 @@
                       ref="fdFormItem"
                       :view="view"
                       :formModel="formModel"
+                      :formModelCn='formModelCn'
                       :data="cItem"
                       :formCode="formCode"
                       :boId="id"
@@ -121,6 +123,7 @@
           ref="fdFormItem"
           :view="view"
           :formModel="formModel"
+          :formModelCn='formModelCn'
           :data="item"
           :formCode="formCode"
           :boId="id"
@@ -214,6 +217,10 @@ export default {
         return [];
       },
     },
+     formModelCn:{
+        type:Object,
+        default:()=>{}
+      },
     fdFormData: {
       type: Object,
       default() {

@@ -13,6 +13,7 @@
             :rules="rules"
             :useCustormRule="useCustormRule"
             :formModel="formModel"
+            :formModelCn='formModelCn'
             :fdFormItems="fdFormItems"
             :fdFormData="fdFormData"
             :isHistory='isHistory'
@@ -82,6 +83,10 @@
         default () {
           return {}
         }
+      },
+      formModelCn:{
+        type:Object,
+        default:()=>{}
       },
       fdFormItems: {
         type: Array,

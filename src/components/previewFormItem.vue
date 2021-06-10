@@ -8,7 +8,7 @@
           uploadHeight: data.type === 'uploadNewFile'
        }"
   >
-<!--    <div style="color: red;">{{formModel}}</div>-->
+    <!--    <div style="color: red;">{{formModel}}</div>-->
     <!--  区分组件类型：type：目前有table\input两种，后续应该还有select等。注意table不是输入型组件,并且table没有label,所以单独提出来  -->
     <template v-if="data.type === 'table'">
       <div
@@ -281,7 +281,7 @@
       <h3 style="margin:6px 0;color:black">{{data.label}}</h3>
       <div style="min-height:200px;border:1px solid #b9c2dd" v-html="data.htmlValue"></div>
     </template>
-  <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
+    <!--  (预览模式不要附件，编辑模式有附件，但附件的样式是特殊的)  -->
     <!-- //TODO 这个属性有变化，还没有改这里   -->
     <el-form-item
       v-else-if="data.type !== 'uploadNewFile' || (data.type === 'uploadNewFile' && !view)"
@@ -537,7 +537,10 @@
       </div>
 
       <!--   上传附件   -->
-      <div v-else-if="data.type === 'uploadFile'&&isHistory!='isHistory'" class="fd-formItem__upload-file">
+      <div
+        v-else-if="data.type === 'uploadFile'&&isHistory!='isHistory'"
+        class="fd-formItem__upload-file"
+      >
         <el-button type="primary" size="mini" @click="upFile" class="file-btn">上传</el-button>
         <a href="javascript:;" class="file-btn open-file-btn">
           浏览
@@ -559,50 +562,49 @@
           </li>
         </ul>
       </div>
-      <template   v-else-if="data.type === 'uploadNewFile'">
-      <!-- 新附件上传 -->
-      <el-upload
-        v-if="isHistory!='isHistory'"
-        class="upload-demo"
-        action="string"
-        ref="newFile"
-        :show-file-list="false"
-        :auto-upload="true"
-        :http-request="uploadNewFile"
-        :disabled="data.disabled"
-        :multiple="data.isMultiple"
-      >
-        <el-button size="small" type="primary">点击上传</el-button>
-        <div
-          class="el-upload__tip"
-          @click.stop="()=>{}"
-        >只能上传{{data.upLoadFileType.join("、")}}文件，且不超过{{data.fileUploadSize}}KB</div>
-        <ul class="el-upload-list el-upload-list--text" @click.stop="()=>{}">
-          <li
-            class="el-upload-list__item is-ready"
-            v-for="(fileItem, fileIndex) in fileList"
-            :key="fileIndex"
-          >
-            <a
-              class="el-upload-list__item-name"
-              :href="getDownURL(fileItem, data.disabled)"
-              download
-              title="下载"
+      <template v-else-if="data.type === 'uploadNewFile'">
+        <!-- 新附件上传 -->
+        <el-upload
+          v-if="isHistory!='isHistory'"
+          class="upload-demo"
+          action="string"
+          ref="newFile"
+          :show-file-list="false"
+          :auto-upload="true"
+          :http-request="uploadNewFile"
+          :disabled="data.disabled"
+          :multiple="data.isMultiple"
+        >
+          <el-button size="small" type="primary">点击上传</el-button>
+          <div
+            class="el-upload__tip"
+            @click.stop="()=>{}"
+          >只能上传{{data.upLoadFileType.join("、")}}文件，且不超过{{data.fileUploadSize}}KB</div>
+          <ul class="el-upload-list el-upload-list--text" @click.stop="()=>{}">
+            <li
+              class="el-upload-list__item is-ready"
+              v-for="(fileItem, fileIndex) in fileList"
+              :key="fileIndex"
             >
-              <i class="el-icon-document"></i>
-              {{fileItem.name}}
-            </a>
-            <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-delete"
-              @click.stop="deleteFile(fileItem)"
-            ></el-button>
-          </li>
-        </ul>
-      </el-upload>
+              <a
+                class="el-upload-list__item-name"
+                :href="getDownURL(fileItem, data.disabled)"
+                download
+                title="下载"
+              >
+                <i class="el-icon-document"></i>
+                {{fileItem.name}}
+              </a>
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-delete"
+                @click.stop="deleteFile(fileItem)"
+              ></el-button>
+            </li>
+          </ul>
+        </el-upload>
       </template>
-
 
       <!-- 计数器 -->
       <el-input-number
@@ -866,24 +868,28 @@ export default {
         return {};
       },
     },
+    formModelCn: {
+      type: Object,
+      default: () => {},
+    },
     data: {
       type: Object,
       default() {
         return {};
-      }
+      },
     },
     labelWidth: {
       type: [Number, String],
-      default: 0
+      default: 0,
     },
     version: {
       type: [Number, String],
-      default: ""
+      default: "",
     },
     //用于流转信息隐藏附件上传
-    isHistory:{
-      type:String,
-      default:''
+    isHistory: {
+      type: String,
+      default: "",
     },
     // 表单的id
     boId: {
@@ -913,7 +919,7 @@ export default {
     componentFormContainer() {
       let parent = this.$parent;
       let parentName = parent.$options.name;
-      while (parentName !== 'previewFormContainer') {
+      while (parentName !== "previewFormContainer") {
         parent = parent.$parent;
         parentName = parent.$options.name;
       }
@@ -1035,20 +1041,16 @@ export default {
   },
   created() {
     // 检查如果有码表配置的，查询其数据
-    let {
-      type,
-      optionSetting,
-      validationSetting,
-      formSetting_children,
-    } = this.data;
+    let { type, optionSetting, validationSetting, formSetting_children } =
+      this.data;
     if (optionSetting === "static") {
       let newList = [];
-      this.data.optionSetting_tabContent.forEach(it =>{
-        if(it.label && it.label.value) {
+      this.data.optionSetting_tabContent.forEach((it) => {
+        if (it.label && it.label.value) {
           newList.push({
             label: it.label.value,
-            value: it.value.value
-          })
+            value: it.value.value,
+          });
         }
       });
       this.options = newList;
@@ -1153,14 +1155,14 @@ export default {
       // eslint-disable-next-line camelcase
       if (this.data.type == "table" && this.data.isCreateDataBaseTable) {
       } else if (this.data.type != "treeBox") {
-         const optionSetting_tabContent = JSON.parse(
-            JSON.stringify(this.data.optionSetting_tabContent)
-          );
+        const optionSetting_tabContent = JSON.parse(
+          JSON.stringify(this.data.optionSetting_tabContent)
+        );
         if (
           optionSetting_tabContent &&
           optionSetting_tabContent.relationSettings &&
           optionSetting_tabContent.relationSettings.values &&
-          !isObjEmpty(optionSetting_tabContent.relationSettings.values)&&
+          !isObjEmpty(optionSetting_tabContent.relationSettings.values) &&
           !this.formModel[this.data.code]
         ) {
           this.getRelationQueryParams(optionSetting_tabContent);
@@ -1180,14 +1182,19 @@ export default {
             if (!it.paramName) {
               break;
             }
-            if(!it.defaultValue&& optionSetting_tabContent &&
-                optionSetting_tabContent.relationSettings &&
-                optionSetting_tabContent.relationSettings.values &&
-                !isObjEmpty(optionSetting_tabContent.relationSettings.values)&&
-                this.formModel[this.data.code]
-              ){
-                this.getRelationQueryParams(optionSetting_tabContent);
-                it.defaultValue =this.formModel[optionSetting_tabContent.relationSettings.values.parentValue[1]]
+            if (
+              !it.defaultValue &&
+              optionSetting_tabContent &&
+              optionSetting_tabContent.relationSettings &&
+              optionSetting_tabContent.relationSettings.values &&
+              !isObjEmpty(optionSetting_tabContent.relationSettings.values) &&
+              this.formModel[this.data.code]
+            ) {
+              this.getRelationQueryParams(optionSetting_tabContent);
+              it.defaultValue =
+                this.formModel[
+                  optionSetting_tabContent.relationSettings.values.parentValue[1]
+                ];
             }
             if (it.paramType === "params") {
               params[it.paramName] = it.defaultValue;
@@ -1197,14 +1204,15 @@ export default {
               headers[it.paramName] = it.defaultValue;
             }
           }
-        optionSetting_tabContent.url && this.getRemoteUrlDatas({
-          url: optionSetting_tabContent.url,
-          method: optionSetting_tabContent.method,
-          data: data,
-          params: params,
-          headers: headers,
-          successCallback: optionSetting_tabContent.successCallback,
-        });
+          optionSetting_tabContent.url &&
+            this.getRemoteUrlDatas({
+              url: optionSetting_tabContent.url,
+              method: optionSetting_tabContent.method,
+              data: data,
+              params: params,
+              headers: headers,
+              successCallback: optionSetting_tabContent.successCallback,
+            });
         }
       }
     }
@@ -1518,12 +1526,12 @@ export default {
           }
         }
       }
-      if(!this.linkFormCode) {
-        queryData.typeId='main'
-      }else{
-        queryData.typeId=sessionStorage.getItem('nodeCode')
-        queryData.attribute4=sessionStorage.getItem('nextNodeCode')
-      };
+      if (!this.linkFormCode) {
+        queryData.typeId = "main";
+      } else {
+        queryData.typeId = sessionStorage.getItem("nodeCode");
+        queryData.attribute4 = sessionStorage.getItem("nextNodeCode");
+      }
       getUploadedFileList(queryData).then((res) => {
         if (res && res.data && res.data.code == "0000") {
           this.fileList = res.data.data.data;
@@ -1661,15 +1669,15 @@ export default {
               ) {
                 this.options = res.data.data.data.map((it) => {
                   return {
-                    label: it.lable||it.name,
-                    value: it.value||it.id,
+                    label: it.lable || it.name,
+                    value: it.value || it.id,
                   };
                 });
               } else {
                 this.options = res.data.data.map((it) => {
                   return {
-                    label: it.lable||it.name,
-                    value: it.value||it.id,
+                    label: it.lable || it.name,
+                    value: it.value || it.id,
                   };
                 });
               }
@@ -1708,7 +1716,7 @@ export default {
       }
       if (flg) {
         const optionSetting_tabContent = this.data.optionSetting_tabContent;
-        if(this.data.optionSetting=='remoteUrl2'){
+        if (this.data.optionSetting == "remoteUrl2") {
           let params = {};
           let data = {};
           let headers = {};
@@ -1723,11 +1731,11 @@ export default {
               break;
             }
             if (it.paramType === "params") {
-              params[it.paramName] = it.defaultValue||val;
+              params[it.paramName] = it.defaultValue || val;
             } else if (it.paramType === "body") {
-              data[it.paramName] = it.defaultValue||val;
+              data[it.paramName] = it.defaultValue || val;
             } else if (it.paramType === "header") {
-              headers[it.paramName] = it.defaultValue||val;
+              headers[it.paramName] = it.defaultValue || val;
             }
           }
 
@@ -1738,22 +1746,21 @@ export default {
             params: params,
             headers: headers,
             successCallback: optionSetting_tabContent.successCallback,
-             needClearFormValue: true
+            needClearFormValue: true,
           });
-        }else if(this.data.optionSetting=='remoteDict'){
-        this.getRemoteUrlDatas({
-          url: optionSetting_tabContent.remoteUrl
-            ? optionSetting_tabContent.remoteUrl.value
-            : "/admin/sysdict/list", // 以现在的情况，如果不是，即是字典表查询
-          method: optionSetting_tabContent.remoteUrl
-            ? optionSetting_tabContent.remoteMethods.value
-            : "get",
-          params: this.relationPreQueryParam,
-          data: this.relationPreQueryParam,
-          needClearFormValue: true, // 是否需要清空当前表单项的绑定值
-        });
+        } else if (this.data.optionSetting == "remoteDict") {
+          this.getRemoteUrlDatas({
+            url: optionSetting_tabContent.remoteUrl
+              ? optionSetting_tabContent.remoteUrl.value
+              : "/admin/sysdict/list", // 以现在的情况，如果不是，即是字典表查询
+            method: optionSetting_tabContent.remoteUrl
+              ? optionSetting_tabContent.remoteMethods.value
+              : "get",
+            params: this.relationPreQueryParam,
+            data: this.relationPreQueryParam,
+            needClearFormValue: true, // 是否需要清空当前表单项的绑定值
+          });
         }
-
       }
     },
 
@@ -1774,8 +1781,13 @@ export default {
     },
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {
+      this.options.forEach((item) => {
+        if (item.value == val) {
+          this.formModelCn[this.data.code] = item.label;
+        }
+      });
+
       const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
-        console.log(FD_FORM_ITEM_LIST,'FD_FORM_ITEM_LIST');
       // 检查当前表单中的所有表单项的前置关联查询参数
       for (let i = 0, len = FD_FORM_ITEM_LIST.length; i < len; i++) {
         let formItem = FD_FORM_ITEM_LIST[i];
@@ -1785,11 +1797,9 @@ export default {
             formItem.relationPreQueryParamKeys[j] &&
             formItem.relationPreQueryParamKeys[j] === this.data.code
           ) {
-            console.log(formItem,'formItem');
             formItem.relationPreQueryParam[j] = val;
             // 假如该下拉框有选中值，再检查是否关联参数都齐了
             if (val) {
-              console.log(val,'val');
               formItem.checkRelationPreQueryParam(val);
             }
             // 假如该下拉框没有选中值，（比如：点了清空按钮，或者选了没有值的选项），则清掉被关联的值和下拉数据
@@ -2237,11 +2247,11 @@ export default {
         let param = new FormData();
         param.append("files", params.file);
         param.append("access_token", sessionStorage.getItem("access_token"));
-        if(!this.linkFormCode) {
-          param.append('typeId', 'main')
-        }else{
-           param.append('typeId', sessionStorage.getItem('nodeCode'))
-        };
+        if (!this.linkFormCode) {
+          param.append("typeId", "main");
+        } else {
+          param.append("typeId", sessionStorage.getItem("nodeCode"));
+        }
         // 用户自定义添加的参数,这是例如在引用页面，用户可能需要再添加一些参数
         if (this.USER_UPLOAD_PARAM) {
           for (let key in this.USER_UPLOAD_PARAM) {
@@ -2613,15 +2623,22 @@ export default {
         );
       }
     },
-    inputClickHand () {
+    inputClickHand() {
       debugger;
-      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
-      let args = {formItem: this.data, value: val, F: this.componentFormContainer};
+      let val =
+        this.data.type === "button"
+          ? this.data.defaultValue
+          : this.formModel[this.data.code];
+      let args = {
+        formItem: this.data,
+        value: val,
+        F: this.componentFormContainer,
+      };
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.click) {
         let codeString = this.data.click.value;
         let behavior = this.data.click.behavior;
-        if(codeString){
+        if (codeString) {
           try {
             let fnc = new Function(codeString);
             fnc(this.componentFormContainer, val);
@@ -2632,21 +2649,31 @@ export default {
         }
 
         // todo 打开弹窗的还没有做
-        if(behavior === 'openDialog'){
-          this.componentFormContainer.$refs.commonDialog.showDialog(this.data.click, this.data)
+        if (behavior === "openDialog") {
+          this.componentFormContainer.$refs.commonDialog.showDialog(
+            this.data.click,
+            this.data
+          );
         }
       }
       // 不论是否有自定义函数，这个都会触发emit,以便使用者可以在回调函数里进行其他行为
-      this.componentFormContainer.$emit('formItemClick', args);
+      this.componentFormContainer.$emit("formItemClick", args);
     },
     inputChangeHand() {
-      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
-      let args = {formItem: this.data, value: val, F:this.componentFormContainer};
+      let val =
+        this.data.type === "button"
+          ? this.data.defaultValue
+          : this.formModel[this.data.code];
+      let args = {
+        formItem: this.data,
+        value: val,
+        F: this.componentFormContainer,
+      };
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.change) {
         let codeString = this.data.change.value;
         let behavior = this.data.change.behavior;
-        if(codeString) {
+        if (codeString) {
           try {
             let fnc = new Function(this.data.change);
             fnc(this.componentFormContainer, val);
@@ -2657,44 +2684,52 @@ export default {
           }
         }
         // todo 打开弹窗的还没有做
-        if(behavior === 'openDialog'){
-
+        if (behavior === "openDialog") {
         }
       }
-      this.componentFormContainer.$emit('formItemChange', args);
+      this.componentFormContainer.$emit("formItemChange", args);
     },
     inputFocusHand() {
-      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
+      let val =
+        this.data.type === "button"
+          ? this.data.defaultValue
+          : this.formModel[this.data.code];
 
-      let args = {formItem: this.data, value: val};
+      let args = { formItem: this.data, value: val };
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.focus) {
         let codeString = this.data.focus.value;
         let behavior = this.data.focus.behavior;
-        if(codeString) {
+        if (codeString) {
           try {
             let fnc = new Function(this.data.focus);
             fnc(this.formModel[this.data.code]);
           } catch (e) {
             // throw e;
-            args = {error: e, formItem:this.data, value: val};
+            args = { error: e, formItem: this.data, value: val };
           }
         }
         // todo 打开弹窗的还没有做
-        if(behavior === 'openDialog'){
-
+        if (behavior === "openDialog") {
         }
       }
-      this.componentFormContainer.$emit('formItemFocus', args);
+      this.componentFormContainer.$emit("formItemFocus", args);
     },
     inputBlurHand() {
-      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
-      let args = {formItem: this.data, value: val, F: this.componentFormContainer};
+      let val =
+        this.data.type === "button"
+          ? this.data.defaultValue
+          : this.formModel[this.data.code];
+      let args = {
+        formItem: this.data,
+        value: val,
+        F: this.componentFormContainer,
+      };
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.blur) {
         let codeString = this.data.blur.value;
         let behavior = this.data.blur.behavior;
-        if(codeString) {
+        if (codeString) {
           try {
             let fnc = new Function(this.data.blur);
             fnc(this.formModel[this.data.code]);
@@ -2704,11 +2739,10 @@ export default {
           }
         }
         // todo 打开弹窗的还没有做
-        if(behavior === 'openDialog'){
-
+        if (behavior === "openDialog") {
         }
       }
-      this.componentFormContainer.$emit('formItemBlur', args);
+      this.componentFormContainer.$emit("formItemBlur", args);
     },
   },
 };
