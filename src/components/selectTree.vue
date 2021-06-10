@@ -24,8 +24,7 @@
         @check="check"
         :key="treeKey"
         :style="{ width: treeWidth - 28 + 'px' }"
-      >
-      </el-tree>
+      ></el-tree>
       <el-input
         class="treeInput"
         :readonly="!data.localSearchable"
@@ -35,7 +34,8 @@
         :disabled="data.disabled"
         slot="reference"
         :suffix-icon="icon"
-        ><i
+      >
+        <i
           @click="clear"
           v-if="data.clearable && data.defaultValueArr"
           slot="suffix"
@@ -46,21 +46,21 @@
   </div>
 </template>
   <script>
-    import {debounce} from 'throttle-debounce';
-    import { getTreePostAPI } from "../api/formDesigner_api";
+import { debounce } from "throttle-debounce";
+import { getTreePostAPI, getsysdictLabels } from "../api/formDesigner_api";
 export default {
   name: "selectTree",
   props: {
     // element tree的props属性，主要不要和vue的props搞混了
     treeProps: {
       type: Object,
-      default(){
+      default() {
         return {
           label: "text",
           children: "children",
           isLeaf: "leaf",
-        }
-      }
+        };
+      },
     },
     data: {
       type: Object,
@@ -70,19 +70,19 @@ export default {
     },
     nodeKey: {
       type: String,
-      default: 'id'
+      default: "id",
     },
     // 树的数据（非懒加载模式下用的）
     staticTreeData: {
       type: Array,
-      default(){
-        return []
-      }
+      default() {
+        return [];
+      },
     },
     // 是否懒加载，默认不是懒加载
     lazy: {
       type: Boolean,
-      default: false
+      default: false,
     },
     formModel: {
       type: Object,
@@ -93,15 +93,14 @@ export default {
   },
   computed: {
     shownTreeData: {
-      get(){
-        if(this.previousQuery){
+      get() {
+        if (this.previousQuery) {
           return this.filteredTreeData;
-        }
-        else{
+        } else {
           return this.staticTreeData;
         }
-      }
-    }
+      },
+    },
   },
   data() {
     return {
@@ -124,7 +123,7 @@ export default {
       flag: false,
       treeKey: 1,
       treeWidth: 0,
-      previousQuery: null,// 上传搜索的信息
+      previousQuery: null, // 上传搜索的信息
       filteredTreeData: [],
     };
   },
@@ -133,21 +132,42 @@ export default {
       this.inputChange(val);
     });
     // 如果当前是配置的码表
-    if(this.data.optionSetting === 'remote') {
+    if (this.data.optionSetting === "remote") {
       this.codeType = this.data.optionSetting_codeType;
     }
   },
   mounted() {
-    this.treeWidth = this.$el.getElementsByClassName(
-      "treeInput"
-    )[0].offsetWidth;
+    this.treeWidth =
+      this.$el.getElementsByClassName("treeInput")[0].offsetWidth;
 
     // 根据defaultValue设置默认勾选的节点
-    if(this.data.defaultValue){
-      try{
-        this.$refs.rogroupEdit.setCheckedKeys(this.data.defaultValue.split(','));
-      }catch(e){
-        console.log(e)
+    if (this.data.defaultValue && !this.formModel[this.data.code]) {
+      console.log("eeeeeeeeee");
+      try {
+        this.$refs.rogroupEdit.setCheckedKeys(
+          this.data.defaultValue.split(",")
+        );
+      } catch (e) {
+        console.log(e, "eeeeeeeeee");
+      }
+    }
+    if (this.formModel[this.data.code]) {
+      if (this.data.optionSetting === "remoteDict") {
+        let value = JSON.parse(
+          JSON.stringify(this.formModel[this.data.code])
+        ).split(",");
+        this.$refs.rogroupEdit.setCheckedKeys(value);
+        this.data.defaultValue=this.formModel[this.data.code]
+        let param = {
+          values: this.formModel[this.data.code],
+        };
+        getsysdictLabels(param)
+          .then((res) => {
+            if (res && res.data && res.data.code == "0000") {
+              this.data.defaultValueArr = Object.values(res.data.data).join();
+            }
+          })
+          .catch(() => {});
       }
     }
   },
@@ -158,9 +178,8 @@ export default {
           this.treeKey++;
           this.codeType = n.optionSetting_codeType;
         }
-        this.treeWidth = this.$el.getElementsByClassName(
-          "treeInput"
-        )[0].offsetWidth;
+        this.treeWidth =
+          this.$el.getElementsByClassName("treeInput")[0].offsetWidth;
       },
       deep: true,
     },
@@ -193,7 +212,7 @@ export default {
       }
     },
     check(data, checkedObj) {
-      let maxCount = this.data.multItemCounts || 0;// 多选时最多可选项，如果是 null 则不限制
+      let maxCount = this.data.multItemCounts || 0; // 多选时最多可选项，如果是 null 则不限制
 
       // 单选的情况
       if (!this.isCheck && this.$refs.rogroupEdit) {
@@ -203,12 +222,12 @@ export default {
       }
 
       // 多选的情况
-      if(this.isCheck && maxCount){
+      if (this.isCheck && maxCount) {
         if (checkedObj.checkedKeys.length > maxCount) {
           let _keys = checkedObj.checkedKeys;
-          for(let i = 0,len = _keys.length;i<len;i++){
-            if(_keys[i] === data.value){
-              _keys.splice(i, 1, 0)
+          for (let i = 0, len = _keys.length; i < len; i++) {
+            if (_keys[i] === data.value) {
+              _keys.splice(i, 1, 0);
             }
           }
 
@@ -231,16 +250,21 @@ export default {
         } else {
           dataList.push({
             id: item[this.nodeKey],
-            name: item[this.treeProps.label]
+            name: item[this.treeProps.label],
           });
         }
       });
       this.data.defaultValueArr = arr.join();
       this.data.defaultValue = "";
       this.formModel[this.data.code] = "";
-      dataList.forEach((item) => {
-        this.data.defaultValue += item.id + ",";
-        this.formModel[this.data.code] += item.id + ",";
+      dataList.forEach((item, index) => {
+        if (dataList.length - 1 == index) {
+          this.data.defaultValue += item.id;
+          this.formModel[this.data.code] += item.id;
+        } else {
+          this.data.defaultValue += item.id + ",";
+          this.formModel[this.data.code] += item.id + ",";
+        }
       });
     },
     clear() {
@@ -250,11 +274,11 @@ export default {
       this.data.defaultValue = "";
       this.formModel[this.data.code] = "";
     },
-    inputChange(val){
+    inputChange(val) {
       this.previousQuery = val;
       if (val) {
-        this.filteredTreeData = this.staticTreeData.filter(it =>{
-          return it[this.treeProps.label].indexOf(val) > -1
+        this.filteredTreeData = this.staticTreeData.filter((it) => {
+          return it[this.treeProps.label].indexOf(val) > -1;
         });
       } else {
         this.filteredTreeData = [];
@@ -285,8 +309,8 @@ export default {
   .el-icon-close:before {
     cursor: pointer;
   }
-.el-input__inner{
-    padding-right:45px
+  .el-input__inner {
+    padding-right: 45px;
   }
 }
 </style>

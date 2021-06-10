@@ -216,3 +216,12 @@ export function getFrameTreeDataById(url,data){
     params:data,
   })
 }
+
+// 根据字典的value获取字典值，返回map：key:字典的value，value:字典的中文值
+export function getsysdictLabels (data) {
+  return axios({
+    url: baseUrl + '/admin/sysdict/labels',
+    method: 'get',
+    params: data
+  })
+}

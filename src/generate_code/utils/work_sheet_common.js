@@ -590,7 +590,7 @@ export const getFormModel = (that, n, valueFieldKey, useInitData, tables) => {
         }
         else if(it.type === 'timePickerRange'){
           // 如果是建单人等字段
-          let _val = (useInitData & it.fieldType) ? that.formInitData[it.code]: it[valueFieldKey];
+          let _val = (useInitData && it.fieldType) ? that.formInitData[it.code]: it[valueFieldKey];
 
           obj[it.code] = _val ? (_val.constructor === String ? _val.split(',') : _val) : null;
 
