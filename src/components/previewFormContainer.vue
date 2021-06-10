@@ -115,7 +115,7 @@
       formRules: {
         get () {
           debugger;
-          return this.rules
+          return JSON.parse(JSON.stringify(this.rules));
         },
         set(val){
           debugger;
@@ -261,22 +261,27 @@
        * @param addRule {Object} 将要新加入的规则
        */
       setFormRule(formCode, formItemCode, addRule){
-        console.log(111);
-        debugger;
         let currentFormCode = this.fdFormData.code;
-        console.log(222);
 
         if(formCode === currentFormCode){
           if(!this.formRules[formItemCode]){
-            console.log(333);
             this.formRules[formItemCode] = [];
           }
-          console.log(444, this.formRules);
 
-          debugger;
           this.formRules[formItemCode].push(addRule);
           this.formRules = JSON.parse(JSON.stringify(this.formRules))
-          // this.formRules = {aa: 11}
+        }
+        // 找页面上的其他表单预览实例
+        else if(formCode){
+          let subForm = this.getFormByCode(formCode);
+          let container = subForm.$parent.$parent;
+
+          if(!container.formRules[formItemCode]){
+            container.formRules[formItemCode] = [];
+          }
+
+          container.formRules[formItemCode].push(addRule);
+          container.formRules = JSON.parse(JSON.stringify(this.formRules))
         }
       },
       setFormModel(formCode, formItemCode, newVal) {
