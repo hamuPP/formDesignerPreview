@@ -2726,7 +2726,7 @@ export default {
         if (codeString) {
           try {
             let fnc = new Function(codeString);
-            fnc(this.formModel[this.data.code]);
+            fnc(this.componentFormContainer, this.formModel[this.data.code]);
           } catch (e) {
             // throw e;
             args = { error: e, formItem: this.data, value: val };
@@ -2755,7 +2755,7 @@ export default {
         if (codeString) {
           try {
             let fnc = new Function(codeString);
-            fnc(this.formModel[this.data.code]);
+            fnc(this.componentFormContainer, this.formModel[this.data.code]);
           } catch (e) {
             // throw e;
             args.error = e;

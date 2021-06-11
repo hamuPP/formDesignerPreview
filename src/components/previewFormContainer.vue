@@ -61,9 +61,9 @@
         default: null
       },
       version: {
-      type: [Number, String],
-      default: null,
-    },
+        type: [Number, String],
+        default: null,
+      },
     //link表单的code
     linkFormCode:{
        type: [Number, String],
@@ -129,17 +129,6 @@
       },
     },
     computed: {
-      formRules: {
-        get () {
-          debugger;
-          return JSON.parse(JSON.stringify(this.rules));
-        },
-        set(val){
-          debugger;
-          console.log('set rule', val)
-          this.rules = val;
-        }
-      },
       previewFormModel:{
         get(){
           return this.formModel;
@@ -152,7 +141,8 @@
     },
     data () {
       return {
-        searchParamObj: {}// 浏览器查询参数
+        searchParamObj: {},// 浏览器查询参数
+        formRules:{},// 表单的规则
       }
     },
     watch: {
@@ -166,11 +156,16 @@
             this.$refs.anchor.reset();
           }
         });
+      },
+      rules(n){
+        this.formRules = JSON.parse(JSON.stringify(n));
       }
     },
     created () {
       // 检查浏览器参数
       let searchParamObj = this.searchParamObj = getUrlQueryParams();
+      // 根据传入的rules生成表单的初始rules
+      this.formRules = JSON.parse(JSON.stringify(this.rules));
     },
     mounted () {
       const that = this;
@@ -296,19 +291,36 @@
           if(!container.formRules[formItemCode]){
             container.formRules[formItemCode] = [];
           }
-
           container.formRules[formItemCode].push(addRule);
-          container.formRules = JSON.parse(JSON.stringify(this.formRules))
+          container.formRules = JSON.parse(JSON.stringify(container.formRules))
         }
       },
-      setFormModel(formCode, formItemCode, newVal) {
+      setFormItemValue(formCode, formItemCode, newVal) {
         let currentFormCode = this.fdFormData.code;
         if(formCode === currentFormCode) {
           this.formModel[formItemCode] = newVal;
           this.formModel = JSON.parse(JSON.stringify(this.formModel))
         }
-        else {
+        else if(formCode){
+          // 找页面上的其他表单预览实例
+          let subForm = this.getFormByCode(formCode);
+          let container = subForm.$parent.$parent;
 
+          container.$set(container.formModel, formItemCode, newVal)
+        }
+      },
+      getFormItemValue(formCode, formItemCode) {
+        debugger;
+        let currentFormCode = this.fdFormData.code;
+        if(formCode === currentFormCode) {
+          return this.formModel[formItemCode];
+        }
+        else if(formCode){
+          debugger;
+          // 找页面上的其他表单预览实例
+          let subForm = this.getFormByCode(formCode);
+          let container = subForm.$parent.$parent;
+          return container.formModel[formItemCode];
         }
       },
       beforeSubmit(){
