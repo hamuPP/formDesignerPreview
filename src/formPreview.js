@@ -2,7 +2,8 @@
  * Created by tangyue on 20/11/6
  */
 import './plugins/element.js'
-
+import axios from './api/axios'
+window.axios = axios;
 // import toolboxButtons from './components/ToolboxButtons'
 // import CusMsgbox from './components/cus_msgbox/index.js'
 // import CusButton from './components/CusButton/index.vue'
