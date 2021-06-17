@@ -257,14 +257,15 @@ export default {
     }
     window.$fdForm[this.formCode] = this;
 
-    this.$bus.$on("selectChange", (data) => {
+    debugger; // this.$parent 是否为container
+    this.$bus.$on("selectChange",(data) => {
       this.selectChange(data);
     });
     // 执行自定义初始化方法
     if (this.fdFormData.init){
       try {
         let fnc = new Function(this.fdFormData.init);
-        fnc(this.formModel);
+        fnc(this.$parent, this.formModel);
       } catch (e) {
         throw e;
       }

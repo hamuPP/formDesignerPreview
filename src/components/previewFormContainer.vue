@@ -326,7 +326,7 @@
       beforeSubmit(){
         if (this.fdFormData.beforeSubmit){
           try {
-            let fnc = new Function(this.fdFormData.beforeSubmit);
+            let fnc = new Function(this, this.fdFormData.beforeSubmit);
             fnc(this.formModel);
           } catch (e) {
             throw e;
@@ -336,7 +336,7 @@
       afterSubmit(){
         if (this.fdFormData.afterSubmit){
           try {
-            let fnc = new Function(this.fdFormData.afterSubmit);
+            let fnc = new Function(this, this.fdFormData.afterSubmit);
             fnc(this.formModel);
           } catch (e) {
             throw e;
