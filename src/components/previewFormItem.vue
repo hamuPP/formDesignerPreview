@@ -705,36 +705,36 @@
       <!--   业务公共字段-操作人当前角色  （有input和select两种）   -->
       <template v-else-if="data.type === 'operatorRole'">
         <el-select
-            v-if="data.showType === 'select'"
-            :ref="data.ref"
-            v-model="formModel[data.code]"
-            :disabled="data.disabled"
-            :readonly="data.readonly"
-            :clearable="data.clearable"
-            @change="selectChangeHand"
-            @click.native="inputClickHand"
-            @focus="inputFocusHand"
-            @blur="inputBlurHand"
+          v-if="data.showType === 'select'"
+          :ref="data.ref"
+          v-model="formModel[data.code]"
+          :disabled="data.disabled"
+          :readonly="data.readonly"
+          :clearable="data.clearable"
+          @change="selectChangeHand"
+          @click.native="inputClickHand"
+          @focus="inputFocusHand"
+          @blur="inputBlurHand"
         >
           <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
           ></el-option>
         </el-select>
 
         <el-input
-            v-else
-            :ref="data.ref"
-            v-model="formModel[data.code]"
-            :disabled="data.disabled"
-            :readonly="data.readonly"
-            :clearable="data.clearable"
-            @click.native="inputClickHand"
-            @change="inputChangeHand"
-            @focus="inputFocusHand"
-            @blur="inputBlurHand"
+          v-else
+          :ref="data.ref"
+          v-model="formModel[data.code]"
+          :disabled="data.disabled"
+          :readonly="data.readonly"
+          :clearable="data.clearable"
+          @click.native="inputClickHand"
+          @change="inputChangeHand"
+          @focus="inputFocusHand"
+          @blur="inputBlurHand"
         ></el-input>
       </template>
 
@@ -895,9 +895,9 @@ export default {
       type: Object,
       default: () => {},
     },
-    formModelCnFlag:{
-      type:Boolean,
-      default:false
+    formModelCnFlag: {
+      type: Boolean,
+      default: false,
     },
     data: {
       type: Object,
@@ -988,15 +988,15 @@ export default {
       return obj;
     },
     itemRules: {
-      get(){
-        let rule = this.componentRootForm.useCustormRule? null: this.rules
+      get() {
+        let rule = this.componentRootForm.useCustormRule ? null : this.rules;
 
         return rule;
       },
-      set(val){
-        console.log('set', val)
-      }
-    }
+      set(val) {
+        console.log("set", val);
+      },
+    },
   },
   watch: {
     // relationPreQueryParam(n, o){
@@ -1817,12 +1817,24 @@ export default {
     },
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {
-      if(this.formModelCnFlag){
-      this.options.forEach((item) => {
-        if (item.value == val) {
-          this.formModelCn[this.data.code] = item.label;
+      if (this.formModelCnFlag) {
+        if (this.data&&this.data.multiple == true) {
+          let obj = [];
+          val.forEach((it) => {
+            this.options.forEach((item) => {
+              if (it == item.value) {
+                obj.push(item.label);
+              }
+            });
+          });
+          this.formModelCn[this.data.code] = obj.join();
+        } else {
+          this.options.forEach((item) => {
+            if (item.value == val) {
+              this.formModelCn[this.data.code] = item.label;
+            }
+          });
         }
-      });
       }
       const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
       // 检查当前表单中的所有表单项的前置关联查询参数
@@ -2660,9 +2672,16 @@ export default {
         );
       }
     },
-    inputClickHand () {
-      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
-      let args = {formItem: this.data, value: val, F: this.componentFormContainer};
+    inputClickHand() {
+      let val =
+        this.data.type === "button"
+          ? this.data.defaultValue
+          : this.formModel[this.data.code];
+      let args = {
+        formItem: this.data,
+        value: val,
+        F: this.componentFormContainer,
+      };
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.click) {
         let codeString = this.data.click.value;
@@ -2688,10 +2707,17 @@ export default {
       // 不论是否有自定义函数，这个都会触发emit,以便使用者可以在回调函数里进行其他行为
       this.componentFormContainer.$emit("formItemClick", args);
     },
-    inputChangeHand() {
+    inputChangeHand(value) {
       debugger;
-      let val = this.data.type === 'button'? this.data.defaultValue : this.formModel[this.data.code];
-      let args = {formItem: this.data, value: val, F:this.componentFormContainer};
+      let val =
+        this.data.type === "button"
+          ? this.data.defaultValue
+          : this.formModel[this.data.code];
+      let args = {
+        formItem: this.data,
+        value: val,
+        F: this.componentFormContainer,
+      };
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.change) {
         let codeString = this.data.change.value;
@@ -2709,6 +2735,17 @@ export default {
         // todo 打开弹窗的还没有做
         if (behavior === "openDialog") {
         }
+      }
+      if(this.data&&this.data.type&&this.data.type=='checkbox'){
+        let obj = [];
+          value.forEach((it) => {
+            this.options.forEach((item) => {
+              if (it == item.value) {
+                obj.push(item.label);
+              }
+            });
+          });
+          this.formModelCn[this.data.code] = obj.join();
       }
       this.componentFormContainer.$emit("formItemChange", args);
     },
