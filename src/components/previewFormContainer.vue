@@ -134,8 +134,8 @@
           return this.formModel;
         },
         set(val){
-          console.log('set formModel', val)
-          this.formModel = val;
+          console.log("set formModel", val);
+          this.$emit('update:formModel', val);
         }
       }
     },
@@ -298,8 +298,7 @@
       setFormItemValue(formCode, formItemCode, newVal) {
         let currentFormCode = this.fdFormData.code;
         if(formCode === currentFormCode) {
-          this.formModel[formItemCode] = newVal;
-          this.formModel = JSON.parse(JSON.stringify(this.formModel))
+          this.$set(this.formModel, formItemCode, newVal);
         }
         else if(formCode){
           // 找页面上的其他表单预览实例
@@ -326,8 +325,8 @@
       beforeSubmit(){
         if (this.fdFormData.beforeSubmit){
           try {
-            let fnc = new Function(this, this.fdFormData.beforeSubmit);
-            fnc(this.formModel);
+            let fnc = new Function(this.fdFormData.beforeSubmit);
+            fnc(this, this.formModel);
           } catch (e) {
             throw e;
           }
@@ -336,8 +335,8 @@
       afterSubmit(){
         if (this.fdFormData.afterSubmit){
           try {
-            let fnc = new Function(this, this.fdFormData.afterSubmit);
-            fnc(this.formModel);
+            let fnc = new Function(this.fdFormData.afterSubmit);
+            fnc(this, this.formModel);
           } catch (e) {
             throw e;
           }
