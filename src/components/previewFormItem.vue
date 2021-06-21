@@ -66,6 +66,7 @@
               align="center"
               :label="col.label"
               :width="col.width"
+              show-overflow-tooltip
             >
               <template slot-scope="scope">
                 <div v-if="col.componentTypeValue === 'input' ">
