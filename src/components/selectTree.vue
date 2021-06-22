@@ -84,6 +84,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    formModelCn: {
+      type: Object,
+      default: () => {},
+    },
     formModel: {
       type: Object,
       default() {
@@ -257,13 +261,16 @@ export default {
       this.data.defaultValueArr = arr.join();
       this.data.defaultValue = "";
       this.formModel[this.data.code] = "";
+      this.formModelCn[this.data.code] = "";
       dataList.forEach((item, index) => {
         if (dataList.length - 1 == index) {
           this.data.defaultValue += item.id;
           this.formModel[this.data.code] += item.id;
+          this.formModelCn[this.data.code] += item.name;
         } else {
           this.data.defaultValue += item.id + ",";
           this.formModel[this.data.code] += item.id + ",";
+          this.formModelCn[this.data.code] += item.name + ",";
         }
       });
     },

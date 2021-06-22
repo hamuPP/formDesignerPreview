@@ -241,7 +241,7 @@
                     type="text"
                     size="small"
                     :disabled="data.readonly&&item.code!='scan'"
-                    @click="dealFuncStr(item, index)"
+                    @click="dealFuncStr(item, index,scope.row)"
                     v-if="item.code == 'scan' && data.tableCols[data.tableCols.length - 1].showScanBtnForOperation || (item.code != 'scan'&&!data.readonly)"
                   >{{item.name}}</el-button>
                 </span>
@@ -350,6 +350,7 @@
             :lazy="false"
             :staticTreeData="options"
             :formModel="formModel"
+            :formModelCn='formModelCn'
           ></selectTree>
         </el-form-item>
       </template>
@@ -1808,8 +1809,11 @@ export default {
       this.options = [];
     },
     // 处理配置的按钮执行点击事件
-    dealFuncStr(item, index) {
-      if (!item.clickFuncStr) {
+    dealFuncStr(item, index,row) {
+      if(item.code=='scan'){
+        console.log(row,'row');
+      }
+      else if (!item.clickFuncStr) {
         this.MessageConfig.showMessage = true;
         this.MessageConfig.MsgBoxType = "warning";
         this.MessageConfig.MsgText = "绑定事件的方法为空！";
@@ -1884,6 +1888,7 @@ export default {
     // 将选人弹窗中确定的人员更新到表单中
     personSure(usersData, names, ids) {
       // usersData:选中的人，用于弹框回显，names：选中的人，用于展示
+      this.formModelCn[this.data.code]=names
       this.data.defaultName = names;
       this.data.defaultValueArr = [...usersData];
       this.formModel[this.data.code] = ids;
@@ -1894,6 +1899,7 @@ export default {
       this.data.defaultName = "";
       this.data.defaultValueArr = [];
       this.formModel[this.data.code] = "";
+      this.formModelCn[this.data.code]=''
     },
     //打开下拉树弹框
     // openTreeDialog(){
@@ -1920,6 +1926,7 @@ export default {
     //将弹出框下拉树的值展示在input中
     showFrameValue({ value, name }) {
       this.data.defaultValueArr = name;
+      this.formModelCn[this.data.code]=name
       this.data.defaultValue = value;
       this.formModel[this.data.code] = value;
     },
@@ -1929,6 +1936,7 @@ export default {
       this.data.defaultValueArr = "";
       this.data.defaultValue = "";
       this.formModel[this.data.code] = "";
+      this.formModelCn[this.data.code]=''
     },
     //新增行
     addTableRow(event) {
@@ -2099,9 +2107,9 @@ export default {
         this.data.tableData.map((item, index) => {
           if (item) {
             for (var colItem in item) {
-              this.data.tableCols.value.map((tableItem, tableIndex) => {
+              this.data.tableCols.map((tableItem, tableIndex) => {
                 if (tableItem.componentTypeValue === "input") {
-                  tableItem.prop === colItem &&
+                  tableItem.prop === colItem && item[colItem]&&
                     (item[colItem] = item[colItem].toString());
                 } else if (tableItem.componentTypeValue === "inputNumber") {
                   tableItem.prop === colItem &&
@@ -2606,6 +2614,21 @@ export default {
               this.data.tableData.push(obj);
             });
           });
+      //   this.data.tableCols.forEach((item) => {
+      //   if(item.componentTypeValue=="select"){
+      //     this.data.tableData.forEach(ele=>{
+      //       for(let key in ele){
+      //         if(key==item.prop){
+      //           item.options.forEach(it=>{
+      //             if(ele[key]==it.value){
+      //               ele[key]=it.label
+      //             }
+      //           })
+      //         }
+      //       }
+      //     })
+      //   }
+      // });
         }
       });
     },
@@ -2747,6 +2770,23 @@ export default {
             });
           });
           this.formModelCn[this.data.code] = obj.join();
+      }
+      if(this.data&&this.data.type&&this.data.type=='cascader'){
+        let label = []
+        let fn=(ele,item)=> {
+          ele.forEach(it=>{
+            if(it.value==item){
+            label.push(it.label)
+          }else if(it.children&&it.children.length>0){
+            fn(it.children,item)
+            }
+          })
+
+        }
+        this.formModel[this.data.code].forEach(item=>{
+          fn(this.options,item)
+        })
+        this.formModelCn[this.data.code] = label.join()
       }
       this.componentFormContainer.$emit("formItemChange", args);
     },
