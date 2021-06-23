@@ -828,6 +828,20 @@
       :isMultiple="data.isMultiple ? data.isMultiple.value : false"
       @personSure="personSure"
     ></newPersonEditDialog>
+    <CusDialog 
+    ref="cusDialog" 
+    :visible.sync="visible" 
+    :appendToBody='true' 
+    :title="diaformTitle"
+    :closeOnClickModal='true'
+    width="65%"
+    @cancel="cancel"
+    @confirm="confirm"
+    >
+    <tableDialog
+          :DialogattrData="DialogattrData"
+    ></tableDialog>
+    </CusDialog>
     <!-- 弹出框下拉树 -->
     <frameTree ref="frameTree" :staticTreeData="options" @showFrameValue="showFrameValue"></frameTree>
     <MessageBox
@@ -868,8 +882,10 @@ import MessageBox from "./MessageBox.vue";
 import selectTree from "./selectTree";
 import frameTree from "./frameTree";
 import personEditDialog from "./personEditDialog.vue";
+import CusDialog from './CusDialog/index'
 import newPersonEditDialog from "./newPersonEditDialog";
 import rogroupEditDialog from "./rogroupEditDialog.vue";
+import tableDialog from "./tableDialog.vue";
 import { baseUrl } from "../api/commonUrl";
 export default {
   name: "previewFormItem",
@@ -880,6 +896,8 @@ export default {
     rogroupEditDialog,
     selectTree,
     frameTree,
+    CusDialog,
+    tableDialog
   },
   props: {
     // 是否为预览模式，模式是编辑模式啦
@@ -1076,6 +1094,9 @@ export default {
       treeData: [], //表头列筛选数据
       defaultDataArray: [],
       tablecolumnCopy: [],
+      visible:false,
+      diaformTitle: "详情", //dialog框信息标题
+      DialogattrData: [], //dialog表单信息
     };
   },
   created() {
@@ -1811,7 +1832,31 @@ export default {
     // 处理配置的按钮执行点击事件
     dealFuncStr(item, index,row) {
       if(item.code=='scan'){
-        console.log(row,'row');
+        console.log(row,'row',this.data.tableCols);
+        for(const key in row){
+          if(key!='cloumnOpera'){
+            this.data.tableCols.forEach(item=>{
+              if(item.prop==key){
+                if(item.componentTypeValue=="select"){
+                  item.options.forEach(it=>{
+                    if(it.value==row[key]){
+                  this.DialogattrData.push({
+                    label:item.label,
+                    value:it.label
+                      })
+                    }
+                  })
+                }else{
+                    this.DialogattrData.push({
+                        label:item.label,
+                        value:row[key]
+                     })
+                    }
+              }
+            })
+          }
+        }
+        this.visible=true
       }
       else if (!item.clickFuncStr) {
         this.MessageConfig.showMessage = true;
@@ -1819,6 +1864,14 @@ export default {
         this.MessageConfig.MsgText = "绑定事件的方法为空！";
       } else if (item.clickFuncStr) {
       }
+    },
+    //取消表格查看弹窗
+    cancel(){
+      this.visible=false
+    },
+    //
+    confirm(){
+this.visible=false
     },
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {

@@ -110,7 +110,7 @@ export default {
       lazy: false,
       isCheck: true,
       url: "",
-      req: { parentId: "" },
+      req: {},
       areaTreeData: [],
     };
   },
@@ -176,9 +176,10 @@ export default {
     loadNode(node, resolve) {
       if (node.level === 0) {
         this.node = node;
+      }else{
+        this.req.parentId = node.data ? node.data.id : "";
       }
       this.resolve = resolve;
-      this.req.parentId = node.data ? node.data.id : "";
       this.getTreeList(this.req, () => {
         resolve(this.areaTreeData);
         if (this.defKeys.length > 0) {
