@@ -1457,6 +1457,11 @@ export default {
         this.getCascaderOptions(params.rootValue, this.data.code);
       }
     }
+    if(this.data.type =='datePicker'||this.data.type=='timePicker'){
+      if(this.data.isDefaultValueUseCurrentTime){
+        this.formModel[this.data.code]= new Date()
+      }
+    }
   },
   methods: {
     renderUploadStyles() {
