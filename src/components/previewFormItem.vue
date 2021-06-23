@@ -241,7 +241,7 @@
                     type="text"
                     size="small"
                     :disabled="data.readonly&&item.code!='scan'"
-                    @click="dealFuncStr(item, index)"
+                    @click="dealFuncStr(item, index,scope.row)"
                     v-if="item.code == 'scan' && data.tableCols[data.tableCols.length - 1].showScanBtnForOperation || (item.code != 'scan'&&!data.readonly)"
                   >{{item.name}}</el-button>
                 </span>
@@ -350,6 +350,7 @@
             :lazy="false"
             :staticTreeData="options"
             :formModel="formModel"
+            :formModelCn='formModelCn'
           ></selectTree>
         </el-form-item>
       </template>
@@ -827,6 +828,20 @@
       :isMultiple="data.isMultiple ? data.isMultiple.value : false"
       @personSure="personSure"
     ></newPersonEditDialog>
+    <CusDialog 
+    ref="cusDialog" 
+    :visible.sync="visible" 
+    :appendToBody='true' 
+    :title="diaformTitle"
+    :closeOnClickModal='true'
+    width="65%"
+    @cancel="cancel"
+    @confirm="confirm"
+    >
+    <tableDialog
+          :DialogattrData="DialogattrData"
+    ></tableDialog>
+    </CusDialog>
     <!-- 弹出框下拉树 -->
     <frameTree ref="frameTree" :staticTreeData="options" @showFrameValue="showFrameValue"></frameTree>
     <MessageBox
@@ -867,8 +882,10 @@ import MessageBox from "./MessageBox.vue";
 import selectTree from "./selectTree";
 import frameTree from "./frameTree";
 import personEditDialog from "./personEditDialog.vue";
+import CusDialog from './CusDialog/index'
 import newPersonEditDialog from "./newPersonEditDialog";
 import rogroupEditDialog from "./rogroupEditDialog.vue";
+import tableDialog from "./tableDialog.vue";
 import { baseUrl } from "../api/commonUrl";
 export default {
   name: "previewFormItem",
@@ -879,6 +896,8 @@ export default {
     rogroupEditDialog,
     selectTree,
     frameTree,
+    CusDialog,
+    tableDialog
   },
   props: {
     // 是否为预览模式，模式是编辑模式啦
@@ -1075,6 +1094,9 @@ export default {
       treeData: [], //表头列筛选数据
       defaultDataArray: [],
       tablecolumnCopy: [],
+      visible:false,
+      diaformTitle: "详情", //dialog框信息标题
+      DialogattrData: [], //dialog表单信息
     };
   },
   created() {
@@ -1433,6 +1455,11 @@ export default {
         };
         params.rootValue = this.data.optionSetting_tabContent.codeType.value;
         this.getCascaderOptions(params.rootValue, this.data.code);
+      }
+    }
+    if(this.data.type =='datePicker'||this.data.type=='timePicker'){
+      if(this.data.isDefaultValueUseCurrentTime){
+        this.formModel[this.data.code]= new Date()
       }
     }
   },
@@ -1808,13 +1835,48 @@ export default {
       this.options = [];
     },
     // 处理配置的按钮执行点击事件
-    dealFuncStr(item, index) {
-      if (!item.clickFuncStr) {
+    dealFuncStr(item, index,row) {
+      if(item.code=='scan'){
+        console.log(row,'row',this.data.tableCols);
+        for(const key in row){
+          if(key!='cloumnOpera'){
+            this.data.tableCols.forEach(item=>{
+              if(item.prop==key){
+                if(item.componentTypeValue=="select"){
+                  item.options.forEach(it=>{
+                    if(it.value==row[key]){
+                  this.DialogattrData.push({
+                    label:item.label,
+                    value:it.label
+                      })
+                    }
+                  })
+                }else{
+                    this.DialogattrData.push({
+                        label:item.label,
+                        value:row[key]
+                     })
+                    }
+              }
+            })
+          }
+        }
+        this.visible=true
+      }
+      else if (!item.clickFuncStr) {
         this.MessageConfig.showMessage = true;
         this.MessageConfig.MsgBoxType = "warning";
         this.MessageConfig.MsgText = "绑定事件的方法为空！";
       } else if (item.clickFuncStr) {
       }
+    },
+    //取消表格查看弹窗
+    cancel(){
+      this.visible=false
+    },
+    //
+    confirm(){
+this.visible=false
     },
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {
@@ -1884,6 +1946,7 @@ export default {
     // 将选人弹窗中确定的人员更新到表单中
     personSure(usersData, names, ids) {
       // usersData:选中的人，用于弹框回显，names：选中的人，用于展示
+      this.formModelCn[this.data.code]=names
       this.data.defaultName = names;
       this.data.defaultValueArr = [...usersData];
       this.formModel[this.data.code] = ids;
@@ -1894,6 +1957,7 @@ export default {
       this.data.defaultName = "";
       this.data.defaultValueArr = [];
       this.formModel[this.data.code] = "";
+      this.formModelCn[this.data.code]=''
     },
     //打开下拉树弹框
     // openTreeDialog(){
@@ -1920,6 +1984,7 @@ export default {
     //将弹出框下拉树的值展示在input中
     showFrameValue({ value, name }) {
       this.data.defaultValueArr = name;
+      this.formModelCn[this.data.code]=name
       this.data.defaultValue = value;
       this.formModel[this.data.code] = value;
     },
@@ -1929,6 +1994,7 @@ export default {
       this.data.defaultValueArr = "";
       this.data.defaultValue = "";
       this.formModel[this.data.code] = "";
+      this.formModelCn[this.data.code]=''
     },
     //新增行
     addTableRow(event) {
@@ -2099,9 +2165,9 @@ export default {
         this.data.tableData.map((item, index) => {
           if (item) {
             for (var colItem in item) {
-              this.data.tableCols.value.map((tableItem, tableIndex) => {
+              this.data.tableCols.map((tableItem, tableIndex) => {
                 if (tableItem.componentTypeValue === "input") {
-                  tableItem.prop === colItem &&
+                  tableItem.prop === colItem && item[colItem]&&
                     (item[colItem] = item[colItem].toString());
                 } else if (tableItem.componentTypeValue === "inputNumber") {
                   tableItem.prop === colItem &&
@@ -2606,6 +2672,21 @@ export default {
               this.data.tableData.push(obj);
             });
           });
+      //   this.data.tableCols.forEach((item) => {
+      //   if(item.componentTypeValue=="select"){
+      //     this.data.tableData.forEach(ele=>{
+      //       for(let key in ele){
+      //         if(key==item.prop){
+      //           item.options.forEach(it=>{
+      //             if(ele[key]==it.value){
+      //               ele[key]=it.label
+      //             }
+      //           })
+      //         }
+      //       }
+      //     })
+      //   }
+      // });
         }
       });
     },
@@ -2747,6 +2828,23 @@ export default {
             });
           });
           this.formModelCn[this.data.code] = obj.join();
+      }
+      if(this.data&&this.data.type&&this.data.type=='cascader'){
+        let label = []
+        let fn=(ele,item)=> {
+          ele.forEach(it=>{
+            if(it.value==item){
+            label.push(it.label)
+          }else if(it.children&&it.children.length>0){
+            fn(it.children,item)
+            }
+          })
+
+        }
+        this.formModel[this.data.code].forEach(item=>{
+          fn(this.options,item)
+        })
+        this.formModelCn[this.data.code] = label.join()
       }
       this.componentFormContainer.$emit("formItemChange", args);
     },

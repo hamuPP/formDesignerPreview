@@ -143,6 +143,7 @@
     }
     .el-dialog__headerbtn {
         height: 30px;
+        top: 3px !important;
     }
     .el-dialog__close{
         top: 8px;
