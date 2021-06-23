@@ -52,16 +52,17 @@ module.exports = {
           },
             {
                 test: /\.js$/,
-                exclude: /node_modules|vue\/dist|vue-router\/|vue-loader\/|vue-hot-reload-api\//,
+                // exclude: /node_modules|vue\/dist|vue-router\/|vue-loader\/|vue-hot-reload-api\//,
+                exclude: /node_modules(?!(\/element-ui\/lib\/mixiins\/locale\/))/,
                 loader: 'babel-loader',
               // include的写法示例
                 include: [
-                  // resolve('src'),
+                  resolve('src'),
                   // resolve('test'),
                   // resolve('node_modules/webpack-dev-server/client'),
-                    resolve('src/api/axios.js.js'),
-                    resolve('src/api/formDesigner_api.js'),
-                    resolve('node_modules/element-ui/src/utils/popup'),
+                  //   resolve('src/api/axios.js.js'),
+                  //    resolve('src/api/formDesigner_api.js'),
+                  //   resolve('node_modules/element-ui/lib/mixins/locale'),
                 ]
             },
           {

@@ -101,13 +101,12 @@
 </template>
 
 <script type="text/babel">
-  import Popup from 'element-ui/src/utils/popup';
-  import Locale from 'element-ui/src/mixins/locale';
-  import ElInput from 'element-ui/packages/input';
-  import ElButton from 'element-ui/packages/button/index.js';
-  import { addClass, removeClass } from 'element-ui/src/utils/dom';
-  import { t } from 'element-ui/src/locale';
-  import Dialog from 'element-ui/src/utils/aria-dialog';
+  import Popup from 'element-ui/lib/utils/popup';
+  import Locale from 'element-ui/lib/mixins/locale';
+  import ElInput from 'element-ui/lib/input';
+  // import ElButton from 'element-ui/packages/button/index.js';
+  import { addClass, removeClass } from 'element-ui/lib/utils/dom';
+  import Dialog from 'element-ui/lib/utils/aria-dialog';
   // import CusButton from '../CusButton/index.vue'
 
   let messageBox;
@@ -157,7 +156,7 @@
 
     components: {
       ElInput,
-      ElButton,
+      // ElButton,
       // CusButton
     },
 
@@ -221,10 +220,10 @@
         }
         return str;
       },
-
-      confirmButtonClasses() {
-        return `el-button--primary ${ this.confirmButtonClass }`;
-      },
+      //
+      // confirmButtonClasses() {
+      //   return `el-button--primary ${ this.confirmButtonClass }`;
+      // },
       cancelButtonClasses() {
         return `${ this.cancelButtonClass }`;
       }
@@ -285,7 +284,7 @@
         if (this.$type === 'prompt') {
           const inputPattern = this.inputPattern;
           if (inputPattern && !inputPattern.test(this.inputValue || '')) {
-            this.editorErrorMessage = this.inputErrorMessage || t('el.messagebox.error');
+            this.editorErrorMessage = this.inputErrorMessage || '请稍后再试';
             addClass(this.getInputElement(), 'invalid');
             return false;
           }
@@ -293,7 +292,7 @@
           if (typeof inputValidator === 'function') {
             const validateResult = inputValidator(this.inputValue);
             if (validateResult === false) {
-              this.editorErrorMessage = this.inputErrorMessage || t('el.messagebox.error');
+              this.editorErrorMessage = this.inputErrorMessage || '请稍后再试'
               addClass(this.getInputElement(), 'invalid');
               return false;
             }
