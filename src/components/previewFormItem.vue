@@ -649,6 +649,42 @@
         @blur="inputBlurHand"
       ></el-cascader>
 
+      <!--   业务公共字段-操作人当前角色  （有input和select两种）   -->
+      <template v-else-if="data.fieldType === 'userRole'">
+        <el-select
+            v-if="data.showType === 'select'"
+            :ref="data.ref"
+            v-model="formModel[data.code]"
+            :disabled="data.disabled"
+            :readonly="data.readonly"
+            :clearable="data.clearable"
+            @change="selectChangeHand"
+            @click.native="inputClickHand"
+            @focus="inputFocusHand"
+            @blur="inputBlurHand"
+        >
+          <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+          ></el-option>
+        </el-select>
+
+        <el-input
+            v-else
+            :ref="data.ref"
+            v-model="formModel[data.code]"
+            :disabled="data.disabled"
+            :readonly="data.readonly"
+            :clearable="data.clearable"
+            @click.native="inputClickHand"
+            @change="inputChangeHand"
+            @focus="inputFocusHand"
+            @blur="inputBlurHand"
+        ></el-input>
+      </template>
+
       <!--   业务公共字段-流水号     -->
       <el-input
         v-else-if="data.type === 'sheetFlowCode'"
@@ -696,49 +732,13 @@
         :ref="data.ref"
         v-model="formModel[data.code]"
         :disabled="data.disabled"
-        :readonly="data.readonly"
+        :readonly="data.readonly"k
         :clearable="data.clearable"
         @click.native="inputClickHand"
         @change="inputChangeHand"
         @focus="inputFocusHand"
         @blur="inputBlurHand"
       ></el-input>
-
-      <!--   业务公共字段-操作人当前角色  （有input和select两种）   -->
-      <template v-else-if="data.type === 'operatorRole'">
-        <el-select
-          v-if="data.showType === 'select'"
-          :ref="data.ref"
-          v-model="formModel[data.code]"
-          :disabled="data.disabled"
-          :readonly="data.readonly"
-          :clearable="data.clearable"
-          @change="selectChangeHand"
-          @click.native="inputClickHand"
-          @focus="inputFocusHand"
-          @blur="inputBlurHand"
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-
-        <el-input
-          v-else
-          :ref="data.ref"
-          v-model="formModel[data.code]"
-          :disabled="data.disabled"
-          :readonly="data.readonly"
-          :clearable="data.clearable"
-          @click.native="inputClickHand"
-          @change="inputChangeHand"
-          @focus="inputFocusHand"
-          @blur="inputBlurHand"
-        ></el-input>
-      </template>
 
       <!--   业务公共字段-操作时间     -->
       <el-date-picker
