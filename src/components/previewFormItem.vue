@@ -242,7 +242,7 @@
                     size="small"
                     :disabled="data.readonly&&item.code!='scan'"
                     @click="dealFuncStr(item, index,scope.row)"
-                    v-if="item.code == 'scan' && data.tableCols[data.tableCols.length - 1].showScanBtnForOperation || (item.code != 'scan'&&!data.readonly)"
+                    v-if="scope.row[item.code]&&(item.code == 'scan' && data.tableCols[data.tableCols.length - 1].showScanBtnForOperation || (item.code != 'scan'&&!data.readonly))"
                   >{{item.name}}</el-button>
                 </span>
               </template>
@@ -1458,8 +1458,22 @@ export default {
       }
     }
     if(this.data.type =='datePicker'||this.data.type=='timePicker'){
-      if(this.data.isDefaultValueUseCurrentTime){
-        this.formModel[this.data.code]= new Date()
+      if(this.data.isDefaultValueUseCurrentTime&&!this.formModel[this.data.code]){
+        var formatDateTime = function (date) {  
+                var y = date.getFullYear();  
+                var m = date.getMonth() + 1;  
+                m = m < 10 ? ('0' + m) : m;  
+                var d = date.getDate();  
+                d = d < 10 ? ('0' + d) : d;  
+                var h = date.getHours();  
+                h=h < 10 ? ('0' + h) : h;  
+                var minute = date.getMinutes();  
+                minute = minute < 10 ? ('0' + minute) : minute;  
+                var second=date.getSeconds();  
+                second=second < 10 ? ('0' + second) : second;  
+                return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;  
+            };  
+        this.formModel[this.data.code]= formatDateTime(new Date())
       }
     }
   },
@@ -1864,9 +1878,15 @@ export default {
         this.visible=true
       }
       else if (!item.clickFuncStr) {
-        this.MessageConfig.showMessage = true;
-        this.MessageConfig.MsgBoxType = "warning";
-        this.MessageConfig.MsgText = "绑定事件的方法为空！";
+        let args = {
+          item:item,
+          row:row,
+          data:this.data
+        }
+        this.componentFormContainer.$emit("tableItemClick", args);
+        // this.MessageConfig.showMessage = true;
+        // this.MessageConfig.MsgBoxType = "warning";
+        // this.MessageConfig.MsgText = "绑定事件的方法为空！";
       } else if (item.clickFuncStr) {
       }
     },
@@ -1876,7 +1896,7 @@ export default {
     },
     //
     confirm(){
-this.visible=false
+      this.visible=false
     },
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {
@@ -2612,7 +2632,6 @@ this.visible=false
     //根据配置sql查询不分页列表
     getFormTableSqlList() {
       getFormTableSqlList(this.sqlData).then((res) => {
-        console.log(res);
         if (res && res.data) {
           this.data.tableData = res.data.data || [];
         }
@@ -2625,7 +2644,6 @@ this.visible=false
         ...this.sqlData,
       };
       getFormTableSqlPage(obj).then((res) => {
-        console.log(res);
         if (res && res.data && res.data.data) {
           this.data.tableData = res.data.data.data || [];
           this.page.total = res.data.data.total
@@ -2647,6 +2665,31 @@ this.visible=false
             });
             this.data.tableData.push(obj);
           });
+          //处理显示不同的按钮显示隐藏
+          this.data.tableCols[this.data.tableCols.length - 1].buttonList.forEach(item=>{
+            if(item.show){
+              if(item.show.indexOf('=')!=-1){
+              let num = item.show.indexOf('=')
+              let left =  item.show.substring(0,num)
+              let right =  item.show.substring(num+1)
+              this.data.tableData.forEach(ele=>{
+                  if(ele[left]==right){
+                    ele[item.code]=true
+                  }else{
+                     ele[item.code]=false
+                  }
+              })
+              }else{
+                this.data.tableData.forEach(it=>{
+                it[item.code]=true
+              })
+              }
+            }else{
+              this.data.tableData.forEach(it=>{
+                it[item.code]=true
+              })
+            }
+          })
         }
       });
     },
@@ -2672,21 +2715,31 @@ this.visible=false
               this.data.tableData.push(obj);
             });
           });
-      //   this.data.tableCols.forEach((item) => {
-      //   if(item.componentTypeValue=="select"){
-      //     this.data.tableData.forEach(ele=>{
-      //       for(let key in ele){
-      //         if(key==item.prop){
-      //           item.options.forEach(it=>{
-      //             if(ele[key]==it.value){
-      //               ele[key]=it.label
-      //             }
-      //           })
-      //         }
-      //       }
-      //     })
-      //   }
-      // });
+          //处理显示不同的按钮显示隐藏
+          this.data.tableCols[this.data.tableCols.length - 1].buttonList.forEach(item=>{
+            if(item.show){
+              if(item.show.indexOf('=')!=-1){
+              let num = item.show.indexOf('=')
+              let left =  item.show.substring(0,num)
+              let right =  item.show.substring(num+1)
+              this.data.tableData.forEach(ele=>{
+                  if(ele[left]==right){
+                    ele[item.code]=true
+                  }else{
+                     ele[item.code]=false
+                  }
+              })
+              }else{
+                this.data.tableData.forEach(it=>{
+                it[item.code]=true
+              })
+              }
+            }else{
+              this.data.tableData.forEach(it=>{
+                it[item.code]=true
+              })
+            }
+          })
         }
       });
     },
