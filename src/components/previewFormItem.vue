@@ -576,8 +576,25 @@
           :http-request="uploadNewFile"
           :disabled="data.disabled"
           :multiple="data.isMultiple"
-        >
+        > 
           <el-button size="small" type="primary">点击上传</el-button>
+          <ul class="el-upload-list file-template el-upload-list--text" @click.stop="()=>{}">
+            <li
+              class="el-upload-list__item is-ready"
+              v-for="(fileItem, fileIndex) in fileTemplate"
+              :key="fileIndex"
+            >
+              <a
+                class="el-upload-list__item-name"
+                :href="getDownURL(fileItem)"
+                download
+                title="下载"
+              >
+                <i class="el-icon-document"></i>
+                {{fileItem.name}}
+              </a>
+            </li>
+          </ul>
           <div
             class="el-upload__tip"
             @click.stop="()=>{}"
@@ -870,6 +887,7 @@ import {
   uploadFiles,
   getPointCodeSheetData,
   getUploadedFileList,
+  getAllFiles,
   delFileNew,
   getFormTableSqlList,
   getFormTableSqlPage,
@@ -1053,6 +1071,7 @@ export default {
       moment: moment,
       options: [], // 针对下拉框等的下拉数据
       fileName: "", // 附件名字
+      fileTemplate:[],//附件模板
       fileList: [
         // {
         //   name: '测试啊啊啊啊'
@@ -1414,6 +1433,21 @@ export default {
     // 处理富文本的值
     if (this.data.type == "richText") {
       this.editorTxt = this.formModel[this.data.code];
+    }
+    //查询附件模板
+    if(this.data.type=="uploadNewFile"){
+        if(this.data.businessType&&this.data.fileTemplate){
+         let queryData = {
+           businessType:this.data.businessType,
+           boId:this.data.fileTemplate
+         };
+         getAllFiles(queryData).then(res=>{
+        if (res && res.data && res.data.code == "0000") {
+          this.fileTemplate = res.data.data.data;
+          console.log(this.fileTemplate,'fileTemplate');
+          }
+         }).catch((e)=>{console.log(e);})
+        }
     }
     //处理表格表头
     if (this.data.type == "table") {
@@ -1851,7 +1885,7 @@ export default {
     // 处理配置的按钮执行点击事件
     dealFuncStr(item, index,row) {
       if(item.code=='scan'){
-        console.log(row,'row',this.data.tableCols);
+        this.DialogattrData=[]
         for(const key in row){
           if(key!='cloumnOpera'){
             this.data.tableCols.forEach(item=>{
@@ -2634,38 +2668,8 @@ export default {
       getFormTableSqlList(this.sqlData).then((res) => {
         if (res && res.data) {
           this.data.tableData = res.data.data || [];
-        }
-      });
-    },
-    //根据配置sql查询分页列表
-    getFormTableSqlPage() {
-      let obj = {
-        ...this.page,
-        ...this.sqlData,
-      };
-      getFormTableSqlPage(obj).then((res) => {
-        if (res && res.data && res.data.data) {
-          this.data.tableData = res.data.data.data || [];
-          this.page.total = res.data.data.total
-            ? parseInt(res.data.data.total)
-            : 0;
-        }
-      });
-    },
-    //不分页查询子表格数据
-    getFormTablesList() {
-      getFormTablesList(this.tableParams).then((res) => {
-        if (res && res.data && res.data.data) {
-          let data = res.data.data || {};
-          this.data.tableData = [];
-          data.rows.forEach((item) => {
-            let obj = {};
-            item.columns.forEach((cIt) => {
-              obj[cIt.code] = cIt.value;
-            });
-            this.data.tableData.push(obj);
-          });
           //处理显示不同的按钮显示隐藏
+          if(this.data.tableCols.length>0 && this.data.tableCols[this.data.tableCols.length - 1].label=='操作'){
           this.data.tableCols[this.data.tableCols.length - 1].buttonList.forEach(item=>{
             if(item.show){
               if(item.show.indexOf('=')!=-1){
@@ -2690,6 +2694,93 @@ export default {
               })
             }
           })
+          }
+
+        }
+      });
+    },
+    //根据配置sql查询分页列表
+    getFormTableSqlPage() {
+      let obj = {
+        ...this.page,
+        ...this.sqlData,
+      };
+      getFormTableSqlPage(obj).then((res) => {
+        if (res && res.data && res.data.data) {
+          this.data.tableData = res.data.data.data || [];
+          this.page.total = res.data.data.total
+            ? parseInt(res.data.data.total)
+            : 0;
+          //处理显示不同的按钮显示隐藏
+          if(this.data.tableCols.length>0 && this.data.tableCols[this.data.tableCols.length - 1].label=='操作'){
+          this.data.tableCols[this.data.tableCols.length - 1].buttonList.forEach(item=>{
+            if(item.show){
+              if(item.show.indexOf('=')!=-1){
+              let num = item.show.indexOf('=')
+              let left =  item.show.substring(0,num)
+              let right =  item.show.substring(num+1)
+              this.data.tableData.forEach(ele=>{
+                  if(ele[left]==right){
+                    ele[item.code]=true
+                  }else{
+                     ele[item.code]=false
+                  }
+              })
+              }else{
+                this.data.tableData.forEach(it=>{
+                it[item.code]=true
+              })
+              }
+            }else{
+              this.data.tableData.forEach(it=>{
+                it[item.code]=true
+              })
+            }
+          })
+          }
+        }
+      });
+    },
+    //不分页查询子表格数据
+    getFormTablesList() {
+      getFormTablesList(this.tableParams).then((res) => {
+        if (res && res.data && res.data.data) {
+          let data = res.data.data || {};
+          this.data.tableData = [];
+          data.rows.forEach((item) => {
+            let obj = {};
+            item.columns.forEach((cIt) => {
+              obj[cIt.code] = cIt.value;
+            });
+            this.data.tableData.push(obj);
+          });
+          //处理显示不同的按钮显示隐藏
+          if(this.data.tableCols.length>0 && this.data.tableCols[this.data.tableCols.length - 1].label=='操作'){
+          this.data.tableCols[this.data.tableCols.length - 1].buttonList.forEach(item=>{
+            if(item.show){
+              if(item.show.indexOf('=')!=-1){
+              let num = item.show.indexOf('=')
+              let left =  item.show.substring(0,num)
+              let right =  item.show.substring(num+1)
+              this.data.tableData.forEach(ele=>{
+                  if(ele[left]==right){
+                    ele[item.code]=true
+                  }else{
+                     ele[item.code]=false
+                  }
+              })
+              }else{
+                this.data.tableData.forEach(it=>{
+                it[item.code]=true
+              })
+              }
+            }else{
+              this.data.tableData.forEach(it=>{
+                it[item.code]=true
+              })
+            }
+          })
+          }
         }
       });
     },
@@ -2716,6 +2807,7 @@ export default {
             });
           });
           //处理显示不同的按钮显示隐藏
+          if(this.data.tableCols.length>0 && this.data.tableCols[this.data.tableCols.length - 1].label=='操作'){
           this.data.tableCols[this.data.tableCols.length - 1].buttonList.forEach(item=>{
             if(item.show){
               if(item.show.indexOf('=')!=-1){
@@ -2740,6 +2832,7 @@ export default {
               })
             }
           })
+          }
         }
       });
     },
@@ -2967,6 +3060,19 @@ export default {
 .el-upload--text {
   text-align: left !important;
 }
+.el-upload{
+  width: 100%;
+}
+.file-template{
+    overflow: hidden;
+      display: inline-block;
+      width: 100%;
+      .el-upload-list__item{
+        float: left;
+        width: auto;
+        margin-top: 5px;
+      }
+    }
 .fd-form-item .pagination {
   display: flex;
   justify-content: space-between;

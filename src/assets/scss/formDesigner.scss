@@ -194,6 +194,7 @@
 @include b(form-item) {
 	// 附件上传组 上传附件(新)
 	&.uploadHeight{
+
 		.el-form-item .el-form-item__content{
 			height: auto !important;
 		}
