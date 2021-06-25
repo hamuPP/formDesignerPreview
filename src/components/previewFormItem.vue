@@ -516,11 +516,12 @@
         :circle="data.circle"
         :icon="data.icon"
         :size="data.size"
-        :disabled="data.disabled"
+        :disabled="data.disabled || counting"
         :class="{'auto-width': data.fixParentWidth}"
         @click.native="inputClickHand"
       >
         <template v-if="data.defaultValue">{{data.defaultValue}}</template>
+        <span v-if="counting" class="countdown">({{countNumber}})</span>
       </el-button>
 
       <!--  分割线  -->
@@ -1116,6 +1117,9 @@ export default {
       visible:false,
       diaformTitle: "详情", //dialog框信息标题
       DialogattrData: [], //dialog表单信息
+      counting: false,// 正在倒计时
+      countNumber: 0,
+      TIMER: null,
     };
   },
   created() {
@@ -1510,6 +1514,13 @@ export default {
         this.formModel[this.data.code]= formatDateTime(new Date())
       }
     }
+  },
+  beforeDestroy() {
+    if (this.TIMER){
+      clearInterval(this.TIMER);
+    }
+    this.counting = false;
+    this.countNumber = 0;
   },
   methods: {
     renderUploadStyles() {
@@ -2910,6 +2921,11 @@ export default {
         value: val,
         F: this.componentFormContainer,
       };
+
+      // 倒计时开始
+      if(this.data.type === "button"){
+        this.startCountingDown();
+      }
       // 尝试把自定义函数字符串转为函数并执行
       if (this.data && this.data.click) {
         let codeString = this.data.click.value;
@@ -2927,7 +2943,6 @@ export default {
         // todo 打开弹窗的还没有做
         if (behavior === "openDialog") {
           this.componentFormContainer.$refs.commonDialog.showDialog(
-            this.data.click,
             this.data
           );
         }
@@ -3049,6 +3064,25 @@ export default {
       }
       this.componentFormContainer.$emit("formItemBlur", args);
     },
+    startCountingDown(){
+      const that = this;
+      let timeInterval = this.data.click.timeInterval;
+      if(timeInterval){
+        if(timeInterval.constructor === String){
+          timeInterval = Number(timeInterval);
+        }
+        this.counting = true;
+        this.countNumber = timeInterval;
+        this.TIMER = setInterval(function(){
+          if (that.countNumber === 0){
+            clearInterval(that.TIMER);
+            that.counting = false;
+          }
+
+          that.countNumber--;
+        }, 1000);
+      }
+    }
   },
 };
 </script>
@@ -3112,6 +3146,11 @@ export default {
   display: flex !important;
   align-items: center !important;
   flex-direction: column !important;
+}
+.fd-form-item{
+  .countdown{
+    color: #888;
+  }
 }
 </style>
 
