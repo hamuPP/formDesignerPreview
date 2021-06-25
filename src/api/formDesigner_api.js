@@ -225,3 +225,11 @@ export function getsysdictLabels (data) {
     params: data
   })
 }
+
+export function getLinkFormByCodeService(data){
+  return axios({
+    method: 'get',
+    url: baseUrl+`/workflow/form/link/config/getFormByCode`,
+    params: data
+  })
+}
