@@ -135,7 +135,12 @@
                       :clearable="col.componentTypeValueAttr.clearable.value"
                       @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                     ></el-input>
-                    <span style="margin-left: 10px" v-else>
+                    <span :style="{
+                      'margin-left': '10px',
+                      'color':col.componentTypeValueAttr.isURL.value?'blue':'',
+                      'cursor':col.componentTypeValueAttr.isURL.value?'pointer':''}" 
+                      @click="herf(col,scope.row)"
+                      v-else>
                       {{
                       scope.row[col.prop]
                       }}
@@ -1895,8 +1900,7 @@ export default {
     },
     // 处理配置的按钮执行点击事件
     dealFuncStr(item, index,row) {
-      if(item.code=='scan'){
-        this.DialogattrData=[]
+      this.DialogattrData=[]
         for(const key in row){
           if(key!='cloumnOpera'){
             this.data.tableCols.forEach(item=>{
@@ -1920,13 +1924,39 @@ export default {
             })
           }
         }
+      if(item.code=='scan'){
+        // this.DialogattrData=[]
+        // for(const key in row){
+        //   if(key!='cloumnOpera'){
+        //     this.data.tableCols.forEach(item=>{
+        //       if(item.prop==key){
+        //         if(item.componentTypeValue=="select"){
+        //           item.options.forEach(it=>{
+        //             if(it.value==row[key]){
+        //           this.DialogattrData.push({
+        //             label:item.label,
+        //             value:it.label
+        //               })
+        //             }
+        //           })
+        //         }else{
+        //             this.DialogattrData.push({
+        //                 label:item.label,
+        //                 value:row[key]
+        //              })
+        //             }
+        //       }
+        //     })
+        //   }
+        // }
         this.visible=true
       }
       else if (!item.clickFuncStr) {
         let args = {
           item:item,
           row:row,
-          data:this.data
+          data:this.data,
+          rowData:this.DialogattrData
         }
         this.componentFormContainer.$emit("tableItemClick", args);
         // this.MessageConfig.showMessage = true;
@@ -2673,6 +2703,20 @@ export default {
         });
       });
       this.tablecolumnCopy = arr;
+    },
+    herf(col,row){
+      if(col.componentTypeValueAttr.isURL.value){
+        let url = col.componentTypeValueAttr.isURLCode.value && 'url'
+        console.log(row,'row[url]');
+        if(row[url]){
+        this.$router.push({
+        path:row[url]
+      })
+        }
+
+      }else{
+        return
+      }
     },
     //根据配置sql查询不分页列表
     getFormTableSqlList() {
