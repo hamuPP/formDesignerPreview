@@ -2804,6 +2804,9 @@ export default {
           this.data.tableData = [];
           data.rows.forEach((item) => {
             let obj = {};
+            if(item.id){
+              obj.id=item.id
+            }
             item.columns.forEach((cIt) => {
               obj[cIt.code] = cIt.value;
             });
@@ -2853,8 +2856,11 @@ export default {
             : 0;
           this.data.tableData = [];
           data.forEach((item) => {
-            let obj = {};
             item.rows.forEach((it) => {
+              let obj = {};
+              if(it.id){
+              obj.id=it.id
+            }
               it.columns.forEach((cIt) => {
                 obj[cIt.code] = cIt.value;
               });
