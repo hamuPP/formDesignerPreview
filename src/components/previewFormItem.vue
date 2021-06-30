@@ -375,6 +375,7 @@
         type="textarea"
         :rows="data.rows"
         resize="none"
+        autosize
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
@@ -1009,7 +1010,7 @@ export default {
       return obj;
     },
     itemRules: {
-      get() {
+      get () {
         let rule = this.componentRootForm.useCustormRule ? null : this.rules;
 
         return rule;
@@ -2995,22 +2996,6 @@ export default {
 </script>
 
 <style lang="scss">
-.fd-form-item .el-autocomplete {
-  width: 100%;
-}
-.el-upload--text {
-  text-align: left !important;
-}
-.fd-form-item .pagination {
-  display: flex;
-  justify-content: space-between;
-}
-.fd-form-item .pagination .el-pagination {
-  margin: 0;
-  min-width: 320px;
-  margin-top: 1.04rem;
-  color: #999;
-}
 .tree-box {
   z-index: 9999;
   position: absolute;

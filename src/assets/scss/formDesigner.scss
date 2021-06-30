@@ -217,6 +217,23 @@
 			}
 		}
 	}
+
+	.el-autocomplete {
+		width: 100%;
+	}
+	.el-upload--text {
+		text-align: left !important;
+	}
+	.pagination {
+		display: flex;
+		justify-content: space-between;
+	}
+	.pagination .el-pagination {
+		margin: 0;
+		min-width: 320px;
+		margin-top: 1.04rem;
+		color: #999;
+	}
 }
 
 // 分组 --start--
