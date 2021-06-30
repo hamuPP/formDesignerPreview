@@ -12,7 +12,6 @@
     :label-width="fdFormData.labelWidth + 'px'"
     :model="formModel"
     ref="fdForm"
-    :rules="rules"
     :disabled="view"
     :data-code="formCode">
     <el-row v-for="(it, index) in fdFormItems" :key="index" :gutter="35">
@@ -37,6 +36,7 @@
                   :data="cItem"
                   :formCode="formCode"
                   :boId="id"
+                  :rules="rules"
                   :version="version"
                   :linkFormCode='linkFormCode'
                   :labelWidth="fdFormData.labelWidth"
@@ -84,6 +84,7 @@
                       :data="cItem"
                       :formCode="formCode"
                       :boId="id"
+                      :rules="rules"
                       :version="version"
                       :linkFormCode='linkFormCode'
                       :labelWidth="fdFormData.labelWidth"
@@ -130,6 +131,7 @@
           :data="item"
           :formCode="formCode"
           :boId="id"
+          :rules="rules"
           :version="version"
           :linkFormCode='linkFormCode'
           :labelWidth="fdFormData.labelWidth"
@@ -243,6 +245,12 @@ export default {
         `fd-form fd-form--preview ${n.skin} ${n.customClassName}` +
         (n.size ? ` fd-form--${n.size}` : "");
     },
+    rules:{
+      handler(n,o){
+        console.log(n,'sssssssssssss');
+      },
+      deep:true
+    }
   },
   created() {
     this.skin = this.fdFormData.skin;

@@ -137,8 +137,8 @@
                     ></el-input>
                     <span :style="{
                       'margin-left': '10px',
-                      'color':col.componentTypeValueAttr.isURL.value?'blue':'',
-                      'cursor':col.componentTypeValueAttr.isURL.value?'pointer':''}" 
+                      'color':(col.componentTypeValueAttr.isURL&&col.componentTypeValueAttr.isURL.value)?'blue':'',
+                      'cursor':(col.componentTypeValueAttr.isURL&&col.componentTypeValueAttr.isURL.value)?'pointer':''}" 
                       @click="herf(col,scope.row)"
                       v-else>
                       {{
@@ -301,7 +301,7 @@
     >
       <!-- 选择人员树组件 -->
       <template v-if="data.type==='user'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress" :rules="itemRules">
+        <el-form-item class="form-item suffix-button" prop="paramExpress">
           <el-input
             clearable
             :disabled="data.disabled"
@@ -347,7 +347,7 @@
 
       <!-- 下拉树组件 -->
       <template v-else-if="data.type==='tree'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress" :rules="itemRules">
+        <el-form-item class="form-item suffix-button" prop="paramExpress" >
           <selectTree
             nodeKey="value"
             :treeProps="treeProps"
@@ -361,7 +361,7 @@
       </template>
       <!-- 弹出框下拉树组件 -->
       <template v-else-if="data.type=='treeBox'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress" :rules="itemRules">
+        <el-form-item class="form-item suffix-button" prop="paramExpress" >
           <el-input
             :clearable="data.clearable"
             :disabled="data.disabled"
@@ -976,6 +976,10 @@ export default {
       type: Number,
       default: 0,
     },
+    rules:{
+      type:Object,
+      default:()=>{}
+    }
   },
   computed: {
     componentRootForm() {
@@ -1033,8 +1037,14 @@ export default {
     },
     itemRules: {
       get() {
-        let rule = this.componentRootForm.useCustormRule ? null : this.rules;
-
+         let  rule=[]
+        if(this.rules&&this.rules[this.data.code]&&this.rulesEle instanceof Array){
+              rule = [...this.rulesEle,...this.rules[this.data.code]]
+        } else if(this.rules&&this.rules[this.data.code]){
+             rule = [...this.rules[this.data.code]]
+        } else if(this.rulesEle instanceof Array){
+           rule = [...this.rulesEle]
+        }
         return rule;
       },
       set(val) {
@@ -1089,7 +1099,7 @@ export default {
       USER_UPLOAD_SEARCH_LIST_PARAM: null, // 仅对上传组件有用的自定义查询参数
       relationPreQueryParam: {}, // 关联前置查询参数(键值的形式的)
       relationPreQueryParamKeys: {}, // 关联前置查询参数(键对应的记录)
-      rules: null,
+      rulesEle: [],
       tableData: [], //表格数据
       currentIndex: null, //用于行内编辑
       delRolIndex: null, //用于删除
@@ -1331,7 +1341,7 @@ export default {
       this.formSetting = formSetting_children;
     }
     // 检查是否有配置校验规则(前提是：不使用用户自定义的规则)
-    if (!this.componentRootForm.useCustormRule) {
+    if (this.componentRootForm.useCustormRule) {
       if (validationSetting) {
         let rules = [];
         // 必填
@@ -1413,7 +1423,7 @@ export default {
             });
           }
         }
-        this.rules = rules;
+        this.rulesEle = rules ;
       }
     }
     if (this.data.type == "treeBox") {
@@ -2019,14 +2029,18 @@ export default {
       // 判断当前下拉框是否有配置更改其他表单元素的状态
       if (this.formSetting.length > 0) {
         let data = [];
+        let flag = false;
         this.formSetting.forEach((item) => {
-          if (item.value == val && item.editSettingArray) {
+          if (item.value == val&&item.editSettingArray) {
+            flag = true
             data = JSON.parse(JSON.stringify(item.editSettingArray));
-            this.$bus.$emit("selectChange", data);
-          } else if (item.editSettingArray) {
-            this.$bus.$emit("selectChange", data);
-          }
+          } 
         });
+        if(flag){
+            this.$bus.$emit("selectChange", data);
+        }else{
+            this.$bus.$emit("selectChange", data);
+        }
       }
 
       // 执行自定义的change事件
