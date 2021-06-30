@@ -226,6 +226,15 @@ export function getsysdictLabels (data) {
   })
 }
 
+// 获取系统所有附件列表
+export function getAllFiles(data) {
+  return axios({
+    method: 'get',
+    url: fileUploadUrl + '/file-center/files/getAllFiles',
+    myContentType: 'application/json',// 自定义content-type
+    params: data
+  })
+}
 export function getLinkFormByCodeService(data){
   return axios({
     method: 'get',
