@@ -141,16 +141,12 @@ export default {
                   _fields
               ));
               // 不论是否为新建或回显，都需要先做一个空值的，否则若有checkbox，则checkbox的值类型会报错
-              try{
-                this.formModel = getFormModel(
-                    this,
-                    flatLists,
-                    "defaultValue",
-                    false
-                );
-              }catch(e){
-                debugger;
-              }
+              this.formModel = getFormModel(
+                  this,
+                  flatLists,
+                  "defaultValue",
+                  false
+              );
 
               this.fdFormData = fmData;
               this.fdFormItems = formateList(list);
@@ -165,10 +161,13 @@ export default {
     },
 
     btnClick(btn, index){
-      let closeDialog = ()=>{
-        this.dialogVisible = false;
-      };
-      this.$emit('dialogBtnClick', {formItem: this.formItem, btnText: btn, formModel: this.formModel}, closeDialog)
+
+      this.dialogVisible = false;// TODO 目前是直接关闭
+
+      // let closeDialog = () =>{
+      //   this.dialogVisible = false;
+      // };
+      // this.$emit('dialogBtnClick', {formItem: this.formItem, btnText: btn, formModel: this.formModel}, closeDialog)
     },
     confirmBtnClickHand(){
       this.confirmCb(_=>{ this.dialogVisible = false;})
