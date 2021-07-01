@@ -135,7 +135,12 @@
                       :clearable="col.componentTypeValueAttr.clearable.value"
                       @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                     ></el-input>
-                    <span style="margin-left: 10px" v-else>
+                    <span :style="{
+                      'margin-left': '10px',
+                      'color':(col.componentTypeValueAttr.isURL&&col.componentTypeValueAttr.isURL.value)?'blue':'',
+                      'cursor':(col.componentTypeValueAttr.isURL&&col.componentTypeValueAttr.isURL.value)?'pointer':''}" 
+                      @click="herf(col,scope.row)"
+                      v-else>
                       {{
                       scope.row[col.prop]
                       }}
@@ -296,7 +301,7 @@
     >
       <!-- 选择人员树组件 -->
       <template v-if="data.type==='user'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress" :rules="itemRules">
+        <el-form-item class="form-item suffix-button" prop="paramExpress">
           <el-input
             clearable
             :disabled="data.disabled"
@@ -342,7 +347,7 @@
 
       <!-- 下拉树组件 -->
       <template v-else-if="data.type==='tree'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress" :rules="itemRules">
+        <el-form-item class="form-item suffix-button" prop="paramExpress" >
           <selectTree
             nodeKey="value"
             :treeProps="treeProps"
@@ -356,7 +361,7 @@
       </template>
       <!-- 弹出框下拉树组件 -->
       <template v-else-if="data.type=='treeBox'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress" :rules="itemRules">
+        <el-form-item class="form-item suffix-button" prop="paramExpress" >
           <el-input
             :clearable="data.clearable"
             :disabled="data.disabled"
@@ -972,6 +977,10 @@ export default {
       type: Number,
       default: 0,
     },
+    rules:{
+      type:Object,
+      default:()=>{}
+    }
   },
   computed: {
     componentRootForm() {
@@ -1028,9 +1037,15 @@ export default {
       return obj;
     },
     itemRules: {
-      get () {
-        let rule = this.componentRootForm.useCustormRule ? null : this.rules;
-
+      get() {
+         let  rule=[]
+        if(this.rules&&this.rules[this.data.code]&&this.rulesEle instanceof Array){
+              rule = [...this.rulesEle,...this.rules[this.data.code]]
+        } else if(this.rules&&this.rules[this.data.code]){
+             rule = [...this.rules[this.data.code]]
+        } else if(this.rulesEle instanceof Array){
+           rule = [...this.rulesEle]
+        }
         return rule;
       },
       set(val) {
@@ -1091,7 +1106,7 @@ export default {
       USER_UPLOAD_SEARCH_LIST_PARAM: null, // 仅对上传组件有用的自定义查询参数
       relationPreQueryParam: {}, // 关联前置查询参数(键值的形式的)
       relationPreQueryParamKeys: {}, // 关联前置查询参数(键对应的记录)
-      rules: null,
+      rulesEle: [],
       tableData: [], //表格数据
       currentIndex: null, //用于行内编辑
       delRolIndex: null, //用于删除
@@ -1333,7 +1348,7 @@ export default {
       this.formSetting = formSetting_children;
     }
     // 检查是否有配置校验规则(前提是：不使用用户自定义的规则)
-    if (!this.componentRootForm.useCustormRule) {
+    if (this.componentRootForm.useCustormRule) {
       if (validationSetting) {
         let rules = [];
         // 必填
@@ -1415,7 +1430,7 @@ export default {
             });
           }
         }
-        this.rules = rules;
+        this.rulesEle = rules ;
       }
     }
     if (this.data.type == "treeBox") {
@@ -1900,8 +1915,7 @@ export default {
     },
     // 处理配置的按钮执行点击事件
     dealFuncStr(item, index,row) {
-      if(item.code=='scan'){
-        this.DialogattrData=[]
+      this.DialogattrData=[]
         for(const key in row){
           if(key!='cloumnOpera'){
             this.data.tableCols.forEach(item=>{
@@ -1925,13 +1939,39 @@ export default {
             })
           }
         }
+      if(item.code=='scan'){
+        // this.DialogattrData=[]
+        // for(const key in row){
+        //   if(key!='cloumnOpera'){
+        //     this.data.tableCols.forEach(item=>{
+        //       if(item.prop==key){
+        //         if(item.componentTypeValue=="select"){
+        //           item.options.forEach(it=>{
+        //             if(it.value==row[key]){
+        //           this.DialogattrData.push({
+        //             label:item.label,
+        //             value:it.label
+        //               })
+        //             }
+        //           })
+        //         }else{
+        //             this.DialogattrData.push({
+        //                 label:item.label,
+        //                 value:row[key]
+        //              })
+        //             }
+        //       }
+        //     })
+        //   }
+        // }
         this.visible=true
       }
       else if (!item.clickFuncStr) {
         let args = {
           item:item,
           row:row,
-          data:this.data
+          data:this.data,
+          rowData:this.DialogattrData
         }
         this.componentFormContainer.$emit("tableItemClick", args);
         // this.MessageConfig.showMessage = true;
@@ -1994,14 +2034,18 @@ export default {
       // 判断当前下拉框是否有配置更改其他表单元素的状态
       if (this.formSetting.length > 0) {
         let data = [];
+        let flag = false;
         this.formSetting.forEach((item) => {
-          if (item.value == val && item.editSettingArray) {
+          if (item.value == val&&item.editSettingArray) {
+            flag = true
             data = JSON.parse(JSON.stringify(item.editSettingArray));
-            this.$bus.$emit("selectChange", data);
-          } else if (item.editSettingArray) {
-            this.$bus.$emit("selectChange", data);
-          }
+          } 
         });
+        if(flag){
+            this.$bus.$emit("selectChange", data);
+        }else{
+            this.$bus.$emit("selectChange", data);
+        }
       }
 
       // 执行自定义的change事件
@@ -2679,6 +2723,20 @@ export default {
       });
       this.tablecolumnCopy = arr;
     },
+    herf(col,row){
+      if(col.componentTypeValueAttr.isURL.value){
+        let url = col.componentTypeValueAttr.isURLCode.value && 'url'
+        console.log(row,'row[url]');
+        if(row[url]){
+        this.$router.push({
+        path:row[url]
+      })
+        }
+
+      }else{
+        return
+      }
+    },
     //根据配置sql查询不分页列表
     getFormTableSqlList() {
       getFormTableSqlList(this.sqlData).then((res) => {
@@ -2765,6 +2823,9 @@ export default {
           this.data.tableData = [];
           data.rows.forEach((item) => {
             let obj = {};
+            if(item.id){
+              obj.id=item.id
+            }
             item.columns.forEach((cIt) => {
               obj[cIt.code] = cIt.value;
             });
@@ -2814,8 +2875,11 @@ export default {
             : 0;
           this.data.tableData = [];
           data.forEach((item) => {
-            let obj = {};
             item.rows.forEach((it) => {
+              let obj = {};
+              if(it.id){
+              obj.id=it.id
+            }
               it.columns.forEach((cIt) => {
                 obj[cIt.code] = cIt.value;
               });
