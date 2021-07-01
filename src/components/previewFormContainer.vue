@@ -309,13 +309,11 @@
         }
       },
       getFormItemValue(formCode, formItemCode) {
-        debugger;
         let currentFormCode = this.fdFormData.code;
         if(formCode === currentFormCode) {
           return this.formModel[formItemCode];
         }
         else if(formCode){
-          debugger;
           // 找页面上的其他表单预览实例
           let subForm = this.getFormByCode(formCode);
           let container = subForm.$parent.$parent;

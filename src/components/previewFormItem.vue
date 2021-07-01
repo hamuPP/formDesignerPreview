@@ -1082,6 +1082,12 @@ export default {
         }
       }
     },
+    'data.hidden'(n, o){
+      if(!n && this.data.type === 'textarea'){
+       this.setLabelEleHeight(this.contentEle.offsetHeight + "px");
+      }
+
+    }
   },
   data() {
     return {
@@ -1733,7 +1739,6 @@ export default {
       }
     },
     delFile(row) {
-      debugger;
       commonRequest({
         method: "DELETE",
         url: this.data.delFileUrl + row.id,
@@ -1745,7 +1750,6 @@ export default {
           type: "success",
         });
 
-        debugger;
         this.getNewFileList();
         // this.getFileList();
       });
