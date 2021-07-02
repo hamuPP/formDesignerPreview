@@ -135,12 +135,14 @@
                       :clearable="col.componentTypeValueAttr.clearable.value"
                       @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                     ></el-input>
-                    <span :style="{
+                    <span
+                      :style="{
                       'margin-left': '10px',
                       'color':(col.componentTypeValueAttr.isURL&&col.componentTypeValueAttr.isURL.value)?'blue':'',
-                      'cursor':(col.componentTypeValueAttr.isURL&&col.componentTypeValueAttr.isURL.value)?'pointer':''}" 
+                      'cursor':(col.componentTypeValueAttr.isURL&&col.componentTypeValueAttr.isURL.value)?'pointer':''}"
                       @click="herf(col,scope.row)"
-                      v-else>
+                      v-else
+                    >
                       {{
                       scope.row[col.prop]
                       }}
@@ -347,7 +349,7 @@
 
       <!-- 下拉树组件 -->
       <template v-else-if="data.type==='tree'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress" >
+        <el-form-item class="form-item suffix-button" prop="paramExpress">
           <selectTree
             nodeKey="value"
             :treeProps="treeProps"
@@ -355,13 +357,13 @@
             :lazy="false"
             :staticTreeData="options"
             :formModel="formModel"
-            :formModelCn='formModelCn'
+            :formModelCn="formModelCn"
           ></selectTree>
         </el-form-item>
       </template>
       <!-- 弹出框下拉树组件 -->
       <template v-else-if="data.type=='treeBox'">
-        <el-form-item class="form-item suffix-button" prop="paramExpress" >
+        <el-form-item class="form-item suffix-button" prop="paramExpress">
           <el-input
             :clearable="data.clearable"
             :disabled="data.disabled"
@@ -583,7 +585,7 @@
           :http-request="uploadNewFile"
           :disabled="data.disabled"
           :multiple="data.isMultiple"
-        > 
+        >
           <el-button size="small" type="primary">点击上传</el-button>
           <ul class="el-upload-list file-template el-upload-list--text" @click.stop="()=>{}">
             <li
@@ -591,12 +593,7 @@
               v-for="(fileItem, fileIndex) in fileTemplate"
               :key="fileIndex"
             >
-              <a
-                class="el-upload-list__item-name"
-                :href="getDownURL(fileItem)"
-                download
-                title="下载"
-              >
+              <a class="el-upload-list__item-name" :href="getDownURL(fileItem)" download title="下载">
                 <i class="el-icon-document"></i>
                 {{fileItem.name}}
               </a>
@@ -676,36 +673,36 @@
       <!--   业务公共字段-操作人当前角色  （有input和select两种）   -->
       <template v-else-if="data.fieldType === 'userRole'">
         <el-select
-            v-if="data.showType === 'select'"
-            :ref="data.ref"
-            v-model="formModel[data.code]"
-            :disabled="data.disabled"
-            :readonly="data.readonly"
-            :clearable="data.clearable"
-            @change="selectChangeHand"
-            @click.native="inputClickHand"
-            @focus="inputFocusHand"
-            @blur="inputBlurHand"
+          v-if="data.showType === 'select'"
+          :ref="data.ref"
+          v-model="formModel[data.code]"
+          :disabled="data.disabled"
+          :readonly="data.readonly"
+          :clearable="data.clearable"
+          @change="selectChangeHand"
+          @click.native="inputClickHand"
+          @focus="inputFocusHand"
+          @blur="inputBlurHand"
         >
           <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
           ></el-option>
         </el-select>
 
         <el-input
-            v-else
-            :ref="data.ref"
-            v-model="formModel[data.code]"
-            :disabled="data.disabled"
-            :readonly="data.readonly"
-            :clearable="data.clearable"
-            @click.native="inputClickHand"
-            @change="inputChangeHand"
-            @focus="inputFocusHand"
-            @blur="inputBlurHand"
+          v-else
+          :ref="data.ref"
+          v-model="formModel[data.code]"
+          :disabled="data.disabled"
+          :readonly="data.readonly"
+          :clearable="data.clearable"
+          @click.native="inputClickHand"
+          @change="inputChangeHand"
+          @focus="inputFocusHand"
+          @blur="inputBlurHand"
         ></el-input>
       </template>
 
@@ -756,7 +753,8 @@
         :ref="data.ref"
         v-model="formModel[data.code]"
         :disabled="data.disabled"
-        :readonly="data.readonly"k
+        :readonly="data.readonly"
+        k
         :clearable="data.clearable"
         @click.native="inputClickHand"
         @change="inputChangeHand"
@@ -852,19 +850,17 @@
       :isMultiple="data.isMultiple ? data.isMultiple.value : false"
       @personSure="personSure"
     ></newPersonEditDialog>
-    <CusDialog 
-    ref="cusDialog" 
-    :visible.sync="visible" 
-    :appendToBody='true' 
-    :title="diaformTitle"
-    :closeOnClickModal='true'
-    width="65%"
-    @cancel="cancel"
-    @confirm="confirm"
+    <CusDialog
+      ref="cusDialog"
+      :visible.sync="visible"
+      :appendToBody="true"
+      :title="diaformTitle"
+      :closeOnClickModal="true"
+      width="65%"
+      @cancel="cancel"
+      @confirm="confirm"
     >
-    <tableDialog
-          :DialogattrData="DialogattrData"
-    ></tableDialog>
+      <tableDialog :DialogattrData="DialogattrData"></tableDialog>
     </CusDialog>
     <!-- 弹出框下拉树 -->
     <frameTree ref="frameTree" :staticTreeData="options" @showFrameValue="showFrameValue"></frameTree>
@@ -907,7 +903,7 @@ import MessageBox from "./MessageBox.vue";
 import selectTree from "./selectTree";
 import frameTree from "./frameTree";
 import personEditDialog from "./personEditDialog.vue";
-import CusDialog from './CusDialog/index'
+import CusDialog from "./CusDialog/index";
 import newPersonEditDialog from "./newPersonEditDialog";
 import rogroupEditDialog from "./rogroupEditDialog.vue";
 import tableDialog from "./tableDialog.vue";
@@ -922,7 +918,7 @@ export default {
     selectTree,
     frameTree,
     CusDialog,
-    tableDialog
+    tableDialog,
   },
   props: {
     // 是否为预览模式，模式是编辑模式啦
@@ -977,10 +973,10 @@ export default {
       type: Number,
       default: 0,
     },
-    rules:{
-      type:Object,
-      default:()=>{}
-    }
+    rules: {
+      type: Object,
+      default: () => {},
+    },
   },
   computed: {
     componentRootForm() {
@@ -1038,15 +1034,22 @@ export default {
     },
     itemRules: {
       get() {
-         let  rule=[]
-        if(this.rules&&this.rules[this.data.code]&&this.rulesEle instanceof Array){
-              rule = [...this.rulesEle,...this.rules[this.data.code]]
-        } else if(this.rules&&this.rules[this.data.code]){
-             rule = [...this.rules[this.data.code]]
-        } else if(this.rulesEle instanceof Array){
-           rule = [...this.rulesEle]
+        let rule = [];
+        if (!this.data.hidden) {
+          if (
+            this.rules &&
+            this.rules[this.data.code] &&
+            this.rulesEle instanceof Array
+          ) {
+            rule = [...this.rulesEle, ...this.rules[this.data.code]];
+          } else if (this.rules && this.rules[this.data.code]) {
+            rule = [...this.rules[this.data.code]];
+          } else if (this.rulesEle instanceof Array) {
+            rule = [...this.rulesEle];
+          }
+
+          return rule;
         }
-        return rule;
       },
       set(val) {
         console.log("set", val);
@@ -1082,20 +1085,122 @@ export default {
         }
       }
     },
+    formModel: {
+      handler(n, o) {
+        if (this.formModelCnFlag) {
+          if (this.data && this.data.type && this.formModel[this.data.code]) {
+            if (this.data.type == "checkbox") {
+              let obj = [];
+              this.formModel[this.data.code].forEach((it) => {
+                this.options.forEach((item) => {
+                  if (it == item.value) {
+                    obj.push(item.label);
+                  }
+                });
+              });
+              this.formModelCn[this.data.code] = obj.join();
+            } else if (this.data.type == "cascader"&&this.options.length) {
+              let label = [];
+              let fn = (ele, item) => {
+                ele.forEach((it) => {
+                  if (it.value == item) {
+                    label.push(it.label);
+                  } else if (it.children && it.children.length > 0) {
+                    fn(it.children, item);
+                  }
+                });
+              };
+              this.formModel[this.data.code].forEach((item) => {
+                fn(this.options, item);
+              });
+              this.formModelCn[this.data.code] = label.join();
+            } else if (this.data.type == "select"||this.data.showType === 'select') {
+              if (this.data.multiple == true) {
+                let obj = [];
+                this.formModel[this.data.code].forEach((it) => {
+                  this.options.forEach((item) => {
+                    if (it == item.value) {
+                      obj.push(item.label);
+                    }
+                  });
+                });
+                this.formModelCn[this.data.code] = obj.join();
+              } else {
+                this.options.forEach((item) => {
+                  if (item.value == this.formModel[this.data.code]) {
+                    this.formModelCn[this.data.code] = item.label;
+                  }
+                });
+              }
+            }
+          }
+        }
+      },
+      deep: true,
+    },
+    options: {
+      handler(n, o) {
+        if (this.formModelCnFlag) {
+          if (n.length > 0) {
+          if (this.data && this.data.type && this.formModel[this.data.code]) {
+            if (this.data.type == "checkbox") {
+              let obj = [];
+              this.formModel[this.data.code].forEach((it) => {
+                this.options.forEach((item) => {
+                  if (it == item.value) {
+                    obj.push(item.label);
+                  }
+                });
+              });
+              this.formModelCn[this.data.code] = obj.join();
+            } else if (this.data.type == "cascader") {
+              let label = [];
+              let fn = (ele, item) => {
+                ele.forEach((it) => {
+                  if (it.value == item) {
+                    label.push(it.label);
+                  } else if (it.children && it.children.length > 0) {
+                    fn(it.children, item);
+                  }
+                });
+              };
+              this.formModel[this.data.code].forEach((item) => {
+                fn(this.options, item);
+              });
+              this.formModelCn[this.data.code] = label.join();
+            } else if (this.data.type == "select"||this.data.showType === 'select'){
+              if (this.data.multiple == true) {
+                let obj = [];
+                this.formModel[this.data.code].forEach((it) => {
+                  this.options.forEach((item) => {
+                    if (it == item.value) {
+                      obj.push(item.label);
+                    }
+                  });
+                });
+                this.formModelCn[this.data.code] = obj.join();
+              } else  {
+                this.options.forEach((item) => {
+                  if (item.value == this.formModel[this.data.code]) {
+                    this.formModelCn[this.data.code] = item.label;
+                  }
+                });
+              }
+            }
+          }
+          }
+        }
+      },
+      deep: true,
+    },
   },
   data() {
     return {
       moment: moment,
       options: [], // 针对下拉框等的下拉数据
       fileName: "", // 附件名字
-      fileTemplate:[],//附件模板
-      fileList: [
-        // {
-        //   name: '测试啊啊啊啊'
-        // }, {
-        //   name: '凉凉以就就'
-        // },
-      ], // 附件列表
+      fileTemplate: [], //附件模板
+      fileList: [], // 附件列表
       USER_UPLOAD_PARAM: null, // 仅对上传组件有用的自定义查询参数
       USER_UPLOAD_SEARCH_LIST_PARAM: null, // 仅对上传组件有用的自定义查询参数
       relationPreQueryParam: {}, // 关联前置查询参数(键值的形式的)
@@ -1130,10 +1235,10 @@ export default {
       treeData: [], //表头列筛选数据
       defaultDataArray: [],
       tablecolumnCopy: [],
-      visible:false,
+      visible: false,
       diaformTitle: "详情", //dialog框信息标题
       DialogattrData: [], //dialog表单信息
-      counting: false,// 正在倒计时
+      counting: false, // 正在倒计时
       countNumber: 0,
       TIMER: null,
     };
@@ -1424,7 +1529,7 @@ export default {
             });
           }
         }
-        this.rulesEle = rules ;
+        this.rulesEle = rules;
       }
     }
     if (this.data.type == "treeBox") {
@@ -1455,19 +1560,23 @@ export default {
       this.editorTxt = this.formModel[this.data.code];
     }
     //查询附件模板
-    if(this.data.type=="uploadNewFile"){
-        if(this.data.businessType&&this.data.fileTemplate){
-         let queryData = {
-           businessType:this.data.businessType,
-           boId:this.data.fileTemplate
-         };
-         getAllFiles(queryData).then(res=>{
-        if (res && res.data && res.data.code == "0000") {
-          this.fileTemplate = res.data.data.data;
-          console.log(this.fileTemplate,'fileTemplate');
-          }
-         }).catch((e)=>{console.log(e);})
-        }
+    if (this.data.type == "uploadNewFile") {
+      if (this.data.businessType && this.data.fileTemplate) {
+        let queryData = {
+          businessType: this.data.businessType,
+          boId: this.data.fileTemplate,
+        };
+        getAllFiles(queryData)
+          .then((res) => {
+            if (res && res.data && res.data.code == "0000") {
+              this.fileTemplate = res.data.data.data;
+              console.log(this.fileTemplate, "fileTemplate");
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     }
     //处理表格表头
     if (this.data.type == "table") {
@@ -1511,28 +1620,31 @@ export default {
         this.getCascaderOptions(params.rootValue, this.data.code);
       }
     }
-    if(this.data.type =='datePicker'||this.data.type=='timePicker'){
-      if(this.data.isDefaultValueUseCurrentTime&&!this.formModel[this.data.code]){
-        var formatDateTime = function (date) {  
-                var y = date.getFullYear();  
-                var m = date.getMonth() + 1;  
-                m = m < 10 ? ('0' + m) : m;  
-                var d = date.getDate();  
-                d = d < 10 ? ('0' + d) : d;  
-                var h = date.getHours();  
-                h=h < 10 ? ('0' + h) : h;  
-                var minute = date.getMinutes();  
-                minute = minute < 10 ? ('0' + minute) : minute;  
-                var second=date.getSeconds();  
-                second=second < 10 ? ('0' + second) : second;  
-                return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;  
-            };  
-        this.formModel[this.data.code]= formatDateTime(new Date())
+    if (this.data.type == "datePicker" || this.data.type == "timePicker") {
+      if (
+        this.data.isDefaultValueUseCurrentTime &&
+        !this.formModel[this.data.code]
+      ) {
+        var formatDateTime = function (date) {
+          var y = date.getFullYear();
+          var m = date.getMonth() + 1;
+          m = m < 10 ? "0" + m : m;
+          var d = date.getDate();
+          d = d < 10 ? "0" + d : d;
+          var h = date.getHours();
+          h = h < 10 ? "0" + h : h;
+          var minute = date.getMinutes();
+          minute = minute < 10 ? "0" + minute : minute;
+          var second = date.getSeconds();
+          second = second < 10 ? "0" + second : second;
+          return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+        };
+        this.formModel[this.data.code] = formatDateTime(new Date());
       }
     }
   },
   beforeDestroy() {
-    if (this.TIMER){
+    if (this.TIMER) {
       clearInterval(this.TIMER);
     }
     this.counting = false;
@@ -1910,32 +2022,32 @@ export default {
       this.options = [];
     },
     // 处理配置的按钮执行点击事件
-    dealFuncStr(item, index,row) {
-      this.DialogattrData=[]
-        for(const key in row){
-          if(key!='cloumnOpera'){
-            this.data.tableCols.forEach(item=>{
-              if(item.prop==key){
-                if(item.componentTypeValue=="select"){
-                  item.options.forEach(it=>{
-                    if(it.value==row[key]){
-                  this.DialogattrData.push({
-                    label:item.label,
-                    value:it.label
-                      })
-                    }
-                  })
-                }else{
+    dealFuncStr(item, index, row) {
+      this.DialogattrData = [];
+      for (const key in row) {
+        if (key != "cloumnOpera") {
+          this.data.tableCols.forEach((item) => {
+            if (item.prop == key) {
+              if (item.componentTypeValue == "select") {
+                item.options.forEach((it) => {
+                  if (it.value == row[key]) {
                     this.DialogattrData.push({
-                        label:item.label,
-                        value:row[key]
-                     })
-                    }
+                      label: item.label,
+                      value: it.label,
+                    });
+                  }
+                });
+              } else {
+                this.DialogattrData.push({
+                  label: item.label,
+                  value: row[key],
+                });
               }
-            })
-          }
+            }
+          });
         }
-      if(item.code=='scan'){
+      }
+      if (item.code == "scan") {
         // this.DialogattrData=[]
         // for(const key in row){
         //   if(key!='cloumnOpera'){
@@ -1960,15 +2072,14 @@ export default {
         //     })
         //   }
         // }
-        this.visible=true
-      }
-      else if (!item.clickFuncStr) {
+        this.visible = true;
+      } else if (!item.clickFuncStr) {
         let args = {
-          item:item,
-          row:row,
-          data:this.data,
-          rowData:this.DialogattrData
-        }
+          item: item,
+          row: row,
+          data: this.data,
+          rowData: this.DialogattrData,
+        };
         this.componentFormContainer.$emit("tableItemClick", args);
         // this.MessageConfig.showMessage = true;
         // this.MessageConfig.MsgBoxType = "warning";
@@ -1977,34 +2088,34 @@ export default {
       }
     },
     //取消表格查看弹窗
-    cancel(){
-      this.visible=false
+    cancel() {
+      this.visible = false;
     },
     //
-    confirm(){
-      this.visible=false
+    confirm() {
+      this.visible = false;
     },
     // 下拉框的选中值改变后的事件
     selectChangeHand(val) {
-      if (this.formModelCnFlag) {
-        if (this.data&&this.data.multiple == true) {
-          let obj = [];
-          val.forEach((it) => {
-            this.options.forEach((item) => {
-              if (it == item.value) {
-                obj.push(item.label);
-              }
-            });
-          });
-          this.formModelCn[this.data.code] = obj.join();
-        } else {
-          this.options.forEach((item) => {
-            if (item.value == val) {
-              this.formModelCn[this.data.code] = item.label;
-            }
-          });
-        }
-      }
+      // if (this.formModelCnFlag) {
+      //   if (this.data && this.data.multiple == true) {
+      //     let obj = [];
+      //     val.forEach((it) => {
+      //       this.options.forEach((item) => {
+      //         if (it == item.value) {
+      //           obj.push(item.label);
+      //         }
+      //       });
+      //     });
+      //     this.formModelCn[this.data.code] = obj.join();
+      //   } else {
+      //     this.options.forEach((item) => {
+      //       if (item.value == val) {
+      //         this.formModelCn[this.data.code] = item.label;
+      //       }
+      //     });
+      //   }
+      // }
       const FD_FORM_ITEM_LIST = this.componentRootForm.$refs.fdFormItem;
       // 检查当前表单中的所有表单项的前置关联查询参数
       for (let i = 0, len = FD_FORM_ITEM_LIST.length; i < len; i++) {
@@ -2032,15 +2143,15 @@ export default {
         let data = [];
         let flag = false;
         this.formSetting.forEach((item) => {
-          if (item.value == val&&item.editSettingArray) {
-            flag = true
+          if (item.value == val && item.editSettingArray) {
+            flag = true;
             data = JSON.parse(JSON.stringify(item.editSettingArray));
-          } 
+          }
         });
-        if(flag){
-            this.$bus.$emit("selectChange", data);
-        }else{
-            this.$bus.$emit("selectChange", data);
+        if (flag) {
+          this.$bus.$emit("selectChange", data);
+        } else {
+          this.$bus.$emit("selectChange", data);
         }
       }
 
@@ -2056,7 +2167,7 @@ export default {
     // 将选人弹窗中确定的人员更新到表单中
     personSure(usersData, names, ids) {
       // usersData:选中的人，用于弹框回显，names：选中的人，用于展示
-      this.formModelCn[this.data.code]=names
+      this.formModelCn[this.data.code] = names;
       this.data.defaultName = names;
       this.data.defaultValueArr = [...usersData];
       this.formModel[this.data.code] = ids;
@@ -2067,7 +2178,7 @@ export default {
       this.data.defaultName = "";
       this.data.defaultValueArr = [];
       this.formModel[this.data.code] = "";
-      this.formModelCn[this.data.code]=''
+      this.formModelCn[this.data.code] = "";
     },
     //打开下拉树弹框
     // openTreeDialog(){
@@ -2094,7 +2205,7 @@ export default {
     //将弹出框下拉树的值展示在input中
     showFrameValue({ value, name }) {
       this.data.defaultValueArr = name;
-      this.formModelCn[this.data.code]=name
+      this.formModelCn[this.data.code] = name;
       this.data.defaultValue = value;
       this.formModel[this.data.code] = value;
     },
@@ -2104,7 +2215,7 @@ export default {
       this.data.defaultValueArr = "";
       this.data.defaultValue = "";
       this.formModel[this.data.code] = "";
-      this.formModelCn[this.data.code]=''
+      this.formModelCn[this.data.code] = "";
     },
     //新增行
     addTableRow(event) {
@@ -2277,7 +2388,8 @@ export default {
             for (var colItem in item) {
               this.data.tableCols.map((tableItem, tableIndex) => {
                 if (tableItem.componentTypeValue === "input") {
-                  tableItem.prop === colItem && item[colItem]&&
+                  tableItem.prop === colItem &&
+                    item[colItem] &&
                     (item[colItem] = item[colItem].toString());
                 } else if (tableItem.componentTypeValue === "inputNumber") {
                   tableItem.prop === colItem &&
@@ -2719,18 +2831,17 @@ export default {
       });
       this.tablecolumnCopy = arr;
     },
-    herf(col,row){
-      if(col.componentTypeValueAttr.isURL.value){
-        let url = col.componentTypeValueAttr.isURLCode.value && 'url'
-        console.log(row,'row[url]');
-        if(row[url]){
-        this.$router.push({
-        path:row[url]
-      })
+    herf(col, row) {
+      if (col.componentTypeValueAttr.isURL.value) {
+        let url = col.componentTypeValueAttr.isURLCode.value && "url";
+        console.log(row, "row[url]");
+        if (row[url]) {
+          this.$router.push({
+            path: row[url],
+          });
         }
-
-      }else{
-        return
+      } else {
+        return;
       }
     },
     //根据配置sql查询不分页列表
@@ -2739,33 +2850,37 @@ export default {
         if (res && res.data) {
           this.data.tableData = res.data.data || [];
           //处理显示不同的按钮显示隐藏
-          if(this.data.tableCols.length>0 && this.data.tableCols[this.data.tableCols.length - 1].label=='操作'){
-          this.data.tableCols[this.data.tableCols.length - 1].buttonList.forEach(item=>{
-            if(item.show){
-              if(item.show.indexOf('=')!=-1){
-              let num = item.show.indexOf('=')
-              let left =  item.show.substring(0,num)
-              let right =  item.show.substring(num+1)
-              this.data.tableData.forEach(ele=>{
-                  if(ele[left]==right){
-                    ele[item.code]=true
-                  }else{
-                     ele[item.code]=false
-                  }
-              })
-              }else{
-                this.data.tableData.forEach(it=>{
-                it[item.code]=true
-              })
+          if (
+            this.data.tableCols.length > 0 &&
+            this.data.tableCols[this.data.tableCols.length - 1].label == "操作"
+          ) {
+            this.data.tableCols[
+              this.data.tableCols.length - 1
+            ].buttonList.forEach((item) => {
+              if (item.show) {
+                if (item.show.indexOf("=") != -1) {
+                  let num = item.show.indexOf("=");
+                  let left = item.show.substring(0, num);
+                  let right = item.show.substring(num + 1);
+                  this.data.tableData.forEach((ele) => {
+                    if (ele[left] == right) {
+                      ele[item.code] = true;
+                    } else {
+                      ele[item.code] = false;
+                    }
+                  });
+                } else {
+                  this.data.tableData.forEach((it) => {
+                    it[item.code] = true;
+                  });
+                }
+              } else {
+                this.data.tableData.forEach((it) => {
+                  it[item.code] = true;
+                });
               }
-            }else{
-              this.data.tableData.forEach(it=>{
-                it[item.code]=true
-              })
-            }
-          })
+            });
           }
-
         }
       });
     },
@@ -2782,31 +2897,36 @@ export default {
             ? parseInt(res.data.data.total)
             : 0;
           //处理显示不同的按钮显示隐藏
-          if(this.data.tableCols.length>0 && this.data.tableCols[this.data.tableCols.length - 1].label=='操作'){
-          this.data.tableCols[this.data.tableCols.length - 1].buttonList.forEach(item=>{
-            if(item.show){
-              if(item.show.indexOf('=')!=-1){
-              let num = item.show.indexOf('=')
-              let left =  item.show.substring(0,num)
-              let right =  item.show.substring(num+1)
-              this.data.tableData.forEach(ele=>{
-                  if(ele[left]==right){
-                    ele[item.code]=true
-                  }else{
-                     ele[item.code]=false
-                  }
-              })
-              }else{
-                this.data.tableData.forEach(it=>{
-                it[item.code]=true
-              })
+          if (
+            this.data.tableCols.length > 0 &&
+            this.data.tableCols[this.data.tableCols.length - 1].label == "操作"
+          ) {
+            this.data.tableCols[
+              this.data.tableCols.length - 1
+            ].buttonList.forEach((item) => {
+              if (item.show) {
+                if (item.show.indexOf("=") != -1) {
+                  let num = item.show.indexOf("=");
+                  let left = item.show.substring(0, num);
+                  let right = item.show.substring(num + 1);
+                  this.data.tableData.forEach((ele) => {
+                    if (ele[left] == right) {
+                      ele[item.code] = true;
+                    } else {
+                      ele[item.code] = false;
+                    }
+                  });
+                } else {
+                  this.data.tableData.forEach((it) => {
+                    it[item.code] = true;
+                  });
+                }
+              } else {
+                this.data.tableData.forEach((it) => {
+                  it[item.code] = true;
+                });
               }
-            }else{
-              this.data.tableData.forEach(it=>{
-                it[item.code]=true
-              })
-            }
-          })
+            });
           }
         }
       });
@@ -2819,8 +2939,8 @@ export default {
           this.data.tableData = [];
           data.rows.forEach((item) => {
             let obj = {};
-            if(item.id){
-              obj.id=item.id
+            if (item.id) {
+              obj.id = item.id;
             }
             item.columns.forEach((cIt) => {
               obj[cIt.code] = cIt.value;
@@ -2828,31 +2948,36 @@ export default {
             this.data.tableData.push(obj);
           });
           //处理显示不同的按钮显示隐藏
-          if(this.data.tableCols.length>0 && this.data.tableCols[this.data.tableCols.length - 1].label=='操作'){
-          this.data.tableCols[this.data.tableCols.length - 1].buttonList.forEach(item=>{
-            if(item.show){
-              if(item.show.indexOf('=')!=-1){
-              let num = item.show.indexOf('=')
-              let left =  item.show.substring(0,num)
-              let right =  item.show.substring(num+1)
-              this.data.tableData.forEach(ele=>{
-                  if(ele[left]==right){
-                    ele[item.code]=true
-                  }else{
-                     ele[item.code]=false
-                  }
-              })
-              }else{
-                this.data.tableData.forEach(it=>{
-                it[item.code]=true
-              })
+          if (
+            this.data.tableCols.length > 0 &&
+            this.data.tableCols[this.data.tableCols.length - 1].label == "操作"
+          ) {
+            this.data.tableCols[
+              this.data.tableCols.length - 1
+            ].buttonList.forEach((item) => {
+              if (item.show) {
+                if (item.show.indexOf("=") != -1) {
+                  let num = item.show.indexOf("=");
+                  let left = item.show.substring(0, num);
+                  let right = item.show.substring(num + 1);
+                  this.data.tableData.forEach((ele) => {
+                    if (ele[left] == right) {
+                      ele[item.code] = true;
+                    } else {
+                      ele[item.code] = false;
+                    }
+                  });
+                } else {
+                  this.data.tableData.forEach((it) => {
+                    it[item.code] = true;
+                  });
+                }
+              } else {
+                this.data.tableData.forEach((it) => {
+                  it[item.code] = true;
+                });
               }
-            }else{
-              this.data.tableData.forEach(it=>{
-                it[item.code]=true
-              })
-            }
-          })
+            });
           }
         }
       });
@@ -2873,9 +2998,9 @@ export default {
           data.forEach((item) => {
             item.rows.forEach((it) => {
               let obj = {};
-              if(it.id){
-              obj.id=it.id
-            }
+              if (it.id) {
+                obj.id = it.id;
+              }
               it.columns.forEach((cIt) => {
                 obj[cIt.code] = cIt.value;
               });
@@ -2883,31 +3008,36 @@ export default {
             });
           });
           //处理显示不同的按钮显示隐藏
-          if(this.data.tableCols.length>0 && this.data.tableCols[this.data.tableCols.length - 1].label=='操作'){
-          this.data.tableCols[this.data.tableCols.length - 1].buttonList.forEach(item=>{
-            if(item.show){
-              if(item.show.indexOf('=')!=-1){
-              let num = item.show.indexOf('=')
-              let left =  item.show.substring(0,num)
-              let right =  item.show.substring(num+1)
-              this.data.tableData.forEach(ele=>{
-                  if(ele[left]==right){
-                    ele[item.code]=true
-                  }else{
-                     ele[item.code]=false
-                  }
-              })
-              }else{
-                this.data.tableData.forEach(it=>{
-                it[item.code]=true
-              })
+          if (
+            this.data.tableCols.length > 0 &&
+            this.data.tableCols[this.data.tableCols.length - 1].label == "操作"
+          ) {
+            this.data.tableCols[
+              this.data.tableCols.length - 1
+            ].buttonList.forEach((item) => {
+              if (item.show) {
+                if (item.show.indexOf("=") != -1) {
+                  let num = item.show.indexOf("=");
+                  let left = item.show.substring(0, num);
+                  let right = item.show.substring(num + 1);
+                  this.data.tableData.forEach((ele) => {
+                    if (ele[left] == right) {
+                      ele[item.code] = true;
+                    } else {
+                      ele[item.code] = false;
+                    }
+                  });
+                } else {
+                  this.data.tableData.forEach((it) => {
+                    it[item.code] = true;
+                  });
+                }
+              } else {
+                this.data.tableData.forEach((it) => {
+                  it[item.code] = true;
+                });
               }
-            }else{
-              this.data.tableData.forEach(it=>{
-                it[item.code]=true
-              })
-            }
-          })
+            });
           }
         }
       });
@@ -2988,7 +3118,7 @@ export default {
       };
 
       // 倒计时开始
-      if(this.data.type === "button"){
+      if (this.data.type === "button") {
         this.startCountingDown();
       }
       // 尝试把自定义函数字符串转为函数并执行
@@ -3007,9 +3137,7 @@ export default {
 
         // todo 打开弹窗的还没有做
         if (behavior === "openDialog") {
-          this.componentFormContainer.$refs.commonDialog.showDialog(
-            this.data
-          );
+          this.componentFormContainer.$refs.commonDialog.showDialog(this.data);
         }
       }
       // 不论是否有自定义函数，这个都会触发emit,以便使用者可以在回调函数里进行其他行为
@@ -3044,34 +3172,33 @@ export default {
         if (behavior === "openDialog") {
         }
       }
-      if(this.data&&this.data.type&&this.data.type=='checkbox'){
-        let obj = [];
-          value.forEach((it) => {
-            this.options.forEach((item) => {
-              if (it == item.value) {
-                obj.push(item.label);
-              }
-            });
-          });
-          this.formModelCn[this.data.code] = obj.join();
-      }
-      if(this.data&&this.data.type&&this.data.type=='cascader'){
-        let label = []
-        let fn=(ele,item)=> {
-          ele.forEach(it=>{
-            if(it.value==item){
-            label.push(it.label)
-          }else if(it.children&&it.children.length>0){
-            fn(it.children,item)
-            }
-          })
-
-        }
-        this.formModel[this.data.code].forEach(item=>{
-          fn(this.options,item)
-        })
-        this.formModelCn[this.data.code] = label.join()
-      }
+      // if (this.data && this.data.type && this.data.type == "checkbox") {
+      //   let obj = [];
+      //   value.forEach((it) => {
+      //     this.options.forEach((item) => {
+      //       if (it == item.value) {
+      //         obj.push(item.label);
+      //       }
+      //     });
+      //   });
+      //   this.formModelCn[this.data.code] = obj.join();
+      // }
+      // if (this.data && this.data.type && this.data.type == "cascader") {
+      //   let label = [];
+      //   let fn = (ele, item) => {
+      //     ele.forEach((it) => {
+      //       if (it.value == item) {
+      //         label.push(it.label);
+      //       } else if (it.children && it.children.length > 0) {
+      //         fn(it.children, item);
+      //       }
+      //     });
+      //   };
+      //   this.formModel[this.data.code].forEach((item) => {
+      //     fn(this.options, item);
+      //   });
+      //   this.formModelCn[this.data.code] = label.join();
+      // }
       this.componentFormContainer.$emit("formItemChange", args);
     },
     inputFocusHand() {
@@ -3129,17 +3256,17 @@ export default {
       }
       this.componentFormContainer.$emit("formItemBlur", args);
     },
-    startCountingDown(){
+    startCountingDown() {
       const that = this;
       let timeInterval = this.data.click.timeInterval;
-      if(timeInterval){
-        if(timeInterval.constructor === String){
+      if (timeInterval) {
+        if (timeInterval.constructor === String) {
           timeInterval = Number(timeInterval);
         }
         this.counting = true;
         this.countNumber = timeInterval;
-        this.TIMER = setInterval(function(){
-          if (that.countNumber === 0){
+        this.TIMER = setInterval(function () {
+          if (that.countNumber === 0) {
             clearInterval(that.TIMER);
             that.counting = false;
           }
@@ -3147,7 +3274,7 @@ export default {
           that.countNumber--;
         }, 1000);
       }
-    }
+    },
   },
 };
 </script>
@@ -3183,9 +3310,13 @@ export default {
   align-items: center !important;
   flex-direction: column !important;
 }
-.fd-form-item{
-  .countdown{
+.fd-form-item {
+  .countdown {
     color: #888;
+  }
+  .fd-formTable .pagination {
+    display: flex;
+    justify-content: space-between;
   }
 }
 </style>
