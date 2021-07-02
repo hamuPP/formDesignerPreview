@@ -1054,19 +1054,6 @@ export default {
     },
   },
   watch: {
-    // relationPreQueryParam(n, o){
-    //   debugger;
-    // }
-    // formModel:{
-    //   handler(n,o){
-    //     if(this.data.type=='richText'&&this.editorFlag){
-    //       this.editorFlag = false
-    //       this.editor.txt.html(this.formModel[this.data.code])
-    //     }
-
-    //   },
-    //   deep:true
-    // },
     editorTxt: {
       handler(n, o) {
         this.editor.txt.html(this.formModel[this.data.code]);
@@ -1086,8 +1073,7 @@ export default {
       if(!n && this.data.type === 'textarea'){
        this.setLabelEleHeight(this.contentEle.offsetHeight + "px");
       }
-
-    }
+    },
   },
   data() {
     return {
@@ -1146,8 +1132,7 @@ export default {
   },
   created() {
     // 检查如果有码表配置的，查询其数据
-    let { type, optionSetting, validationSetting, formSetting_children } =
-      this.data;
+    let { type, optionSetting, validationSetting, formSetting_children } = this.data;
     if (optionSetting === "static") {
       let newList = [];
       this.data.optionSetting_tabContent.forEach((it) => {
@@ -1347,6 +1332,7 @@ export default {
     if (formSetting_children) {
       this.formSetting = formSetting_children;
     }
+
     // 检查是否有配置校验规则(前提是：不使用用户自定义的规则)
     if (this.componentRootForm.useCustormRule) {
       if (validationSetting) {
@@ -1365,15 +1351,10 @@ export default {
           });
         }
         // 数据类型
-
         if (validationSetting.dataType && validationSetting.dataType.selected) {
           let validationDataValue = validationSetting.dataType.value;
           let txt = "";
-          for (
-            let i = 0, len = validationSetting.dataType.options.length;
-            i < len;
-            i++
-          ) {
+          for (let i = 0, len = validationSetting.dataType.options.length; i < len; i++) {
             let child = validationSetting.dataType.options[i];
             if (child.value === validationDataValue) {
               txt = child.label;
@@ -1389,6 +1370,28 @@ export default {
             });
           }
           // 其他类型的，用 elementui 自己的校验配置的type即可
+          else if(validationDataValue === 'number'){
+            // 假如当前的值不是number，则转为number
+            if(!this.formModel[this.data.code]){
+              this.formModel[this.data.code] = 0
+            }else if(typeof this.formModel[this.data.code] === 'string'){
+              this.formModel[this.data.code] = Number(this.formModel[this.data.code]);
+            }
+            rules.push({
+              type: validationDataValue,
+              message: `仅限${txt}类型`,
+            });
+          }
+          else if (validationDataValue === 'string') {
+            // 假如当前的值不是string，则转为string(目前场景只转number就行了)
+            if (typeof this.formModel[this.data.code] === 'number') {
+              this.formModel[this.data.code] = String(this.formModel[this.data.code]);
+            }
+            rules.push({
+              type: validationDataValue,
+              message: `仅限${txt}类型`,
+            });
+          }
           else {
             rules.push({
               type: validationDataValue,
@@ -1416,18 +1419,29 @@ export default {
         }
 
         // 长度控制
-        if (
-          validationSetting.lengthControl &&
-          validationSetting.lengthControl.selected
-        ) {
+        if (validationSetting.lengthControl && validationSetting.lengthControl.selected) {
           let min = validationSetting.lengthControl.min;
           let max = validationSetting.lengthControl.max;
           if (max && max !== min) {
-            rules.push({
-              min: min,
-              max: max,
-              message: `长度在 ${min} 到 ${max} 个字符`,
-            });
+            // 特殊处理，因为我们的傻逼业务，数字的情况如果有长度控制，就转为str取length
+            if (validationSetting.dataType.value === 'number'){
+              rules.push({
+                validator: function(rule, value, callback){
+                  let length = String(value).length;
+                  if(length >= min && length <= max){
+                    callback();
+                  }else{
+                    callback(new Error(`长度在 ${min} 到 ${max} 个字符`));
+                  }
+                }
+              });
+            }else{
+              rules.push({
+                min: min,
+                max: max,
+                message: `长度在 ${min} 到 ${max} 个字符`,
+              });
+            }
           }
         }
         this.rulesEle = rules ;
