@@ -35,24 +35,6 @@
       </FormDesigner>
     </div>
 
-    <div style="border: 1px solid red;">
-      <FormDesigner v-if="formVisible"
-                    ref="FD2"
-                    :view="isView"
-                    :id="formId"
-                    :formModel="formModel"
-                    :fdFormItems="fdFormItems"
-                    :fdFormData="fdFormData"
-                    :showAnchor="false"
-                    :useCustormRule="false"
-                    @formItemClick="clickHand"
-                    @dialogBtnClick="dialogBtnClickHand">
-        <template v-slot:[dialogContent]>
-          <myComp1></myComp1>
-        </template>
-
-      </FormDesigner>
-    </div>
     <h2>表单值</h2>
     <div class="form-model-box">{{formModel}}</div>
 

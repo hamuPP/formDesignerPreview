@@ -265,7 +265,6 @@ export default {
     }
     window.$fdForm[this.formCode] = this;
 
-    debugger; // this.$parent 是否为container
     this.$bus.$on("selectChange",(data) => {
       this.selectChange(data);
     });
