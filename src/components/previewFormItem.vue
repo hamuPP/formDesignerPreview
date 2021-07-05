@@ -456,7 +456,7 @@
         @blur="inputBlurHand"
       >
         <el-option
-          v-for="item in options"
+          v-for="item in data.options||options"
           :key="item.value"
           :label="item.label"
           :value="item.value"
@@ -3312,6 +3312,15 @@ export default {
   padding-right: 10px;
   max-height: 240px;
   overflow-y: auto;
+}
+.fd-form-item .el-date-editor .el-range__icon{
+  line-height: 24px;
+}
+.fd-form-item .el-date-editor .el-range-input{
+  width: 44%;
+}
+.fd-form-item .el-date-editor .el-range__close-icon{
+  line-height: 24px;
 }
 .tree-box .el-checkbox__inner {
   width: 12px;
