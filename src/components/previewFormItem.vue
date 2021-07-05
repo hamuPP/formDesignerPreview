@@ -3311,6 +3311,12 @@ export default {
 .fd-form-item .el-date-editor .el-range__icon{
   line-height: 24px;
 }
+.fd-form-item .el-date-editor .el-range-input{
+  width: 44%;
+}
+.fd-form-item .el-date-editor .el-range__close-icon{
+  line-height: 24px;
+}
 .tree-box .el-checkbox__inner {
   width: 12px;
   height: 12px;
