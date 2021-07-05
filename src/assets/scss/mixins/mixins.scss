@@ -159,6 +159,12 @@ $--color-purple2: rgb(245, 177, 179) !default;
 			//vertical-align: middle;
 		}
 	}
+	.el-button{
+		padding-top: 0;
+		padding-bottom: 0;
+		line-height: $--form-button-height--default;
+		height: $--form-button-height--default;
+	}
 	.fd-form-tabs{
 		border: 1px solid #b9c2dd;
 		margin-bottom: 10px;
