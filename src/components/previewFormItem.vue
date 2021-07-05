@@ -382,7 +382,6 @@
         type="textarea"
         :rows="data.rows"
         resize="none"
-        autosize
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
@@ -525,7 +524,7 @@
         :icon="data.icon"
         :size="data.size"
         :disabled="data.disabled || counting"
-        :class="{'auto-width': data.fixParentWidth}"
+        :style="buttonStyle"
         @click.native="inputClickHand"
       >
         <template v-if="data.defaultValue">{{data.defaultValue}}</template>
@@ -1055,6 +1054,19 @@ export default {
         console.log("set", val);
       },
     },
+    buttonStyle (){
+      if (this.data.fixParentWidth){
+        let $width = `${this.labelWidth - 10}px`;
+        return {
+          marginLeft: `-${$width}`,
+          width: `calc(100% + ${$width})`
+        }
+      }else{
+        return {
+          marginLeft: `-${this.labelWidth - 10}px`,
+        }
+      }
+    }
   },
   watch: {
     editorTxt: {
