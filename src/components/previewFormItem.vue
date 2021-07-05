@@ -382,7 +382,6 @@
         type="textarea"
         :rows="data.rows"
         resize="none"
-        autosize
         :disabled="data.disabled"
         :readonly="data.readonly"
         :clearable="data.clearable"
@@ -525,7 +524,7 @@
         :icon="data.icon"
         :size="data.size"
         :disabled="data.disabled || counting"
-        :class="{'auto-width': data.fixParentWidth}"
+        :style="buttonStyle"
         @click.native="inputClickHand"
       >
         <template v-if="data.defaultValue">{{data.defaultValue}}</template>
@@ -1055,6 +1054,19 @@ export default {
         console.log("set", val);
       },
     },
+    buttonStyle (){
+      if (this.data.fixParentWidth){
+        let $width = `${this.labelWidth - 10}px`;
+        return {
+          marginLeft: `-${$width}`,
+          width: `calc(100% + ${$width})`
+        }
+      }else{
+        return {
+          marginLeft: `-${this.labelWidth - 10}px`,
+        }
+      }
+    }
   },
   watch: {
     editorTxt: {
@@ -1524,29 +1536,22 @@ export default {
         }
 
         // 长度控制
+        debugger;
         if (validationSetting.lengthControl && validationSetting.lengthControl.selected) {
           let min = validationSetting.lengthControl.min;
           let max = validationSetting.lengthControl.max;
           if (max && max !== min) {
             // 特殊处理，因为我们的傻逼业务，数字的情况如果有长度控制，就转为str取length
-            if (validationSetting.dataType.value === 'number'){
-              rules.push({
-                validator: function(rule, value, callback){
-                  let length = String(value).length;
-                  if(length >= min && length <= max){
-                    callback();
-                  }else{
-                    callback(new Error(`长度在 ${min} 到 ${max} 个字符`));
-                  }
+            rules.push({
+              validator: function(rule, value, callback){
+                let length = String(value).length;
+                if(length >= min && length <= max){
+                  callback();
+                }else{
+                  callback(new Error(`长度在 ${min} 到 ${max} 个字符`));
                 }
-              });
-            }else{
-              rules.push({
-                min: min,
-                max: max,
-                message: `长度在 ${min} 到 ${max} 个字符`,
-              });
-            }
+              }
+            });
           }
         }
         this.rulesEle = rules;
