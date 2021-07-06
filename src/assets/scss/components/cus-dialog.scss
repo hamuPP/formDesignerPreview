@@ -8,17 +8,24 @@
 @include b(dialog) {
 	.el-dialog__header{
 		padding: 0 15px;
+		.el-dialog__title{
+			font-size: 12px;
+			height: 30px;
+			line-height: 30px;
+		}
 	}
-	.el-dialog__title{
-		font-size: 14px;
-		height: 30px;
-		line-height: 30px;
-	}
+
 	.el-dialog__headerbtn{
 		top: 8px !important;
 	}
+	.el-dialog__close{
+		font-weight: 600;
+	}
+	.el-dialog__body {
+		padding: 20px 20px 10px;
+	}
 	.el-dialog__footer{
-		padding: 10px 0;
+		padding: 10px 20px;
 		text-align: center;
 		.el-button{
 			padding: 4px 14px;
@@ -33,30 +40,32 @@
 		.el-dialog__title{
 			@include dialog-title-variant($--dialog-header-primary-font-color);
 		}
-		.el-dialog__close{
-			color: #fff;
-			font-weight: 600;
-			&:hover{
+		.el-dialog__headerbtn{
+			.el-dialog__close{
 				color: #fff;
+				&:hover{
+					color: #fff;
+				}
 			}
 		}
 		.el-dialog__footer{
 			@include dialog-footer-variant($--dialog-footer-primary-background-color, $--dialog-footer-primary-border-top-color);
 		}
 	}
-	// 第二种蓝色系
-	@include m(primary2) {
+	// skin-type
+	@include m(aoi2) {
 		.el-dialog__header{
 			@include dialog-header-variant($--dialog-header-primary2-background-color);
 		}
 		.el-dialog__title{
 			@include dialog-title-variant($--dialog-header-primary2-font-color);
 		}
-		.el-dialog__close{
-			color: #fff;
-			font-weight: 600;
-			&:hover{
+		.el-dialog__headerbtn{
+			.el-dialog__close{
 				color: #fff;
+				&:hover{
+					color: #fff;
+				}
 			}
 		}
 		.el-dialog__footer{

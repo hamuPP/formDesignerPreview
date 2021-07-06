@@ -13,7 +13,7 @@
  *
  */
 <template>
-  <div class="MessageBox">
+  <div class="MMessageBox">
     <el-dialog
       @open="open"
       :visible.sync="MessageConfig.showMessage"
@@ -56,13 +56,13 @@
             <div class="msgbody">{{MessageConfig.MsgText}}</div>
         </div>
         <!-- <div class="dialog-footer">
-           <el-button @click="closeModal" class="dialogbtn exit">取 消</el-button>
-        <el-button @click="yesok" class="dialogbtn" >确 定</el-button>
+           <el-button @click="closeModal" class="dialogbtn exit">取消</el-button>
+        <el-button @click="yesok" class="dialogbtn" >确定</el-button>
         </div> -->
       </div>
       <div v-if="MessageConfig.MsgBoxType=='confirm'" slot="footer" class="dialog-footer">
-        <el-button @click="closeModal" class="dialogbtn exit">取 消</el-button>
-        <el-button @click="yesok" class="dialogbtn" >确 定</el-button>
+        <el-button @click="closeModal" class="dialogbtn exit">取消</el-button>
+        <el-button @click="yesok" class="dialogbtn" >确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -99,7 +99,7 @@ export default {
 };
 </script>
 <style lang="scss">
-.MessageBox {
+.MMessageBox {
   .el-dialog {
     // width: 40%;
     // height: 160px;
@@ -108,6 +108,9 @@ export default {
     // border: 1px solid #247FFB;
     box-shadow: 1px 0px 8px 0px #247FFB;
     box-sizing: border-box;
+    .el-button{
+      line-height: 1;
+    }
   }
   .el-dialog__footer {
     display: block;
