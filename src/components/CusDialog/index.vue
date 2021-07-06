@@ -131,43 +131,20 @@
 </script>
 <style lang="scss">
 .el-dialog{
-    .el-dialog__header{
-        background-color:#4f96e1;
-        padding: 0 15px;
-    }
-    .el-dialog__title{
-        color: #fff;
-        font-size: 14px;
-        height: 30px;
-        line-height: 30px;
-    }
+
     .el-dialog__headerbtn {
         height: 30px;
         top: 3px !important;
     }
-    .el-dialog__close{
-        top: 8px;
-        color: #fff;
-        font-weight: 600;
-    }
-    .el-dialog__footer{
-        background-color: #e2e9f0;
-        border-top: 1px solid #e2e9f0;
-        padding: 10px 20px;
-        text-align: center;
-          .el-button{
-            padding: 4px 14px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .el-button--primary{
-            background: #1b6ef6;
-            border-color: #1b6ef6;
-        }
-        .el-button--default{
-            border-color: #1b6ef6;
-            color: #1b6ef6;
-        }
-    }
+    //.el-dialog__footer{
+    //    .el-button--primary{
+    //        background: #1b6ef6;
+    //        border-color: #1b6ef6;
+    //    }
+    //    .el-button--default{
+    //        border-color: #1b6ef6;
+    //        color: #1b6ef6;
+    //    }
+    //}
 }
 </style>

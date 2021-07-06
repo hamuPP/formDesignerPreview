@@ -381,24 +381,13 @@ export default {
   .el-dialog {
   }
   .el-dialog__header {
-    padding: 0 10px;
-    background: #52bee5;
-    .el-dialog__title {
-      font-size: 12px;
-      line-height: 30px;
-      color: #fff;
-    }
+
     .el-dialog__headerbtn {
       top: 6px;
       right: 10px;
     }
-    .el-dialog__close {
-      color: #fff;
-    }
   }
-  .el-dialog__body {
-    padding: 20px 20px 10px;
-  }
+
   // 尾部
   .dialog-footer {
     text-align: center;
