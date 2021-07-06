@@ -80,6 +80,8 @@ export default {
       formRules: {}, // 表单的校验规则
       fdFormItems: [],
       fdFormData: {},
+      formId:'',
+      code:'',
     }
   },
   methods: {
@@ -90,6 +92,7 @@ export default {
       this.dialogTitle = formItem.click.openDialogTitle;
       this.formItem = formItem;
       this.openDialogContent = formItem.click.openDialogContent;
+      this.code = formItem.click.openDialogContent;
       // this.dialogTitle = openDialogTitle;
       // this.dialogWidth = dialogWidth;
       // this.formItem = formItem;
