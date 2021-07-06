@@ -517,6 +517,7 @@
       <!--  按钮     (按钮只有一个click事件) -->
       <el-button
         v-else-if="data.type === 'button'"
+        class="todo-but"
         :ref="data.ref"
         :type="data.innerType"
         :round="data.round"
@@ -3303,6 +3304,11 @@ export default {
 </script>
 
 <style lang="scss">
+.todo-but {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .tree-box {
   z-index: 9999;
   position: absolute;
