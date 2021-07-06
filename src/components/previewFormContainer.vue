@@ -38,7 +38,7 @@
   import anchor from './anchor/index.vue'
   import CusMsgbox from './cus_msgbox/index.js'
   // import CusButton from './CusButton/index.vue'
-  import commonDialog from './commonDialog'
+  import commonDialog from './comm-dialog'
   import {generateElementuiCode} from '../generate_code/generateCode'
 
   export default {

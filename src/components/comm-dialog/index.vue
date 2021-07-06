@@ -6,7 +6,7 @@
       :visible.sync="dialogVisible"
       :width="dialogWidth"
       :title="dialogTitle"
-      type="primary2"
+      type="aoi2"
       custom-class="form-common-dialog"
       :append-to-body="true"
   >
@@ -54,12 +54,12 @@
 </template>
 
 <script>
-import CusDialog from './CusDialog/index'
-import previewForm from './previewForm.vue'
+import CusDialog from '../CusDialog'
+import previewForm from '../previewForm.vue'
 // api 相关
-import {getLinkFormByCodeService} from '../api/formDesigner_api.js'
-import {flatList, getFormModel, formateList} from '../util/common'
-import {getUrlQueryParams} from '../assets/js/utils';
+import {getLinkFormByCodeService} from '../../api/formDesigner_api.js'
+import {flatList, getFormModel, formateList} from '../../util/common'
+import {getUrlQueryParams} from '../../assets/js/utils';
 export default {
   name: 'commonDialog',
   components: {CusDialog, previewForm},
@@ -178,7 +178,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>
