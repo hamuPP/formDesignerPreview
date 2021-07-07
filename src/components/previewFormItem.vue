@@ -1091,6 +1091,15 @@ export default {
           if (this.data && this.data.type && this.formModel[this.data.code]) {
             if (this.data.type == "checkbox") {
               let obj = [];
+              if(typeof this.formModel[this.data.code]=='string'){
+                this.formModel[this.data.code].split(',').forEach((it) => {
+                this.options.forEach((item) => {
+                  if (it == item.value) {
+                    obj.push(item.label);
+                  }
+                });
+              });
+              }else{
               this.formModel[this.data.code].forEach((it) => {
                 this.options.forEach((item) => {
                   if (it == item.value) {
@@ -1098,6 +1107,8 @@ export default {
                   }
                 });
               });
+              }
+
               this.formModelCn[this.data.code] = obj.join();
             } else if (this.data.type == "cascader"&&this.options.length) {
               let label = [];
@@ -1110,13 +1121,29 @@ export default {
                   }
                 });
               };
-              this.formModel[this.data.code].forEach((item) => {
+              if(typeof this.formModel[this.data.code]=='string'){
+                              this.formModel[this.data.code].split(',').forEach((item) => {
                 fn(this.options, item);
               });
+              }else{
+                              this.formModel[this.data.code].forEach((item) => {
+                fn(this.options, item);
+              });
+              }
+
               this.formModelCn[this.data.code] = label.join();
             } else if (this.data.type == "select"||this.data.showType === 'select') {
               if (this.data.multiple == true) {
                 let obj = [];
+                if(typeof this.formModel[this.data.code]=='string'){
+                this.formModel[this.data.code].split(',').forEach((it) => {
+                  this.options.forEach((item) => {
+                    if (it == item.value) {
+                      obj.push(item.label);
+                    }
+                  });
+                });
+                }else{
                 this.formModel[this.data.code].forEach((it) => {
                   this.options.forEach((item) => {
                     if (it == item.value) {
@@ -1124,6 +1151,8 @@ export default {
                     }
                   });
                 });
+                }
+
                 this.formModelCn[this.data.code] = obj.join();
               } else {
                 this.options.forEach((item) => {
@@ -1145,6 +1174,15 @@ export default {
           if (this.data && this.data.type && this.formModel[this.data.code]) {
             if (this.data.type == "checkbox") {
               let obj = [];
+              if(typeof this.formModel[this.data.code]=='string'){
+              this.formModel[this.data.code].split(',').forEach((it) => {
+                this.options.forEach((item) => {
+                  if (it == item.value) {
+                    obj.push(item.label);
+                  }
+                });
+              });
+              }else{
               this.formModel[this.data.code].forEach((it) => {
                 this.options.forEach((item) => {
                   if (it == item.value) {
@@ -1152,6 +1190,8 @@ export default {
                   }
                 });
               });
+              }
+
               this.formModelCn[this.data.code] = obj.join();
             } else if (this.data.type == "cascader") {
               let label = [];
@@ -1164,13 +1204,29 @@ export default {
                   }
                 });
               };
-              this.formModel[this.data.code].forEach((item) => {
+              if(typeof this.formModel[this.data.code]=='string'){
+              this.formModel[this.data.code].split(',').forEach((item) => {
                 fn(this.options, item);
               });
+              }else{
+               this.formModel[this.data.code].forEach((item) => {
+                fn(this.options, item);
+              });
+              }
+
               this.formModelCn[this.data.code] = label.join();
             } else if (this.data.type == "select"||this.data.showType === 'select'){
               if (this.data.multiple == true) {
                 let obj = [];
+                if(typeof this.formModel[this.data.code]=='string'){
+                this.formModel[this.data.code].split(',').forEach((it) => {
+                  this.options.forEach((item) => {
+                    if (it == item.value) {
+                      obj.push(item.label);
+                    }
+                  });
+                });
+                }else{
                 this.formModel[this.data.code].forEach((it) => {
                   this.options.forEach((item) => {
                     if (it == item.value) {
@@ -1178,6 +1234,8 @@ export default {
                     }
                   });
                 });
+                }
+
                 this.formModelCn[this.data.code] = obj.join();
               } else  {
                 this.options.forEach((item) => {
