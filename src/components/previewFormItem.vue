@@ -26,9 +26,9 @@
             {{ data.title.value }}
           </div>-->
           <h3 style="margin:6px 0;float:left;color:black">{{data.tName}}</h3>
-          <div v-if="!data.readonly" style="text-align: right; margin-bottom: 5px">
+          <!-- <div v-if="!data.readonly" style="text-align: right; margin-bottom: 5px">
             <el-button type="primary" round size="mini" @click="addTableRow ">新增行</el-button>
-          </div>
+          </div> -->
           <el-tree
             v-show="treeShow"
             class="tree-box"
@@ -40,7 +40,7 @@
             :default-checked-keys="defaultDataArray"
           ></el-tree>
           <el-table
-            style="width: 100%"
+            style="width: 100%;font-size:12px"
             ref="tableInForm"
             stripe
             :data="data.tableData"
@@ -247,9 +247,9 @@
                     :key="index"
                     type="text"
                     size="small"
-                    :disabled="data.readonly&&item.code!='scan'"
+                    :disabled="data.readonly"
                     @click="dealFuncStr(item, index,scope.row)"
-                    v-if="scope.row[item.code]&&(item.code == 'scan' && data.tableCols[data.tableCols.length - 1].showScanBtnForOperation || (item.code != 'scan'&&!data.readonly))"
+                    v-if="scope.row[item.code]&&!data.readonly"
                   >{{item.name}}</el-button>
                 </span>
               </template>
@@ -975,6 +975,14 @@ export default {
     rules: {
       type: Object,
       default: () => {},
+    },
+    nodeCode:{
+      type:String,
+      default:''
+    },
+    curNodeCode:{
+      type:String,
+      default:'DraftHumTask'
     },
   },
   computed: {
@@ -3037,6 +3045,7 @@ export default {
               this.data.tableCols.length - 1
             ].buttonList.forEach((item) => {
               if (item.show) {
+                console.log(item.show,'item');
                 if (item.show.indexOf("=") != -1) {
                   let num = item.show.indexOf("=");
                   let left = item.show.substring(0, num);
@@ -3097,22 +3106,50 @@ export default {
               this.data.tableCols.length - 1
             ].buttonList.forEach((item) => {
               if (item.show) {
-                if (item.show.indexOf("=") != -1) {
-                  let num = item.show.indexOf("=");
-                  let left = item.show.substring(0, num);
-                  let right = item.show.substring(num + 1);
-                  this.data.tableData.forEach((ele) => {
-                    if (ele[left] == right) {
-                      ele[item.code] = true;
-                    } else {
-                      ele[item.code] = false;
-                    }
-                  });
-                } else {
-                  this.data.tableData.forEach((it) => {
-                    it[item.code] = true;
-                  });
+                console.log(item.show,'item');
+                let sessionArr = item.show.match(/(?<=\$\{)\w+(?=})/g),sessionValue = [];
+                let itemArr = item.show.match(/(?<=\#\{)\w+(?=})/g),itemValue=[];
+                let rowArr = item.show.match(/(?<=\@\{)\w+(?=})/g),rowValue=[];
+                console.log(sessionArr,itemArr,rowArr);
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach(item=>{
+                   sessionValue.push(sessionStorage.getItem(item)) 
+                  })
                 }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach(item=>{
+                   itemValue.push(this[item]) 
+                  })
+                }
+                
+                var str = ''
+                sessionArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '${'+ele+'}' , "g" );
+                  console.log(reg);
+                 str = item.show.replace(reg,sessionValue[index])
+                })
+                console.log(sessionValue,itemValue,'sss',str);
+                // if(rowArr&&rowArr.length){
+                //   rowArr.forEach(item=>{
+                //    rowValue.push(sessionStorage.getItem(item)) 
+                //   })
+                // }
+                // if (item.show.indexOf("=") != -1) {
+                //   let num = item.show.indexOf("=");
+                //   let left = item.show.substring(0, num);
+                //   let right = item.show.substring(num + 1);
+                //   this.data.tableData.forEach((ele) => {
+                //     if (ele[left] == right) {
+                //       ele[item.code] = true;
+                //     } else {
+                //       ele[item.code] = false;
+                //     }
+                //   });
+                // } else {
+                //   this.data.tableData.forEach((it) => {
+                //     it[item.code] = true;
+                //   });
+                // }
               } else {
                 this.data.tableData.forEach((it) => {
                   it[item.code] = true;
@@ -3376,6 +3413,9 @@ export default {
 }
 .fd-form-item .el-date-editor .el-range-input{
   width: 44%;
+}
+.fd-form-item .el-textarea .el-textarea__inner{
+  font-family: "微软雅黑";
 }
 .fd-form-item .el-date-editor .el-range__close-icon{
   line-height: 24px;

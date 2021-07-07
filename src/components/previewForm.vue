@@ -37,6 +37,7 @@
                   :formCode="formCode"
                   :boId="id"
                   :rules="rules"
+                  :nodeCode='nodeCode'
                   :version="version"
                   :linkFormCode='linkFormCode'
                   :labelWidth="fdFormData.labelWidth"
@@ -85,6 +86,7 @@
                       :formCode="formCode"
                       :boId="id"
                       :rules="rules"
+                      :nodeCode='nodeCode'
                       :version="version"
                       :linkFormCode='linkFormCode'
                       :labelWidth="fdFormData.labelWidth"
@@ -132,6 +134,7 @@
           :formCode="formCode"
           :boId="id"
           :rules="rules"
+          :nodeCode='nodeCode'
           :version="version"
           :linkFormCode='linkFormCode'
           :labelWidth="fdFormData.labelWidth"
@@ -188,6 +191,10 @@ export default {
     linkFormCode:{
        type: [Number, String],
       default: null,
+    },
+    nodeCode:{
+      type:String,
+      default:''
     },
     rules: {
       type: Object,

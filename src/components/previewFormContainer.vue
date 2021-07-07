@@ -11,6 +11,7 @@
             :version='version'
             :linkFormCode='linkFormCode'
             :rules="formRules"
+            :nodeCode='nodeCode'
             :useCustormRule="useCustormRule"
             :formModel="previewFormModel"
             :formModelCn='formModelCn'
@@ -85,6 +86,10 @@
         default () {
           return {}
         }
+      },
+      nodeCode:{
+        type:String,
+        default:''
       },
       formModelCn:{
         type:Object,
