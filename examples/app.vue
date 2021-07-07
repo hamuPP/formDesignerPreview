@@ -6,6 +6,7 @@
     <button @click="getFormByCodeHand">getFormByCode</button>
     <button @click="getFormItemsByCodeHand">getFormItemsByCode</button>
     <button @click="setRule">setRule</button>
+    <button @click="validateForm">validateForm</button>
     <el-card class="params-config">
       <div slot="header" class="clearfix">
         <span>try</span>
@@ -21,7 +22,7 @@
                     ref="FD"
                     :view="isView"
                     :id="formId"
-                    :formModel="formModel"
+                    :formModel.sync="formModel"
                     :fdFormItems="fdFormItems"
                     :fdFormData="fdFormData"
                     :showAnchor="false"
@@ -377,6 +378,14 @@
         console.log(FD);
         var rule = { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' };
         FD.setFormRule('myF', 'd1', rule)
+      },
+
+      validateForm(){
+        var FD = this.$refs.FD;
+        debugger;
+        FD.$refs.form.$refs.fdForm.validate(V => {
+          debugger;
+        })
       }
     }
 
