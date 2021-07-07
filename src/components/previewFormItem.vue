@@ -901,7 +901,7 @@ import {
 import { isObjEmpty, validateRegType } from "../util/common.js";
 import MessageBox from "./MessageBox.vue";
 import selectTree from "./selectTree";
-import frameTree from "./frameTree";
+import frameTree from './frame-tree';
 import personEditDialog from "./personEditDialog.vue";
 import CusDialog from "./CusDialog/index";
 import newPersonEditDialog from "./newPersonEditDialog";

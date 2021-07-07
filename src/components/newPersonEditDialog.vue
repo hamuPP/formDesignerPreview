@@ -4,7 +4,7 @@
 */
 <template>
   <el-dialog
-    class="cus-dialog line-params-dialog person-dialog new_dialog"
+    class="cus-dialog person-dialog new_dialog"
     :title="title"
     :close-on-click-modal="false"
     :visible.sync="dialogVisible"

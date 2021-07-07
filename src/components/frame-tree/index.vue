@@ -1,31 +1,33 @@
- /**
-*弹出树选择器
+/**
+* 弹出树选择器
 * Created by lzp on 21/6/1
+* Modified by ty on 21/7/3
 */
 
 <template>
-  <div class="frameTree">
-    <el-dialog
-      class="cus-dialog line-params-dialog person-dialog"
-      :title="title"
+  <cus-dialog
       :visible.sync="dialogVisible"
-      width="400"
+      width="660px"
+      :title="title"
+      type="aoi2"
+      custom-class="form-common-dialog__todo"
       append-to-body
-    >
+  >
+    <div class="form-common-dialog-body">
       <div class="choose" :style="{ width: '60%' }">
         <div class="chooseTitle">{{title}}</div>
         <div class="chooseBody includeFoot">
           <el-tree
-            ref="tree"
-            :data="treeData"
-            :props="props"
-            :load="loadNode"
-            :lazy="lazy"
-            show-checkbox
-            node-key="id"
-            :default-checked-keys="defKeys"
-            :check-strictly="true"
-            @check-change="handleCheckChange"
+              ref="tree"
+              :data="treeData"
+              :props="props"
+              :load="loadNode"
+              :lazy="lazy"
+              show-checkbox
+              node-key="id"
+              :default-checked-keys="defKeys"
+              :check-strictly="true"
+              @check-change="handleCheckChange"
           >
             <span class="custom-tree-node" slot-scope="{ data }">
               <span v-if="data.leaf">
@@ -51,14 +53,14 @@
         <div class="chooseBody">
           <el-checkbox-group v-model="delList">
             <el-checkbox
-              class="showList"
-              v-for="(item, index) in checkList"
-              :label="item.text"
-              :key="index"
+                class="showList"
+                v-for="(item, index) in checkList"
+                :label="item.text"
+                :key="index"
             >
               <span @dblclick="delPeople(item, 'single')">
                 {{
-                item.text
+                  item.text
                 }}
               </span>
             </el-checkbox>
@@ -71,26 +73,29 @@
           </span>
         </div>
       </div>
-      <!-- 操作栏 -->
-      <span slot="footer" class="dialog-footer">
+    </div>
+
+    <!-- 操作栏 -->
+    <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="sureHand" size="mini">确定</el-button>
         <el-button @click="dialogVisible = false" size="mini">取消</el-button>
       </span>
-    </el-dialog>
-  </div>
+  </cus-dialog>
 </template>
 
 <script>
-import { getFrameTreeData } from "../api/formDesigner_api";
+import CusDialog from '../CusDialog'
+import { getFrameTreeData } from '../../api/formDesigner_api';
 export default {
-  name: "frameTree",
+  name: 'frameTree',
+  components: {CusDialog},
   props: {
     staticTreeData: {
       type: Array,
       default: () => [],
-    },
+    }
   },
-  data() {
+  data () {
     return {
       title: "",
       checkList: [],
@@ -109,9 +114,8 @@ export default {
       data: "",
       lazy: false,
       isCheck: true,
-      url: "",
+      url: '',
       req: {},
-      areaTreeData: [],
     };
   },
   mounted() {},
@@ -121,6 +125,7 @@ export default {
      * @param data
      */
     init(data) {
+      debugger;
       this.dialogVisible = true;
       this.data = JSON.parse(JSON.stringify(data));
       this.title = this.data.label;
@@ -311,74 +316,3 @@ export default {
   },
 };
 </script>
-
-<style lang='scss'>
-// .region {
-.choose {
-  display: inline-block;
-  .iconfont {
-    color: #5887ff;
-    font-weight: 400;
-    margin-right: 0.5rem;
-  }
-  .iconwenjianjia {
-    color: #ffcb3d;
-  }
-  .expanded + .custom-tree-node {
-    .iconwenjianjia:before {
-      content: "\e65b";
-    }
-  }
-  .chooseTitle {
-    height: 20px;
-    line-height: 20px;
-    color: #000;
-    font-weight: bold;
-    padding-left: 0.5rem;
-    .iconfont {
-      font-size: 13px;
-    }
-    .tips {
-      font-size: 12px;
-      font-weight: normal;
-      color: #ff5a09;
-      margin-left: 0.5rem;
-    }
-  }
-  .chooseBody {
-    width: 100%;
-    height: 23rem;
-    background: #ffffff;
-    border: 1px solid #dddddd;
-    margin-top: 0.7rem;
-    padding: 0.2rem;
-    overflow: auto;
-    .showList {
-      display: block;
-      padding: 0.2rem 1rem;
-      &:hover {
-        background: #ebf1ff;
-      }
-    }
-  }
-  .chooseFoot {
-    height: 2rem;
-    line-height: 2rem;
-    width: 100%;
-    background: #f9fbff;
-    border: 1px solid #dddddd;
-    border-top: none;
-    padding: 0 1rem;
-    .el-checkbox__label {
-      font-size: 0.6rem;
-    }
-  }
-  .del {
-    float: right;
-    cursor: pointer;
-    font-size: 1.4rem;
-    color: #5887ff;
-  }
-}
-// }
-</style>

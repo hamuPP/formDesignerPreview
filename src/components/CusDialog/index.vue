@@ -123,8 +123,8 @@
       /**
        * 关闭弹框
        */
-      closeHandle(){
-        this.$emit("close");
+      closeHandle () {
+        this.$emit('close');
       }
     }
   };
