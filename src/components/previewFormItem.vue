@@ -517,6 +517,7 @@
       <!--  按钮     (按钮只有一个click事件) -->
       <el-button
         v-else-if="data.type === 'button'"
+        class="todo-but"
         :ref="data.ref"
         :type="data.innerType"
         :round="data.round"
@@ -900,7 +901,7 @@ import {
 import { isObjEmpty, validateRegType } from "../util/common.js";
 import MessageBox from "./MessageBox.vue";
 import selectTree from "./selectTree";
-import frameTree from "./frameTree";
+import frameTree from './frame-tree';
 import personEditDialog from "./personEditDialog.vue";
 import CusDialog from "./CusDialog/index";
 import newPersonEditDialog from "./newPersonEditDialog";
@@ -3361,6 +3362,11 @@ export default {
 </script>
 
 <style lang="scss">
+.todo-but {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .tree-box {
   z-index: 9999;
   position: absolute;

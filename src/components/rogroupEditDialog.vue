@@ -4,7 +4,7 @@
 */
 <template>
   <el-dialog
-    class="cus-dialog line-params-dialog person-dialog rolegroups"
+    class="cus-dialog person-dialog rolegroups"
     :title="title"
     :visible.sync="dialogVisible"
     width="400"

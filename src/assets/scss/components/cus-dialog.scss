@@ -6,6 +6,9 @@
 @import "./mixins/mixins";
 
 @include b(dialog) {
+	* {
+		box-sizing: border-box;
+	}
 	.el-dialog__header{
 		padding: 0 15px;
 		.el-dialog__title{
