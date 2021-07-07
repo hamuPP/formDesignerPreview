@@ -1,0 +1,66 @@
+.choose {
+  display: inline-block;
+  .iconfont {
+    color: #5887ff;
+    font-weight: 400;
+    margin-right: 0.5rem;
+  }
+  .iconwenjianjia {
+    color: #ffcb3d;
+  }
+  .expanded + .custom-tree-node {
+    .iconwenjianjia:before {
+      content: "\e65b";
+    }
+  }
+  .chooseTitle {
+    height: 20px;
+    line-height: 20px;
+    color: #000;
+    font-weight: bold;
+    padding-left: 0.5rem;
+    .iconfont {
+      font-size: 13px;
+    }
+    .tips {
+      font-size: 12px;
+      font-weight: normal;
+      color: #ff5a09;
+      margin-left: 0.5rem;
+    }
+  }
+  .chooseBody {
+    width: 100%;
+    height: 23rem;
+    background: #ffffff;
+    border: 1px solid #dddddd;
+    margin-top: 0.7rem;
+    padding: 0.2rem;
+    overflow: auto;
+    .showList {
+      display: block;
+      padding: 0.2rem 1rem;
+      &:hover {
+        background: #ebf1ff;
+      }
+    }
+  }
+  .chooseFoot {
+    height: 2rem;
+    line-height: 2rem;
+    width: 100%;
+    background: #f9fbff;
+    border: 1px solid #dddddd;
+    border-top: none;
+    padding: 0 1rem;
+    .el-checkbox__label {
+      font-size: 0.6rem;
+    }
+  }
+  .del {
+    float: right;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: #5887ff;
+  }
+}

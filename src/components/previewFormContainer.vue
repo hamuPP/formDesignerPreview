@@ -237,7 +237,6 @@
         let allForm = window.$fdForm;
         let resultList = [];
 
-        debugger;
         for(let key in allForm){
           let form = allForm[key];
           if((formCode && form.formCode === formCode) || !formCode){
@@ -275,29 +274,45 @@
        * 添加rules
        * @param formCode 表单code
        * @param formItemCode 字段code
-       * @param addRule {Object} 将要新加入的规则
+       * @param addRule {Object|Array} 将要新加入的规则
        */
       setFormRule(formCode, formItemCode, addRule){
         let currentFormCode = this.fdFormData.code;
 
         if(formCode === currentFormCode){
-          if(!this.formRules[formItemCode]){
-            this.formRules[formItemCode] = [];
+          if(addRule.constructor === Array){
+
+          }else if(addRule.constructor === Object){
+            addRule = [addRule];
           }
 
-          this.formRules[formItemCode].push(addRule);
-          this.formRules = JSON.parse(JSON.stringify(this.formRules))
+          this.formRules[formItemCode] = addRule;
+          this.formRules = JSON.parse(JSON.stringify(this.formRules));
+          this.$nextTick(__=>{
+            let todo = this.getFormItemsByCode(formItemCode, formCode);
+            if(todo[0] && todo[0].$refs && todo[0].$refs.elfmitem){
+              todo[0].$refs.elfmitem.addValidateEvents();
+            }
+          });
         }
         // 找页面上的其他表单预览实例
         else if(formCode){
+          if(addRule.constructor === Array){
+
+          }else if(addRule.constructor === Object){
+            addRule = [addRule];
+          }
           let subForm = this.getFormByCode(formCode);
           let container = subForm.$parent.$parent;
 
-          if(!container.formRules[formItemCode]){
-            container.formRules[formItemCode] = [];
-          }
-          container.formRules[formItemCode].push(addRule);
-          container.formRules = JSON.parse(JSON.stringify(container.formRules))
+          container.formRules[formItemCode] = addRule;
+          container.formRules = JSON.parse(JSON.stringify(container.formRules));
+          container.$nextTick(__=>{
+            let todo = container.getFormItemsByCode(formItemCode, formCode);
+            if(todo[0] && todo[0].$refs && todo[0].$refs.elfmitem){
+              todo[0].$refs.elfmitem.addValidateEvents();
+            }
+          });
         }
       },
       setFormItemValue(formCode, formItemCode, newVal) {
