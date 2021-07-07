@@ -293,6 +293,7 @@
     <!-- //TODO 这个属性有变化，还没有改这里   -->
     <el-form-item
       v-else-if="data.type !== 'uploadNewFile' || (data.type === 'uploadNewFile' && !view)"
+      ref="elfmitem"
       :prop="data.code"
       :label="data.label"
       :class="data.className"
@@ -1047,7 +1048,6 @@ export default {
           } else if (this.rulesEle instanceof Array) {
             rule = [...this.rulesEle];
           }
-
           return rule;
         }
       },
@@ -1595,7 +1595,6 @@ export default {
         }
 
         // 长度控制
-        debugger;
         if (validationSetting.lengthControl && validationSetting.lengthControl.selected) {
           let min = validationSetting.lengthControl.min;
           let max = validationSetting.lengthControl.max;
