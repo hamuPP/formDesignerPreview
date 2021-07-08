@@ -11,7 +11,7 @@
             :version='version'
             :linkFormCode='linkFormCode'
             :rules="formRules"
-            :nodeCode='nodeCode'
+            :tableBtnIsShow='tableBtnIsShow'
             :useCustormRule="useCustormRule"
             :formModel="previewFormModel"
             :formModelCn='formModelCn'
@@ -87,9 +87,9 @@
           return {}
         }
       },
-      nodeCode:{
-        type:String,
-        default:''
+      tableBtnIsShow:{
+        type:Object,
+        default:()=>{}
       },
       formModelCn:{
         type:Object,

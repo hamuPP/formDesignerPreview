@@ -247,7 +247,7 @@
                     :key="index"
                     type="text"
                     size="small"
-                    :disabled="data.readonly"
+                    :disabled="data.readonly||item.isDisabled"
                     @click="dealFuncStr(item, index,scope.row)"
                     v-if="scope.row[item.code]&&!data.readonly"
                   >{{item.name}}</el-button>
@@ -982,10 +982,10 @@ export default {
       type:String,
       default:''
     },
-    curNodeCode:{
-      type:String,
-      default:'DraftHumTask'
-    },
+      tableBtnIsShow:{
+        type:Object,
+        default:()=>{}
+      },
   },
   computed: {
     componentRootForm() {
@@ -2947,22 +2947,45 @@ export default {
               this.data.tableCols.length - 1
             ].buttonList.forEach((item) => {
               if (item.show) {
-                if (item.show.indexOf("=") != -1) {
-                  let num = item.show.indexOf("=");
-                  let left = item.show.substring(0, num);
-                  let right = item.show.substring(num + 1);
-                  this.data.tableData.forEach((ele) => {
-                    if (ele[left] == right) {
-                      ele[item.code] = true;
-                    } else {
-                      ele[item.code] = false;
-                    }
-                  });
-                } else {
-                  this.data.tableData.forEach((it) => {
-                    it[item.code] = true;
-                  });
+                let sessionArr = item.show.match(/(?<=\$\{)\w+(?=})/g),sessionValue = [];
+                let itemArr = item.show.match(/(?<=\#\{)\w+(?=})/g),itemValue=[];
+                let rowArr = item.show.match(/(?<=\@\{)\w+(?=})/g),rowValue=[];
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach(it=>{
+                   sessionValue.push("'"+sessionStorage.getItem(it)+"'") 
+                  })
                 }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach(it=>{
+                   itemValue.push("'"+this.tableBtnIsShow[it]+"'") 
+                  })
+                }
+                
+                let str = ''
+                sessionArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
+                 str = item.show.replace(reg,sessionValue[index])
+                })
+                itemArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
+                  str = str.replace(reg,itemValue[index])
+                })
+                this.data.tableData.forEach(ele=>{
+                  let strCopy = str
+                  rowValue=[];
+                  if(rowArr&&rowArr.length){
+
+                    rowArr.forEach(it=>{
+                      rowValue.push("'"+ele[it]+"'")
+                    })
+                  rowArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'@{'+ele+'}' , "g" );
+                  strCopy = strCopy.replace(reg,rowValue[index])
+                  })
+                  
+                  }
+                  ele[item.code] = eval(strCopy)
+                })
               } else {
                 this.data.tableData.forEach((it) => {
                   it[item.code] = true;
@@ -2994,22 +3017,45 @@ export default {
               this.data.tableCols.length - 1
             ].buttonList.forEach((item) => {
               if (item.show) {
-                if (item.show.indexOf("=") != -1) {
-                  let num = item.show.indexOf("=");
-                  let left = item.show.substring(0, num);
-                  let right = item.show.substring(num + 1);
-                  this.data.tableData.forEach((ele) => {
-                    if (ele[left] == right) {
-                      ele[item.code] = true;
-                    } else {
-                      ele[item.code] = false;
-                    }
-                  });
-                } else {
-                  this.data.tableData.forEach((it) => {
-                    it[item.code] = true;
-                  });
+                let sessionArr = item.show.match(/(?<=\$\{)\w+(?=})/g),sessionValue = [];
+                let itemArr = item.show.match(/(?<=\#\{)\w+(?=})/g),itemValue=[];
+                let rowArr = item.show.match(/(?<=\@\{)\w+(?=})/g),rowValue=[];
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach(it=>{
+                   sessionValue.push("'"+sessionStorage.getItem(it)+"'") 
+                  })
                 }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach(it=>{
+                   itemValue.push("'"+this.tableBtnIsShow[it]+"'") 
+                  })
+                }
+                
+                let str = ''
+                sessionArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
+                 str = item.show.replace(reg,sessionValue[index])
+                })
+                itemArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
+                  str = str.replace(reg,itemValue[index])
+                })
+                this.data.tableData.forEach(ele=>{
+                  let strCopy = str
+                  rowValue=[];
+                  if(rowArr&&rowArr.length){
+
+                    rowArr.forEach(it=>{
+                      rowValue.push("'"+ele[it]+"'")
+                    })
+                  rowArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'@{'+ele+'}' , "g" );
+                  strCopy = strCopy.replace(reg,rowValue[index])
+                  })
+                  
+                  }
+                  ele[item.code] = eval(strCopy)
+                })
               } else {
                 this.data.tableData.forEach((it) => {
                   it[item.code] = true;
@@ -3045,23 +3091,45 @@ export default {
               this.data.tableCols.length - 1
             ].buttonList.forEach((item) => {
               if (item.show) {
-                console.log(item.show,'item');
-                if (item.show.indexOf("=") != -1) {
-                  let num = item.show.indexOf("=");
-                  let left = item.show.substring(0, num);
-                  let right = item.show.substring(num + 1);
-                  this.data.tableData.forEach((ele) => {
-                    if (ele[left] == right) {
-                      ele[item.code] = true;
-                    } else {
-                      ele[item.code] = false;
-                    }
-                  });
-                } else {
-                  this.data.tableData.forEach((it) => {
-                    it[item.code] = true;
-                  });
+                let sessionArr = item.show.match(/(?<=\$\{)\w+(?=})/g),sessionValue = [];
+                let itemArr = item.show.match(/(?<=\#\{)\w+(?=})/g),itemValue=[];
+                let rowArr = item.show.match(/(?<=\@\{)\w+(?=})/g),rowValue=[];
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach(it=>{
+                   sessionValue.push("'"+sessionStorage.getItem(it)+"'") 
+                  })
                 }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach(it=>{
+                   itemValue.push("'"+this.tableBtnIsShow[it]+"'") 
+                  })
+                }
+                
+                let str = ''
+                sessionArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
+                 str = item.show.replace(reg,sessionValue[index])
+                })
+                itemArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
+                  str = str.replace(reg,itemValue[index])
+                })
+                this.data.tableData.forEach(ele=>{
+                  let strCopy = str
+                  rowValue=[];
+                  if(rowArr&&rowArr.length){
+
+                    rowArr.forEach(it=>{
+                      rowValue.push("'"+ele[it]+"'")
+                    })
+                  rowArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'@{'+ele+'}' , "g" );
+                  strCopy = strCopy.replace(reg,rowValue[index])
+                  })
+                  
+                  }
+                  ele[item.code] = eval(strCopy)
+                })
               } else {
                 this.data.tableData.forEach((it) => {
                   it[item.code] = true;
@@ -3106,50 +3174,45 @@ export default {
               this.data.tableCols.length - 1
             ].buttonList.forEach((item) => {
               if (item.show) {
-                console.log(item.show,'item');
                 let sessionArr = item.show.match(/(?<=\$\{)\w+(?=})/g),sessionValue = [];
                 let itemArr = item.show.match(/(?<=\#\{)\w+(?=})/g),itemValue=[];
                 let rowArr = item.show.match(/(?<=\@\{)\w+(?=})/g),rowValue=[];
-                console.log(sessionArr,itemArr,rowArr);
                 if(sessionArr&&sessionArr.length){
-                  sessionArr.forEach(item=>{
-                   sessionValue.push(sessionStorage.getItem(item)) 
+                  sessionArr.forEach(it=>{
+                   sessionValue.push("'"+sessionStorage.getItem(it)+"'") 
                   })
                 }
                 if(itemArr&&itemArr.length){
-                  itemArr.forEach(item=>{
-                   itemValue.push(this[item]) 
+                  itemArr.forEach(it=>{
+                   itemValue.push("'"+this.tableBtnIsShow[it]+"'") 
                   })
                 }
                 
-                var str = ''
+                let str = ''
                 sessionArr.forEach((ele,index)=>{
-                  var reg = new RegExp( '${'+ele+'}' , "g" );
-                  console.log(reg);
+                  var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
                  str = item.show.replace(reg,sessionValue[index])
                 })
-                console.log(sessionValue,itemValue,'sss',str);
-                // if(rowArr&&rowArr.length){
-                //   rowArr.forEach(item=>{
-                //    rowValue.push(sessionStorage.getItem(item)) 
-                //   })
-                // }
-                // if (item.show.indexOf("=") != -1) {
-                //   let num = item.show.indexOf("=");
-                //   let left = item.show.substring(0, num);
-                //   let right = item.show.substring(num + 1);
-                //   this.data.tableData.forEach((ele) => {
-                //     if (ele[left] == right) {
-                //       ele[item.code] = true;
-                //     } else {
-                //       ele[item.code] = false;
-                //     }
-                //   });
-                // } else {
-                //   this.data.tableData.forEach((it) => {
-                //     it[item.code] = true;
-                //   });
-                // }
+                itemArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
+                  str = str.replace(reg,itemValue[index])
+                })
+                this.data.tableData.forEach(ele=>{
+                  let strCopy = str
+                  rowValue=[];
+                  if(rowArr&&rowArr.length){
+
+                    rowArr.forEach(it=>{
+                      rowValue.push("'"+ele[it]+"'")
+                    })
+                  rowArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'@{'+ele+'}' , "g" );
+                  strCopy = strCopy.replace(reg,rowValue[index])
+                  })
+                  
+                  }
+                  ele[item.code] = eval(strCopy)
+                })
               } else {
                 this.data.tableData.forEach((it) => {
                   it[item.code] = true;
