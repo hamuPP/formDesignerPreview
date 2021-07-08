@@ -26,9 +26,9 @@
             {{ data.title.value }}
           </div>-->
           <h3 style="margin:6px 0;float:left;color:black">{{data.tName}}</h3>
-          <div v-if="!data.readonly" style="text-align: right; margin-bottom: 5px">
+          <!-- <div v-if="!data.readonly" style="text-align: right; margin-bottom: 5px">
             <el-button type="primary" round size="mini" @click="addTableRow ">新增行</el-button>
-          </div>
+          </div> -->
           <el-tree
             v-show="treeShow"
             class="tree-box"
@@ -40,7 +40,7 @@
             :default-checked-keys="defaultDataArray"
           ></el-tree>
           <el-table
-            style="width: 100%"
+            style="width: 100%;font-size:12px"
             ref="tableInForm"
             stripe
             :data="data.tableData"
@@ -247,9 +247,9 @@
                     :key="index"
                     type="text"
                     size="small"
-                    :disabled="data.readonly&&item.code!='scan'"
+                    :disabled="data.readonly||item.isDisabled"
                     @click="dealFuncStr(item, index,scope.row)"
-                    v-if="scope.row[item.code]&&(item.code == 'scan' && data.tableCols[data.tableCols.length - 1].showScanBtnForOperation || (item.code != 'scan'&&!data.readonly))"
+                    v-if="scope.row[item.code]&&!data.readonly"
                   >{{item.name}}</el-button>
                 </span>
               </template>
@@ -978,6 +978,14 @@ export default {
       type: Object,
       default: () => {},
     },
+    nodeCode:{
+      type:String,
+      default:''
+    },
+      tableBtnIsShow:{
+        type:Object,
+        default:()=>{}
+      },
   },
   computed: {
     componentRootForm() {
@@ -2939,22 +2947,45 @@ export default {
               this.data.tableCols.length - 1
             ].buttonList.forEach((item) => {
               if (item.show) {
-                if (item.show.indexOf("=") != -1) {
-                  let num = item.show.indexOf("=");
-                  let left = item.show.substring(0, num);
-                  let right = item.show.substring(num + 1);
-                  this.data.tableData.forEach((ele) => {
-                    if (ele[left] == right) {
-                      ele[item.code] = true;
-                    } else {
-                      ele[item.code] = false;
-                    }
-                  });
-                } else {
-                  this.data.tableData.forEach((it) => {
-                    it[item.code] = true;
-                  });
+                let sessionArr = item.show.match(/(?<=\$\{)\w+(?=})/g),sessionValue = [];
+                let itemArr = item.show.match(/(?<=\#\{)\w+(?=})/g),itemValue=[];
+                let rowArr = item.show.match(/(?<=\@\{)\w+(?=})/g),rowValue=[];
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach(it=>{
+                   sessionValue.push("'"+sessionStorage.getItem(it)+"'") 
+                  })
                 }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach(it=>{
+                   itemValue.push("'"+this.tableBtnIsShow[it]+"'") 
+                  })
+                }
+                
+                let str = ''
+                sessionArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
+                 str = item.show.replace(reg,sessionValue[index])
+                })
+                itemArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
+                  str = str.replace(reg,itemValue[index])
+                })
+                this.data.tableData.forEach(ele=>{
+                  let strCopy = str
+                  rowValue=[];
+                  if(rowArr&&rowArr.length){
+
+                    rowArr.forEach(it=>{
+                      rowValue.push("'"+ele[it]+"'")
+                    })
+                  rowArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'@{'+ele+'}' , "g" );
+                  strCopy = strCopy.replace(reg,rowValue[index])
+                  })
+                  
+                  }
+                  ele[item.code] = eval(strCopy)
+                })
               } else {
                 this.data.tableData.forEach((it) => {
                   it[item.code] = true;
@@ -2986,22 +3017,45 @@ export default {
               this.data.tableCols.length - 1
             ].buttonList.forEach((item) => {
               if (item.show) {
-                if (item.show.indexOf("=") != -1) {
-                  let num = item.show.indexOf("=");
-                  let left = item.show.substring(0, num);
-                  let right = item.show.substring(num + 1);
-                  this.data.tableData.forEach((ele) => {
-                    if (ele[left] == right) {
-                      ele[item.code] = true;
-                    } else {
-                      ele[item.code] = false;
-                    }
-                  });
-                } else {
-                  this.data.tableData.forEach((it) => {
-                    it[item.code] = true;
-                  });
+                let sessionArr = item.show.match(/(?<=\$\{)\w+(?=})/g),sessionValue = [];
+                let itemArr = item.show.match(/(?<=\#\{)\w+(?=})/g),itemValue=[];
+                let rowArr = item.show.match(/(?<=\@\{)\w+(?=})/g),rowValue=[];
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach(it=>{
+                   sessionValue.push("'"+sessionStorage.getItem(it)+"'") 
+                  })
                 }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach(it=>{
+                   itemValue.push("'"+this.tableBtnIsShow[it]+"'") 
+                  })
+                }
+                
+                let str = ''
+                sessionArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
+                 str = item.show.replace(reg,sessionValue[index])
+                })
+                itemArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
+                  str = str.replace(reg,itemValue[index])
+                })
+                this.data.tableData.forEach(ele=>{
+                  let strCopy = str
+                  rowValue=[];
+                  if(rowArr&&rowArr.length){
+
+                    rowArr.forEach(it=>{
+                      rowValue.push("'"+ele[it]+"'")
+                    })
+                  rowArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'@{'+ele+'}' , "g" );
+                  strCopy = strCopy.replace(reg,rowValue[index])
+                  })
+                  
+                  }
+                  ele[item.code] = eval(strCopy)
+                })
               } else {
                 this.data.tableData.forEach((it) => {
                   it[item.code] = true;
@@ -3037,22 +3091,45 @@ export default {
               this.data.tableCols.length - 1
             ].buttonList.forEach((item) => {
               if (item.show) {
-                if (item.show.indexOf("=") != -1) {
-                  let num = item.show.indexOf("=");
-                  let left = item.show.substring(0, num);
-                  let right = item.show.substring(num + 1);
-                  this.data.tableData.forEach((ele) => {
-                    if (ele[left] == right) {
-                      ele[item.code] = true;
-                    } else {
-                      ele[item.code] = false;
-                    }
-                  });
-                } else {
-                  this.data.tableData.forEach((it) => {
-                    it[item.code] = true;
-                  });
+                let sessionArr = item.show.match(/(?<=\$\{)\w+(?=})/g),sessionValue = [];
+                let itemArr = item.show.match(/(?<=\#\{)\w+(?=})/g),itemValue=[];
+                let rowArr = item.show.match(/(?<=\@\{)\w+(?=})/g),rowValue=[];
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach(it=>{
+                   sessionValue.push("'"+sessionStorage.getItem(it)+"'") 
+                  })
                 }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach(it=>{
+                   itemValue.push("'"+this.tableBtnIsShow[it]+"'") 
+                  })
+                }
+                
+                let str = ''
+                sessionArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
+                 str = item.show.replace(reg,sessionValue[index])
+                })
+                itemArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
+                  str = str.replace(reg,itemValue[index])
+                })
+                this.data.tableData.forEach(ele=>{
+                  let strCopy = str
+                  rowValue=[];
+                  if(rowArr&&rowArr.length){
+
+                    rowArr.forEach(it=>{
+                      rowValue.push("'"+ele[it]+"'")
+                    })
+                  rowArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'@{'+ele+'}' , "g" );
+                  strCopy = strCopy.replace(reg,rowValue[index])
+                  })
+                  
+                  }
+                  ele[item.code] = eval(strCopy)
+                })
               } else {
                 this.data.tableData.forEach((it) => {
                   it[item.code] = true;
@@ -3097,22 +3174,45 @@ export default {
               this.data.tableCols.length - 1
             ].buttonList.forEach((item) => {
               if (item.show) {
-                if (item.show.indexOf("=") != -1) {
-                  let num = item.show.indexOf("=");
-                  let left = item.show.substring(0, num);
-                  let right = item.show.substring(num + 1);
-                  this.data.tableData.forEach((ele) => {
-                    if (ele[left] == right) {
-                      ele[item.code] = true;
-                    } else {
-                      ele[item.code] = false;
-                    }
-                  });
-                } else {
-                  this.data.tableData.forEach((it) => {
-                    it[item.code] = true;
-                  });
+                let sessionArr = item.show.match(/(?<=\$\{)\w+(?=})/g),sessionValue = [];
+                let itemArr = item.show.match(/(?<=\#\{)\w+(?=})/g),itemValue=[];
+                let rowArr = item.show.match(/(?<=\@\{)\w+(?=})/g),rowValue=[];
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach(it=>{
+                   sessionValue.push("'"+sessionStorage.getItem(it)+"'") 
+                  })
                 }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach(it=>{
+                   itemValue.push("'"+this.tableBtnIsShow[it]+"'") 
+                  })
+                }
+                
+                let str = ''
+                sessionArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
+                 str = item.show.replace(reg,sessionValue[index])
+                })
+                itemArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
+                  str = str.replace(reg,itemValue[index])
+                })
+                this.data.tableData.forEach(ele=>{
+                  let strCopy = str
+                  rowValue=[];
+                  if(rowArr&&rowArr.length){
+
+                    rowArr.forEach(it=>{
+                      rowValue.push("'"+ele[it]+"'")
+                    })
+                  rowArr.forEach((ele,index)=>{
+                  var reg = new RegExp( '\\'+'@{'+ele+'}' , "g" );
+                  strCopy = strCopy.replace(reg,rowValue[index])
+                  })
+                  
+                  }
+                  ele[item.code] = eval(strCopy)
+                })
               } else {
                 this.data.tableData.forEach((it) => {
                   it[item.code] = true;
@@ -3381,6 +3481,9 @@ export default {
 }
 .fd-form-item .el-date-editor .el-range-input{
   width: 44%;
+}
+.fd-form-item .el-textarea .el-textarea__inner{
+  font-family: "微软雅黑";
 }
 .fd-form-item .el-date-editor .el-range__close-icon{
   line-height: 24px;

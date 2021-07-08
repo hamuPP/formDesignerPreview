@@ -37,6 +37,7 @@
                   :formCode="formCode"
                   :boId="id"
                   :rules="rules"
+                  :tableBtnIsShow='tableBtnIsShow'
                   :version="version"
                   :linkFormCode='linkFormCode'
                   :labelWidth="fdFormData.labelWidth"
@@ -85,6 +86,7 @@
                       :formCode="formCode"
                       :boId="id"
                       :rules="rules"
+                      :tableBtnIsShow='tableBtnIsShow'
                       :version="version"
                       :linkFormCode='linkFormCode'
                       :labelWidth="fdFormData.labelWidth"
@@ -132,6 +134,7 @@
           :formCode="formCode"
           :boId="id"
           :rules="rules"
+          :tableBtnIsShow='tableBtnIsShow'
           :version="version"
           :linkFormCode='linkFormCode'
           :labelWidth="fdFormData.labelWidth"
@@ -189,6 +192,10 @@ export default {
        type: [Number, String],
       default: null,
     },
+    tableBtnIsShow:{
+        type:Object,
+        default:()=>{}
+    }, 
     rules: {
       type: Object,
       default() {
