@@ -905,7 +905,7 @@ import selectTree from "./selectTree";
 import frameTree from './frame-tree';
 import personEditDialog from "./personEditDialog.vue";
 import CusDialog from "./CusDialog/index";
-import newPersonEditDialog from "./newPersonEditDialog";
+import newPersonEditDialog from './new-person-edit-dialog';
 import rogroupEditDialog from "./rogroupEditDialog.vue";
 import tableDialog from "./tableDialog.vue";
 import { baseUrl } from "../api/commonUrl";
