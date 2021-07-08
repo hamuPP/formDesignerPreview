@@ -1,0 +1,166 @@
+$input-line-height: 26px;
+.person-dialog.new_dialog {
+
+  .el-dialog{
+    width: 900px;
+  }
+  .el-dialog__body{
+    background: #f2f6f9;
+    .people-table-wrap{
+      background: #fff;
+      .people-search-input{
+        margin: 10px;
+        width: calc(100% - 20px);
+        height:auto !important;
+      }
+      .el-table{
+        height: calc(100% - 46px - 42px);
+      }
+    }
+  }
+  .tabPersonRoleClass.el-tabs{
+    height: 100%;
+    overflow: hidden;
+    .el-tabs__content{
+      height: calc(100% - 31px);
+      border-bottom: 1px solid #f1f1f1;
+      .el-tab-pane{
+        height: 100%;
+        .cus-treeSelectTransfer__tree-wrapper {
+          height: calc(100% - 46px);
+          overflow: auto;
+        }
+      }
+
+      .tree-line{
+        // 点中时的背景颜色
+        .el-tree-node:focus>.el-tree-node__content {
+          background-color:transparent;
+        }
+        // 悬浮时的背景颜色
+        .el-tree-node__content:hover {
+          background-color: transparent;
+        }
+        .el-tree-node {
+          position: relative;
+          padding-left: 16px; // 缩进量
+        }
+        .el-tree-node__children {
+          padding-left: 16px; // 缩进量
+        }
+        // 一级
+
+        // & >.el-tree-node>.el-tree-node__content::before{
+        //     content: '+';
+        // }
+        // 竖线
+
+        .el-tree-node::before {
+          content: "";
+          height: 100%;
+          width: 1px;
+          position: absolute;
+          left: -3px;
+          top: -26px;
+          border-width: 1px;
+          border-left: 1px dashed #52627C;
+        }
+        //一级节点的竖线
+        & >.el-tree-node>.el-tree-node__children>.el-tree-node::before{
+          left: 8px;
+        }
+
+        // 当前层最后一个节点的竖线高度固定
+        .el-tree-node:last-child::before {
+          height: 38px; // 可以自己调节到合适数值
+        }
+
+        // 横线
+        .el-tree-node::after {
+          content: "";
+          width: 24px;
+          height: 20px;
+          position: absolute;
+          left: -3px;
+          top: 12px;
+          border-width: 1px;
+          border-top: 1px dashed #52627C;
+        }
+        //一级节点的横线
+        & >.el-tree-node>.el-tree-node__children>.el-tree-node::after{
+          width: 11px;
+          left: 8px;
+        }
+
+        // 去掉最顶层的虚线，放最下面样式才不会被上面的覆盖了
+        & > .el-tree-node::after {
+          border-top: none;
+        }
+        & > .el-tree-node::before {
+          // border-left: none;
+          left: 21px;
+          top:20px;
+          height: 70%;
+        }
+        & > .el-tree-node:nth-last-child(2):before {
+          border-left: none;
+        }
+
+        // & > .el-tree-node:nth-of-type(3)::before {
+        //   border-left: none;
+        // }
+        // 展开关闭的icon
+        .el-tree-node__expand-icon{
+          font-size: 16px;
+          // 叶子节点（无子节点）
+          &.is-leaf{
+            color: transparent;
+            // display: none; // 也可以去掉
+          }
+        }
+      }
+      .searchCandidate{
+        display: block;
+        height: $input-line-height;
+        line-height: $input-line-height;
+        width: 90%;
+        margin: 10px auto;
+        .el-input__inner{
+          height: $input-line-height;
+          line-height: $input-line-height;
+        }
+        .el-input__suffix{
+          .el-input__icon{
+            line-height: $input-line-height;
+          }
+        }
+      }
+    }
+    .el-tabs__header.is-bottom{
+      border: none;
+      margin: 0;
+      .el-tabs__nav.is-bottom{
+        .el-tabs__item.is-bottom.is-active{
+          background-color: #f7faff;
+          color: #175eff;
+          border-radius: 4px;
+        }
+        .el-tabs__item{
+          height: 30px;
+          line-height: 30px;
+          padding: 0 30px;
+        }
+      }
+    }
+  }
+  .el-dialog__footer{
+    background: #e2e9f0;
+  }
+  .people-define-group {
+    .people-table-wrap {
+      .Pagination {
+        height: 42px;
+      }
+    }
+  }
+}
