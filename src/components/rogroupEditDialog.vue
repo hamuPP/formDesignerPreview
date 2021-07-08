@@ -3,36 +3,42 @@
 * Created by lzp on 21/3/2
 */
 <template>
-  <el-dialog
-    class="cus-dialog person-dialog rolegroups"
-    :title="title"
-    :visible.sync="dialogVisible"
-    width="400"
-    append-to-body
+  <cus-dialog
+      :visible.sync="dialogVisible"
+      width="660px"
+      :title="title"
+      type="aoi2"
+      custom-class="form-common-dialog__todo person-dialog rolegroups"
+      append-to-body
   >
-    <el-tree
-      :props="props"
-      :load="loadNode"
-      lazy
-      show-checkbox
-      check-strictly
-      node-key="id"
-      ref="rogroupEdit"
-      :default-checked-keys="defaultData"
-      @check="check"
-    >
-    </el-tree>
+    <div class="form-common-dialog-body">
+      <el-tree
+          :props="props"
+          :load="loadNode"
+          lazy
+          show-checkbox
+          check-strictly
+          node-key="id"
+          ref="rogroupEdit"
+          :default-checked-keys="defaultData"
+          @check="check"
+      >
+      </el-tree>
+    </div>
+    <!-- 操作栏 -->
     <span slot="footer" class="dialog-footer">
       <el-button type="primary" @click="sureHand" size="mini">确定</el-button>
       <el-button @click="dialogVisible = false" size="mini">取消</el-button>
     </span>
-  </el-dialog>
+  </cus-dialog>
 </template>
 
 <script>
+import CusDialog from './CusDialog'
 import { getTreePostAPI } from "../api/formDesigner_api";
 export default {
   name: "line-group-param-edit-dialog",
+  components: {CusDialog},
   data() {
     return {
       graph: null,
