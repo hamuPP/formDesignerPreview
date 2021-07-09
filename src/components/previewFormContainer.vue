@@ -11,6 +11,7 @@
             :version='version'
             :linkFormCode='linkFormCode'
             :rules="formRules"
+            :tableBtnIsShow='tableBtnIsShow'
             :useCustormRule="useCustormRule"
             :formModel="previewFormModel"
             :formModelCn='formModelCn'
@@ -85,6 +86,10 @@
         default () {
           return {}
         }
+      },
+      tableBtnIsShow:{
+        type:Object,
+        default:()=>{}
       },
       formModelCn:{
         type:Object,
