@@ -12,7 +12,6 @@
     :label-width="fdFormData.labelWidth + 'px'"
     :model="formModel"
     ref="fdForm"
-    :disabled="view"
     :data-code="formCode">
     <el-row v-for="(it, index) in fdFormItems" :key="index" :gutter="35">
       <el-col v-for="(item, key) in it" :key="key" :span="item.width" :style="colStyle(item)">
