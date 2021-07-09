@@ -77,7 +77,7 @@
                       :ref="data.ref.value"
                       @click.native.stop
                       v-model="scope.row[col.prop]"
-                      :disabled="col.componentTypeValueAttr.disabled.value"
+                      :disabled="col.componentTypeValueAttr.disabled.value  || view"
                       :readonly="col.componentTypeValueAttr.readonly.value"
                       :clearable="col.componentTypeValueAttr.clearable.value"
                       @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
@@ -96,7 +96,7 @@
                       :ref="data.ref.value"
                       @click.native.stop
                       v-model.number="scope.row[col.prop]"
-                      :disabled="col.componentTypeValueAttr.disabled.value"
+                      :disabled="col.componentTypeValueAttr.disabled.value || view"
                       :readonly="col.componentTypeValueAttr.readonly.value"
                       :clearable="col.componentTypeValueAttr.clearable.value"
                       @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
@@ -115,7 +115,7 @@
                       v-model="scope.row[col.prop]"
                       placeholder="请输入内容"
                       @click.native.stop
-                      :disabled="col.componentTypeValueAttr.disabled.value"
+                      :disabled="col.componentTypeValueAttr.disabled.value  || view"
                       :readonly="col.componentTypeValueAttr.readonly.value"
                       :clearable="col.componentTypeValueAttr.clearable.value"
                     ></el-autocomplete>
@@ -130,7 +130,7 @@
                     <el-input
                       v-model="scope.row[col.prop]"
                       v-if="currentIndex == scope.$index"
-                      :disabled="col.componentTypeValueAttr.disabled.value"
+                      :disabled="col.componentTypeValueAttr.disabled.value || view"
                       :readonly="col.componentTypeValueAttr.readonly.value"
                       :clearable="col.componentTypeValueAttr.clearable.value"
                       @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
@@ -156,7 +156,7 @@
                     v-if="currentIndex == scope.$index"
                     placeholder="请选择"
                     :filterable="col.componentTypeValueAttr.filterable.value"
-                    :disabled="col.componentTypeValueAttr.disabled.value"
+                    :disabled="col.componentTypeValueAttr.disabled.value  || view"
                     :clearable="col.componentTypeValueAttr.clearable.value"
                     @blur="validateTabColRules(col, col.componentTypeValueAttr, scope.row[col.prop], col.prop)"
                   >
@@ -194,7 +194,7 @@
                   <el-date-picker
                     class="el_datePicker_self"
                     v-model="scope.row[col.prop]"
-                    :disabled="col.componentTypeValueAttr.disabled.value"
+                    :disabled="col.componentTypeValueAttr.disabled.value  || view"
                     :type="col.componentTypeValueAttr.innerType.value"
                     :clearable="col.componentTypeValueAttr.clearable.value"
                     :format="col.componentTypeValueAttr.selfShowValueFormat.value ? col.componentTypeValueAttr.inputFormatShow.value : col.componentTypeValueAttr.showValueFormat.value"
@@ -247,7 +247,7 @@
                     :key="index"
                     type="text"
                     size="small"
-                    :disabled="data.readonly||item.isDisabled"
+                    :disabled="data.readonly||item.isDisabled || view"
                     @click="dealFuncStr(item, index,scope.row)"
                     v-if="scope.row[item.code]&&!data.readonly"
                   >{{item.name}}</el-button>
@@ -307,7 +307,7 @@
         <el-form-item class="form-item suffix-button" prop="paramExpress">
           <el-input
             clearable
-            :disabled="data.disabled"
+            :disabled="data.disabled || view"
             v-model="data.defaultName"
             @clear="clearExpress"
             v-on:click.native.stop="openPerRoleDialog()"
@@ -329,7 +329,7 @@
       <template v-else-if="data.type==='newUser'">
         <el-form-item>
           <el-input
-            :disabled="data.disabled"
+            :disabled="data.disabled || view"
             v-model="data.defaultName"
             :clearable="data.clearable"
             v-on:click.native.stop="openNewPerRoleDialog(data.isMultiple)"
@@ -367,7 +367,7 @@
         <el-form-item class="form-item suffix-button" prop="paramExpress">
           <el-input
             :clearable="data.clearable"
-            :disabled="data.disabled"
+            :disabled="data.disabled || view"
             v-model="data.defaultValueArr"
             @clear="clearGogroup"
             @click.native.stop="openFrameTreeDialog()"
@@ -383,7 +383,7 @@
         type="textarea"
         :rows="data.rows"
         resize="none"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         @click.native="inputClickHand"
@@ -396,7 +396,7 @@
         v-else-if="data.type === 'radio'"
         :ref="data.ref"
         v-model="formModel[data.code]"
-        :disabled="data.disabled"
+        :disabled="data.disabled  || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         @change="selectChangeHand"
@@ -412,7 +412,7 @@
         v-else-if="data.type === 'checkbox'"
         :ref="data.ref"
         v-model="formModel[data.code]"
-        :disabled="data.disabled"
+        :disabled="data.disabled  || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         @click.native="inputClickHand"
@@ -432,7 +432,7 @@
         v-else-if="data.type === 'rate'"
         :ref="data.ref"
         v-model="formModel[data.code]"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         @click.native="inputClickHand"
@@ -446,7 +446,7 @@
         v-else-if="data.type === 'select'"
         :ref="data.ref"
         v-model="formModel[data.code]"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :clearable="data.clearable"
         :filterable="data.filterable"
         :multiple="data.multiple==true"
@@ -472,7 +472,7 @@
         :type="data.innerType"
         :format="data.isCustormFormat? data.custormFormat : data.format"
         :value-format="data.isCustormValueFormat ? data.custormValueFormat : data.valueFormat"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         @click.native="inputClickHand"
@@ -488,7 +488,7 @@
         v-model="formModel[data.code]"
         :format="data.isCustormFormat? data.custormFormat : data.format"
         :value-format="data.isCustormValueFormat ? data.custormValueFormat : data.valueFormat"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         @click.native="inputClickHand"
@@ -504,7 +504,7 @@
         is-range
         v-model="formModel[data.code]"
         :value-format="data.valueFormat"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         range-separator="至"
@@ -525,7 +525,7 @@
         :circle="data.circle"
         :icon="data.icon"
         :size="data.size"
-        :disabled="data.disabled || counting"
+        :disabled="data.disabled || counting || view"
         :style="buttonStyle"
         @click.native="inputClickHand"
       >
@@ -584,7 +584,7 @@
           :show-file-list="false"
           :auto-upload="true"
           :http-request="uploadNewFile"
-          :disabled="data.disabled"
+          :disabled="data.disabled || view"
           :multiple="data.isMultiple"
         >
           <el-button size="small" type="primary">点击上传</el-button>
@@ -640,7 +640,7 @@
         :precision="data.precision"
         :step="data.stepValue"
         :controls="data.showButton"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         :min="data.minValue || 0"
         :max="data.maxValue || 0"
@@ -658,7 +658,7 @@
         class="el_cascader_self"
         :key.sync="data.cascaderKey"
         collapse-tags
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         :filterable="data.filterable"
@@ -677,7 +677,7 @@
           v-if="data.showType === 'select'"
           :ref="data.ref"
           v-model="formModel[data.code]"
-          :disabled="data.disabled"
+          :disabled="data.disabled  || view"
           :readonly="data.readonly"
           :clearable="data.clearable"
           @change="selectChangeHand"
@@ -697,7 +697,7 @@
           v-else
           :ref="data.ref"
           v-model="formModel[data.code]"
-          :disabled="data.disabled"
+          :disabled="data.disabled || view"
           :readonly="data.readonly"
           :clearable="data.clearable"
           @click.native="inputClickHand"
@@ -712,7 +712,7 @@
         v-else-if="data.type === 'sheetFlowCode'"
         :ref="data.ref"
         v-model="formModel[data.code]"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         @click.native="inputClickHand"
@@ -726,7 +726,7 @@
         v-else-if="data.type === 'operator'"
         :ref="data.ref"
         v-model="formModel[data.code]"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         @click.native="inputClickHand"
@@ -740,7 +740,7 @@
         v-else-if="data.type === 'operatorDept'"
         :ref="data.ref"
         v-model="formModel[data.code]"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         :clearable="data.clearable"
         @click.native="inputClickHand"
@@ -753,7 +753,7 @@
         v-else-if="data.type === 'operatorMobile'"
         :ref="data.ref"
         v-model="formModel[data.code]"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :readonly="data.readonly"
         k
         :clearable="data.clearable"
@@ -771,7 +771,7 @@
         :value-format="data.format||'yyyy-MM-dd HH:mm:ss'"
         v-model="formModel[data.code]"
         type="datetime"
-        :disabled="data.disabled"
+        :disabled="data.disabled || view"
         :computereadonly="data.readonly"
         @click.native="inputClickHand"
         @change="inputChangeHand"
@@ -788,7 +788,7 @@
           :fetch-suggestions="querySearchAsync"
           placeholder="请输入内容"
           @select="handleSelect"
-          :disabled="data.disabled"
+          :disabled="data.disabled || view"
           :readonly="data.readonly"
           @click.native="inputClickHand"
           @change="inputChangeHand"
@@ -799,7 +799,7 @@
         <el-input
           v-else-if="data.validationSetting && data.validationSetting.dataType.value === 'number'"
           :ref="data.ref"
-          :disabled="data.disabled"
+          :disabled="data.disabled || view"
           :readonly="data.readonly"
           :clearable="data.clearable"
           type="number"
@@ -812,7 +812,7 @@
         <el-input
           v-else-if="data.validationSetting && data.validationSetting.dataType.value === 'password'"
           :ref="data.ref"
-          :disabled="data.disabled"
+          :disabled="data.disabled || view"
           :readonly="data.readonly"
           :clearable="data.clearable"
           type="password"
@@ -825,7 +825,7 @@
         <el-input
           v-else
           :ref="data.ref"
-          :disabled="data.disabled"
+          :disabled="data.disabled || view"
           :readonly="data.readonly"
           :clearable="data.clearable"
           v-model="formModel[data.code]"
@@ -3299,7 +3299,7 @@ export default {
       };
 
       // 倒计时开始
-      if (this.data.type === "button") {
+      if (this.data.type === 'button') {
         this.startCountingDown();
       }
       // 尝试把自定义函数字符串转为函数并执行
