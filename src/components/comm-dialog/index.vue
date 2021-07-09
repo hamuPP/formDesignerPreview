@@ -10,9 +10,9 @@
       custom-class="form-common-dialog"
       :append-to-body="true"
   >
-    <div class="form-common-dialog-body">
+    <div class="form-common-dialog-body" :key="index">
       <!--  配置子表单的形式打开弹窗    -->
-      <template v-if="mode == 1">
+      <template v-if="mode == 1" >
         <previewForm
             ref="form"
             view
@@ -28,6 +28,7 @@
             showAnchor
             :outerHeaderHeight="85"
             :outerheightHeight="46"
+            
         >
         </previewForm>
       </template>
@@ -82,6 +83,7 @@ export default {
       fdFormData: {},
       formId:'',
       code:'',
+      index:1
     }
   },
   methods: {
@@ -94,13 +96,14 @@ export default {
       this.openDialogContent = formItem.click.openDialogContent;
       this.code = formItem.click.openDialogContent;
       // this.dialogTitle = openDialogTitle;
-      // this.dialogWidth = dialogWidth;
+      this.dialogWidth = '50%';
       // this.formItem = formItem;
       // 按钮
       this.footerBtns = formItem.click.openDialogFooterBtns.filter(it =>{
         return it;
       });
       this.dialogVisible = true;
+      
       this.getLinkFormByCode(this.openDialogContent);
     },
     // 使用代码的打开弹窗
@@ -133,6 +136,7 @@ export default {
             if (res.data && res.data.code == "0000") {
               this.formId = res.data.data.id || "";
               let configContent = JSON.parse(res.data.data.configContent);
+              console.log(configContent,'configContent');
               let _fields = res.data.data.fields;
               // 表单配置项数据合并
               let fmData = configContent.fm;
@@ -154,6 +158,7 @@ export default {
               this.fdFormData = fmData;
               this.fdFormItems = formateList(list);
               this.formVisible = true; // 显示表单
+              this.index++
               // this.$nextTick(()=>{ todo
               //   this.formCode=this.code
               //   setRoleOptions.call(this);
