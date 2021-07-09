@@ -2961,15 +2961,19 @@ export default {
                   })
                 }
                 
-                let str = ''
-                sessionArr.forEach((ele,index)=>{
+                let str = item.show
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach((ele,index)=>{
                   var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
                  str = item.show.replace(reg,sessionValue[index])
                 })
-                itemArr.forEach((ele,index)=>{
+                }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach((ele,index)=>{
                   var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
                   str = str.replace(reg,itemValue[index])
                 })
+                }
                 this.data.tableData.forEach(ele=>{
                   let strCopy = str
                   rowValue=[];
@@ -3031,15 +3035,19 @@ export default {
                   })
                 }
                 
-                let str = ''
-                sessionArr.forEach((ele,index)=>{
+                let str = item.show
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach((ele,index)=>{
                   var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
                  str = item.show.replace(reg,sessionValue[index])
                 })
-                itemArr.forEach((ele,index)=>{
+                }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach((ele,index)=>{
                   var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
                   str = str.replace(reg,itemValue[index])
                 })
+                }
                 this.data.tableData.forEach(ele=>{
                   let strCopy = str
                   rowValue=[];
@@ -3105,15 +3113,20 @@ export default {
                   })
                 }
                 
-                let str = ''
-                sessionArr.forEach((ele,index)=>{
+                let str = item.show
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach((ele,index)=>{
                   var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
                  str = item.show.replace(reg,sessionValue[index])
                 })
-                itemArr.forEach((ele,index)=>{
+                }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach((ele,index)=>{
                   var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
                   str = str.replace(reg,itemValue[index])
                 })
+                }
+                
                 this.data.tableData.forEach(ele=>{
                   let strCopy = str
                   rowValue=[];
@@ -3188,15 +3201,19 @@ export default {
                   })
                 }
                 
-                let str = ''
-                sessionArr.forEach((ele,index)=>{
+                let str = item.show
+                if(sessionArr&&sessionArr.length){
+                  sessionArr.forEach((ele,index)=>{
                   var reg = new RegExp( '\\'+'${'+ele+'}' , "g" );
                  str = item.show.replace(reg,sessionValue[index])
                 })
-                itemArr.forEach((ele,index)=>{
+                }
+                if(itemArr&&itemArr.length){
+                  itemArr.forEach((ele,index)=>{
                   var reg = new RegExp( '\\'+'#{'+ele+'}' , "g" );
                   str = str.replace(reg,itemValue[index])
                 })
+                }
                 this.data.tableData.forEach(ele=>{
                   let strCopy = str
                   rowValue=[];
@@ -3487,6 +3504,9 @@ export default {
 }
 .fd-form-item .el-date-editor .el-range__close-icon{
   line-height: 24px;
+}
+.fd-form-item .el-cascader{
+  line-height: 30px;
 }
 .tree-box .el-checkbox__inner {
   width: 12px;
