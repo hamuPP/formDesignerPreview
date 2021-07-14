@@ -97,7 +97,7 @@
 
   import {getForm} from './api/API';
 
-  import {getUrlQueryParams} from '../src/assets/js/utils';
+  import {getUrlQueryParams} from '@/util/utils';
 
   import myComp1 from './views/myComp1'
 

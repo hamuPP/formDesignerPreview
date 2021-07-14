@@ -7,8 +7,11 @@ const config = require('../config')
 const uglify = require('uglifyjs-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HOST = process.env.HOST;
-console.log('HOST', HOST);
-console.log('config.dev.host', config.dev.host);
+
+function resolve (dir) {
+  return path.join(__dirname, '..', dir)
+}
+
 module.exports = {
   devtool: 'source-map',
   entry: './examples/main',
@@ -18,7 +21,10 @@ module.exports = {
     filename: '[name].js',
   },
   resolve: {
-    extensions: ['.js', '.vue', '.json']
+    extensions: ['.js', '.vue', '.json'],
+    alias: {
+      '@': resolve('src'),
+    }
   },
   devServer: {
     host: HOST || config.dev.host,
