@@ -909,6 +909,8 @@ import newPersonEditDialog from './new-person-edit-dialog';
 import rogroupEditDialog from "./rogroupEditDialog.vue";
 import tableDialog from "./tableDialog.vue";
 import { baseUrl } from "../api/commonUrl";
+import {getUrlQueryParams} from '@/util/utils';
+
 export default {
   name: "previewFormItem",
   components: {
@@ -1008,7 +1010,7 @@ export default {
     },
     sqlData() {
       let obj = {
-        formCode: this.$route.query.formCode,
+        formCode: this.urlParams.formCode,
         version: this.version,
         map: {},
         tableCode: this.data.code,
@@ -1035,7 +1037,7 @@ export default {
     tableParams() {
       let obj = {
         boId: this.boId,
-        formCode: this.$route.query.formCode,
+        formCode: this.urlParams.formCode,
         version: this.version,
         tableCode: this.data.code,
       };
@@ -1267,6 +1269,7 @@ export default {
   },
   data() {
     return {
+      urlParams: {},// 浏览器参数
       moment: moment,
       options: [], // 针对下拉框等的下拉数据
       fileName: "", // 附件名字
@@ -1315,6 +1318,7 @@ export default {
     };
   },
   created() {
+    this.urlParams = getUrlQueryParams();
     // 检查如果有码表配置的，查询其数据
     let { type, optionSetting, validationSetting, formSetting_children } = this.data;
     if (optionSetting === "static") {
@@ -2170,9 +2174,6 @@ export default {
           rowData: this.DialogattrData,
         };
         this.componentFormContainer.$emit("tableItemClick", args);
-        // this.MessageConfig.showMessage = true;
-        // this.MessageConfig.MsgBoxType = "warning";
-        // this.MessageConfig.MsgText = "绑定事件的方法为空！";
       } else if (item.clickFuncStr) {
       }
     },
@@ -2317,6 +2318,7 @@ export default {
     },
     //删除行
     handleDelete(index) {
+      debugger;
       event.stopPropagation();
       this.MessageConfig.showMessage = true;
       this.MessageConfig.MsgBoxType = "confirm";

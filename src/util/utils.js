@@ -49,3 +49,18 @@ export const downloadLocalFile = (filename, reqData, fileContentType)=>{
     }
   }
 };
+
+// 获取浏览器传参（即：？后面的参数）
+export const getUrlQueryParams = () => {
+  let urlSearch = window.location.search;
+  if (!urlSearch || !urlSearch.substr(1)) {
+    return {}
+  }
+  let searchList = urlSearch.substr(1).split('&');
+  let searchObj = {};
+  searchList.forEach(it => {
+    let arr = it.split('=');
+    searchObj[arr[0].trim()] = arr[1].trim();
+  });
+  return searchObj;
+};

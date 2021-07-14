@@ -60,7 +60,7 @@ import previewForm from '../previewForm.vue'
 // api 相关
 import {getLinkFormByCodeService} from '../../api/formDesigner_api.js'
 import {flatList, getFormModel, formateList} from '../../util/common'
-import {getUrlQueryParams} from '../../assets/js/utils';
+import {getUrlQueryParams} from '@/util/utils';
 export default {
   name: 'commonDialog',
   components: {CusDialog, previewForm},

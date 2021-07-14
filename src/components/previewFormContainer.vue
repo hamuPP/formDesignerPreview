@@ -34,7 +34,7 @@
 </template>
 
 <script>
-  import {getUrlQueryParams, showQueryErrorMessage} from '../assets/js/utils'
+  import {getUrlQueryParams} from '@/util/utils'
   import previewForm from './previewForm.vue'
   import anchor from './anchor/index.vue'
   import CusMsgbox from './cus_msgbox/index.js'
